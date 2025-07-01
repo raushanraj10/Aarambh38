@@ -3,12 +3,14 @@ const app=express();
 const AuthRouter =require("./routes/auth")
 const connectDb=require("./config/database")
 
+app.use(express.json())
+// this convert data into json to js for understand js console
 
 app.use("/",AuthRouter)
-app.get("/",(req,res)=>{
-    console.log(req.body)
-    res.send("This is the homepage")
-})
+// app.get("/",(req,res)=>{
+//     console.log(req.body)
+//     res.send("This is the homepage")
+// })
 
 
 connectDb().then(()=>{app.listen(5000,()=>{

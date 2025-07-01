@@ -1,5 +1,5 @@
 const mongoose=require("mongoose")
-
+const validator=require("validator")
 const UserSchema=new mongoose.Schema({
     fullName:{
         type:String,
@@ -8,47 +8,51 @@ const UserSchema=new mongoose.Schema({
     gender:{
         type:String,
         require:true,
-        validate(value){
-            if(!["male","female","other"].includes(value))
-                return res.send("gender not valid")
-        }
+        
+        // validate(value){
+        //     console.log(value)
+        //     if(!["male","female","other"].includes(value))
+        //         return res.status(400).send("gender not valid")
+        // }
     },
     collegeName:{
-        text:String,
-        require:true,
-        default:""
+        type:String,
+        // require:true,
+        default:"Bakhtiyarpur College Of Engineering"
     },
     batch:{
         type:Number,
-        require:true,
+        // require:true,
         default:2022
     },
     age:{
-        text:Number,
-        require:true,
+        type:Number,
+        // require:true,
     },
     registration:{
-        text:Number,
+        type:Number,
         require:true,
     },
     emailId:{
-        text:String,
+        type:String,
         require:true,
     },
     newPassword:{
-        text:String,
+        type:String,
         require:true,
+        // min:4,
     },
-    confirmpassword:{
-        text,String,
+    confirmPassword:{
+        type:String,
         require:true,
+        // minLength:4,
     },
     photourl:{
-        text:String,
-        default:""
+        type:String,
+        default:"https://img.freepik.com/free-psd/contact-icon-illustration-isolated_23-2151903337.jpg?semt=ais_items_boosted&w=740"
     },
-    mobilenumber:{
-        text:Number
+    mobileNumber:{
+        type:Number
     }
 },{timestamps:true})
 
