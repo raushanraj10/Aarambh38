@@ -19,7 +19,7 @@ export default function Navbar() {
             About
           </Link>
           <Link to="/students" className="text-gray-700 hover:text-blue-600 font-medium">
-            Help
+            Contact
           </Link>
         </div>
 
