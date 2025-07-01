@@ -5,10 +5,10 @@ const validateBodyData = require("../utils/ValidateBodyData");
 
 const AuthRouter=express.Router()
 
-AuthRouter.post("/signup",async (req,res)=>{
+AuthRouter.post("/signupuser",async (req,res)=>{
     const data=req.body;
     // console.log(data)
-    const requiredFields=["fullName","gender","emailId","newPassword","confirmPassword","registration"]
+    const requiredFields=["fullName","gender","emailId","newPassword","confirmPassword","registration","age","collegeName"]
     
      const allFieldsPresent = requiredFields.every(field => field in data);
 
