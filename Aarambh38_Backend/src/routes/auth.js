@@ -30,7 +30,7 @@ AuthRouter.post("/signup",async (req,res)=>{
     const finalData=ModelUser(data)
     await finalData.save()
     
-    res.send("form signup")
+    res.send("Signup Successfully")
     
 
 })
