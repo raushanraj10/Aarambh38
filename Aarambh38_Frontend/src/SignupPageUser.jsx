@@ -1,16 +1,24 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import { pendinguser } from "./utils/EmailSlice";
+import { useDispatch, useSelector } from "react-redux";
+import bcrypt from "bcryptjs";
+import {useNavigate} from "react-router-dom"
 
 export default function SignupPageUser() {
+  const dispatch=useDispatch()
+  const data=useSelector((store)=>store.verifyuser)
+  const Navigate =useNavigate()
   const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    collegeName: "",
-    registrationNumber: "",
-    age: "",
-    gender: "",
-    newPassword: "",
-    confirmPassword: "",
+    fullName: "a",
+    email: "a@gmail.com",
+    collegeName: "a",
+    registrationNumber: "123",
+    age: "123",
+    gender: "male",
+    newPassword: "1234",
+    confirmPassword: "1234",
+    code:""
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -24,6 +32,31 @@ export default function SignupPageUser() {
     console.log("Signup data:", formData);
     // Send to backend
   };
+
+  const HandleVerification = async () => {
+  // Generate a 6-digit random code
+  const code = Math.floor(Math.random() * 900000) + 100000;
+  // const hashcode=  bcrypt.hash(code,10)
+
+  // Update form data with the code
+  const hashedCode = await bcrypt.hash(code.toString(), 10);
+  const updatedFormData = { ...formData, code: hashedCode };
+
+  // Update state
+  setFormData(updatedFormData);
+
+  // Dispatch to Redux
+  dispatch(pendinguser(updatedFormData));
+
+  // Optional: for debugging
+  console.log("Verification Code:", code);
+  return Navigate("/emailverification")
+};
+
+
+
+
+
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
@@ -69,7 +102,7 @@ export default function SignupPageUser() {
           <div>
             <label className="text-sm font-medium text-gray-700">Registration Number</label>
             <input
-              type="text"
+              type="number"
               name="registrationNumber"
               value={formData.registrationNumber}
               onChange={handleChange}
@@ -137,7 +170,7 @@ export default function SignupPageUser() {
             />
           </div>
 
-          <button
+          <button onClick={()=>HandleVerification()}
             type="submit"
             className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
           >
