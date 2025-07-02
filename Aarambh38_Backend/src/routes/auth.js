@@ -6,10 +6,10 @@ const SendEmail =require("../utils/SendEmail")
 
 const AuthRouter=express.Router()
 
-AuthRouter.post("/sendemail",(req,res)=>{
+AuthRouter.post("/sendemail",async (req,res)=>{
     try{
     const {emailId,code}=req.body
-    SendEmail(emailId,code)
+    await SendEmail(emailId,code)
     res.send("Email Sent")
 }
     catch(err){console.log(err.message)}
@@ -29,9 +29,9 @@ AuthRouter.post("/signupuser",async (req,res)=>{
     // .include not working because data is object and requiredfields are array use "in" keyword
     validateBodyData(req,res);
 
-    const checkemailid=await ModelUser.findOne({emailId:req.body.emailId})
-    if(checkemailid)
-        return res.status(400).send("Email already exist")
+    // const checkemailid=await ModelUser.findOne({emailId:req.body.emailId})
+    // if(checkemailid)
+    //     return res.status(400).send("Email already exist")
 
     if(req.body.newPassword!==req.body.confirmPassword)
         return res.status(400).send("Password not match")
@@ -43,4 +43,15 @@ AuthRouter.post("/signupuser",async (req,res)=>{
     
 
 })
+
+AuthRouter.post("/login",async (req,res)=>{
+    const {emailId,Password}=req.body
+const checkemail=await ModelUser.findOne({emailId:emailId})
+
+const checkpassword= await bcrypt.compare(Password,checkemail.newPassword)
+
+})
+
+
+
 module.exports=AuthRouter

@@ -10,15 +10,15 @@ import axios from "axios"
 export default function SignupPageUser() {
   const code = Math.floor(Math.random() * 900000) + 100000;
   const dispatch=useDispatch()
-  const data=useSelector((store)=>store.verifyuser)
+  // const data=useSelector((store)=>store.verifyuser)
   const Navigate =useNavigate()
   const [formData, setFormData] = useState({
-    fullName: "a",
+    fullName: "abc",
     emailId: "r661157@gmail.com",
     collegeName: "a",
     registration: "123",
     age: "123",
-    gender: "male",
+    gender: "Male",
     newPassword: "1234",
     confirmPassword: "1234",
     code:""
@@ -90,8 +90,8 @@ export default function SignupPageUser() {
             <label className="text-sm font-medium text-gray-700">Email</label>
             <input
               type="email"
-              name="email"
-              value={formData.email}
+              name="emailId"
+              value={formData.emailId}
               onChange={handleChange}
               className="w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
@@ -114,8 +114,8 @@ export default function SignupPageUser() {
             <label className="text-sm font-medium text-gray-700">Registration Number</label>
             <input
               type="number"
-              name="registrationNumber"
-              value={formData.registrationNumber}
+              name="registration"
+              value={formData.registration}
               onChange={handleChange}
               className="w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
@@ -181,8 +181,7 @@ export default function SignupPageUser() {
             />
           </div>
 
-          <button onClick={()=>HandleVerification()}
-            type="submit"
+          <button type="button" onClick={HandleVerification}
             className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
           >
             Sign Up

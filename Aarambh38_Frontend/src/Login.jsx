@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react"; // Optional icon package
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
+  const Navigate = useNavigate()
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ email: "", password: "" });
 
@@ -14,6 +16,10 @@ export default function Login() {
     console.log("Login data:", formData);
     // call API
   };
+
+  const handlelogin=()=>{
+   Navigate("/landingpage")
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
@@ -51,7 +57,7 @@ export default function Login() {
             </div>
           </div>
 
-          <button
+          <button onClick={handlelogin}
             type="submit"
             className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
           >

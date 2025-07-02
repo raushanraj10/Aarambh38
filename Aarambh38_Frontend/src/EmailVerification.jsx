@@ -28,7 +28,7 @@ export default function EmailVerification() {
 // console.log(gender)
     const res=await axios.post("http://localhost:5000/signupuser",{fullName,gender,emailId,registration,newPassword,confirmPassword,age,collegeName},{withCredentials:true})
     //  console.log(res)
-      return Navigate("/profile")
+      return Navigate("/landingpage")
     } else {
       setMessage("❌ Invalid verification code.");
     }
