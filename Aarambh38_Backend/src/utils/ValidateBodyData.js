@@ -3,8 +3,8 @@ const validateBodyData=(req,res)=>{
     const {emailId,gender,age,newPassword}=req.body
     if(!validate.isEmail(emailId))
             return res.status(400).send("Email not vaid")
-    if(!["male","female","other"].includes(gender))
-        return res.status(400).send("gender not valid")
+    // if(!["male","female","other"].includes(gender))
+    //     return res.status(400).send("gender not valid")
     if(age<0)
         return res.status(400).send("Age not vaid")
     

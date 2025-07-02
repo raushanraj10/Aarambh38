@@ -4,16 +4,19 @@ import { pendinguser } from "./utils/EmailSlice";
 import { useDispatch, useSelector } from "react-redux";
 import bcrypt from "bcryptjs";
 import {useNavigate} from "react-router-dom"
+import axios from "axios"
+
 
 export default function SignupPageUser() {
+  const code = Math.floor(Math.random() * 900000) + 100000;
   const dispatch=useDispatch()
   const data=useSelector((store)=>store.verifyuser)
   const Navigate =useNavigate()
   const [formData, setFormData] = useState({
     fullName: "a",
-    email: "a@gmail.com",
+    emailId: "r661157@gmail.com",
     collegeName: "a",
-    registrationNumber: "123",
+    registration: "123",
     age: "123",
     gender: "male",
     newPassword: "1234",
@@ -29,16 +32,23 @@ export default function SignupPageUser() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Signup data:", formData);
+    // console.log("Signup data:", formData);
     // Send to backend
   };
 
   const HandleVerification = async () => {
+    const emailId=formData.emailId
+    // console.log(emailId)
+    // console.log(code)
+
+  const res=await axios.post("http://localhost:5000/sendemail",{emailId,code},{withCredentials:true})
+  // console.log(res)
   // Generate a 6-digit random code
-  const code = Math.floor(Math.random() * 900000) + 100000;
+  
   // const hashcode=  bcrypt.hash(code,10)
 
   // Update form data with the code
+  
   const hashedCode = await bcrypt.hash(code.toString(), 10);
   const updatedFormData = { ...formData, code: hashedCode };
 
@@ -49,7 +59,8 @@ export default function SignupPageUser() {
   dispatch(pendinguser(updatedFormData));
 
   // Optional: for debugging
-  console.log("Verification Code:", code);
+  // console.log("Verification Code:", code);
+  
   return Navigate("/emailverification")
 };
 

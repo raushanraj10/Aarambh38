@@ -8,6 +8,7 @@ import SignupChoice from "./SignupChoice"
 import appStore from "./utils/appStore"
 import { Provider } from 'react-redux'
 import EmailVerification from "./EmailVerification"
+import Profile from "./profile"
 
 function App() {
   
@@ -19,6 +20,7 @@ function App() {
         <Route path="/" element={<Body />}>
         <Route path="/" element={<Home/>}/>
         <Route path="/login" element={<Login/>}/>
+        <Route path="/profile" element={<Profile/>}/>
         <Route path="/signupchoice" element={<SignupChoice/>} />
         <Route path="/emailverification" element={<EmailVerification/>} />
           <Route path="signupuser" element={<SignupPageUser />} />

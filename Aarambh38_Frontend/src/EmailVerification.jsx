@@ -1,23 +1,46 @@
+import axios from "axios";
+import bcrypt from "bcryptjs";
 import { useState } from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+
 
 export default function EmailVerification() {
+
+
   const [code, setCode] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const Navigate=useNavigate();
+  const verifydata=useSelector((store)=>store.verifyuser)
+//    console.log(verifydata.code)
+  
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setLoading(true);
-    // Simulate backend verification
-    setTimeout(() => {
-      if (code === "123456") {
-        setMessage("✅ Code verified successfully!");
-      } else {
-        setMessage("❌ Invalid verification code.");
-      }
-      setLoading(false);
-    }, 1500);
-  };
+   const handleSubmit = async (e) => {
+  e.preventDefault(); // Prevent the form from reloading the page
+  setLoading(true);
+  try {
+    const isTrue = await bcrypt.compare(code, verifydata.code);
+    if (isTrue) {
+      setMessage("✅ Email verified successfully!");
+      
+      const {fullName,gender,emailId,registration,newPassword,confirmPassword,age,collegeName}=verifydata
+// console.log(gender)
+    const res=await axios.post("http://localhost:5000/signupuser",{fullName,gender,emailId,registration,newPassword,confirmPassword,age,collegeName},{withCredentials:true})
+    //  console.log(res)
+      return Navigate("/profile")
+    } else {
+      setMessage("❌ Invalid verification code.");
+    }
+  } catch (error) {
+    console.error("Verification error:", error);
+    setMessage("⚠️ Something went wrong during verification.");
+  }
+  setLoading(false);
+};
+
+
+  
 
   const handleResend = () => {
     setMessage("📩 Verification code resent to your email.");
