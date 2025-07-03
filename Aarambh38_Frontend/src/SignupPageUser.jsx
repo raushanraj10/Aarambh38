@@ -1,27 +1,31 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { pendinguser } from "./utils/EmailSlice";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import bcrypt from "bcryptjs";
-import {useNavigate} from "react-router-dom"
-import axios from "axios"
-
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import governmentEngineeringColleges from "./constants/CollegeList";
+import Select from "react-select";
+import Shimmer from "./Shimmer"; // Make sure this component is styled and exists
 
 export default function SignupPageUser() {
   const code = Math.floor(Math.random() * 900000) + 100000;
-  const dispatch=useDispatch()
-  // const data=useSelector((store)=>store.verifyuser)
-  const Navigate =useNavigate()
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const [loading, setLoading] = useState(false); // shimmer loading state
+
   const [formData, setFormData] = useState({
     fullName: "abc",
     emailId: "r661157@gmail.com",
-    collegeName: "a",
-    registration: "123",
-    age: "123",
+    collegeName: "Bakhtiyarpur Engineering College (BEC), Bakhtiyarpur",
+    registration: "1234",
+    age: "22",
     gender: "Male",
     newPassword: "1234",
     confirmPassword: "1234",
-    code:""
+    code: "",
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -30,50 +34,54 @@ export default function SignupPageUser() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // console.log("Signup data:", formData);
-    // Send to backend
+  const handleCollegeSelect = (selectedOption) => {
+    setFormData({ ...formData, collegeName: selectedOption.value });
   };
 
-  const HandleVerification = async () => {
-    const emailId=formData.emailId
-    // console.log(emailId)
-    console.log(code)
+  const handleVerification = async () => {
+    setLoading(true);
+    try {
+      const { emailId } = formData;
+      await axios.post(
+        "http://localhost:5000/sendemail",
+        { emailId, code },
+        { withCredentials: true }
+      );
 
-  const res=await axios.post("http://localhost:5000/sendemail",{emailId,code},{withCredentials:true})
-  // console.log(res)
-  // Generate a 6-digit random code
-  
-  // const hashcode=  bcrypt.hash(code,10)
+      const hashedCode = await bcrypt.hash(code.toString(), 10);
+      const updatedFormData = { ...formData, code: hashedCode };
 
-  // Update form data with the code
-  
-  const hashedCode = await bcrypt.hash(code.toString(), 10);
-  const updatedFormData = { ...formData, code: hashedCode };
+      dispatch(pendinguser(updatedFormData));
 
-  // Update state
-  setFormData(updatedFormData);
+      // Delay shimmer just to simulate better UX
+      setTimeout(() => {
+        setLoading(false);
+        navigate("/emailverificationalumini", {
+        state: { message: `📩 OTP sent to ${formData.emailId}` },
+        });
 
-  // Dispatch to Redux
-  dispatch(pendinguser(updatedFormData));
+      }, 1000);
+    } catch (err) {
+      console.error("Email verification error:", err);
+      alert("Failed to send verification email.");
+      setLoading(false);
+    }
+  };
 
-  // Optional: for debugging
-  // console.log("Verification Code:", code);
-  
-  return Navigate("/emailverificationuser")
-};
+  const collegeOptions = governmentEngineeringColleges.map((college) => ({
+    value: college,
+    label: college,
+  }));
 
-
-
-
-
+  if (loading) return <Shimmer />;
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
       <div className="bg-white shadow-xl rounded-2xl p-8 w-full max-w-md">
-        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Create Student Account</h2>
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
+          Create Student Account
+        </h2>
+        <form className="space-y-5">
           <div>
             <label className="text-sm font-medium text-gray-700">Full Name</label>
             <input
@@ -100,13 +108,15 @@ export default function SignupPageUser() {
 
           <div>
             <label className="text-sm font-medium text-gray-700">College Name</label>
-            <input
-              type="text"
-              name="collegeName"
-              value={formData.collegeName}
-              onChange={handleChange}
-              className="w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
+            <Select
+              options={collegeOptions}
+              onChange={handleCollegeSelect}
+              defaultValue={{ label: formData.collegeName, value: formData.collegeName }}
+              placeholder="Select your college"
+              className="mt-1"
+              classNames={{
+                control: () => "border rounded-lg px-2 py-1",
+              }}
             />
           </div>
 
@@ -181,10 +191,12 @@ export default function SignupPageUser() {
             />
           </div>
 
-          <button type="button" onClick={HandleVerification}
+          <button
+            type="button"
+            onClick={handleVerification}
             className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
           >
-            Sign Up
+            Sign Up & Verify Email
           </button>
         </form>
 

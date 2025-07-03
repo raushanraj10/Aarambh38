@@ -5,61 +5,75 @@ import { useDispatch } from "react-redux";
 import bcrypt from "bcryptjs";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import Shimmer from "./Shimmer";
+import Select from "react-select";
+import governmentEngineeringColleges from "./constants/CollegeList";
+import Shimmer from "./Shimmer"; // Make sure this exists
 
 export default function SignupPageAlumini() {
   const code = Math.floor(Math.random() * 900000) + 100000;
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const [loading, setLoading] = useState(false);
+
   const [formData, setFormData] = useState({
     fullName: "abc",
     emailId: "r661157@gmail.com",
-    collegeName: "abc",
-    registration: "1213",
-    batch: "2022",
-    company: "abc",
+    collegeName: "Bakhtiyarpur Engineering College (BEC), Bakhtiyarpur",
+    registration: "123",
+    batch: "2024",
+    company: "google",
     role: "manager",
     gender: "Male",
     newPassword: "1234",
     confirmPassword: "1234",
-    about: "I Am Alumini",
+    about: "abc",
     photourl: "https://www.shutterstock.com/image-vector/school-graduation-hat-cartoon-diploma-600nw-2355557719.jpg",
-    code: ""
+    code: "",
   });
 
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false); // ✅ Track loading for shimmer
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const HandleVerification = async () => {
+  const handleCollegeSelect = (selectedOption) => {
+    setFormData({ ...formData, collegeName: selectedOption.value });
+  };
+
+  const handleVerification = async () => {
+    setLoading(true);
     try {
-      console.log(code)
-      setLoading(true); // ✅ Show shimmer
       const { emailId } = formData;
-      const res = await axios.post(
-        "http://localhost:5000/sendemail",
-        { emailId, code },
-        { withCredentials: true }
-      );
+      await axios.post("http://localhost:5000/sendemail", { emailId, code }, { withCredentials: true });
 
       const hashedCode = await bcrypt.hash(code.toString(), 10);
       const updatedFormData = { ...formData, code: hashedCode };
+
       setFormData(updatedFormData);
       dispatch(pendinguser(updatedFormData));
 
-      navigate("/emailverificationalumini");
-    } catch (err) {
-      console.error("Verification error:", err.message);
-    } finally {
-      setLoading(false); // ✅ Hide shimmer
+      // Show shimmer for UX
+      setTimeout(() => {
+        setLoading(false);
+        navigate("/emailverificationalumini", {
+           state: { message: `📩 OTP sent to ${formData.emailId}` },
+         });
+
+      }, 1000);
+    } catch (error) {
+      console.error("Verification error:", error);
+      alert("Failed to send verification email.");
+      setLoading(false);
     }
   };
 
-  // ✅ Show shimmer while loading
+  const collegeOptions = governmentEngineeringColleges.map((college) => ({
+    value: college,
+    label: college,
+  }));
+
   if (loading) return <Shimmer />;
 
   return (
@@ -68,29 +82,41 @@ export default function SignupPageAlumini() {
         <h2 className="text-3xl font-semibold text-center text-blue-700 mb-6">
           Create Alumni Account
         </h2>
+
         <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {[
-            ["Full Name", "fullName", "text"],
-            ["Email", "emailId", "email"],
-            ["College Name", "collegeName", "text"],
-            ["Registration Number", "registration", "text"],
-            ["Batch", "batch", "number"],
-            ["Company Name", "company", "text"],
-            ["Role in Company", "role", "text"],
-            ["Photo URL", "photourl", "text"]
-          ].map(([label, name, type]) => (
-            <div key={name} className="col-span-1">
-              <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+          {["fullName", "emailId", "registration", "batch", "company", "role", "photourl"].map((field) => (
+            <div key={field} className="col-span-1">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {field
+                  .replace(/([A-Z])/g, " $1")
+                  .replace("Id", " ID")
+                  .replace("Url", " URL")
+                  .replace(/\b\w/g, (c) => c.toUpperCase())}
+              </label>
               <input
-                type={type}
-                name={name}
-                value={formData[name]}
+                type={field === "emailId" ? "email" : "text"}
+                name={field}
+                value={formData[field]}
                 onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
           ))}
+
+          <div className="col-span-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">College Name</label>
+            <Select
+              options={collegeOptions}
+              onChange={handleCollegeSelect}
+              defaultValue={{
+                label: formData.collegeName,
+                value: formData.collegeName,
+              }}
+              placeholder="Select your college"
+              className="mt-1"
+            />
+          </div>
 
           <div className="col-span-1">
             <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
@@ -108,7 +134,7 @@ export default function SignupPageAlumini() {
             </select>
           </div>
 
-          <div className="col-span-1">
+          <div className="col-span-1 md:col-span-2">
             <label className="block text-sm font-medium text-gray-700 mb-1">About</label>
             <textarea
               name="about"
@@ -118,7 +144,7 @@ export default function SignupPageAlumini() {
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
               placeholder="Write something about yourself..."
               required
-            ></textarea>
+            />
           </div>
 
           <div className="col-span-1 relative">
@@ -155,7 +181,7 @@ export default function SignupPageAlumini() {
 
         <button
           type="button"
-          onClick={HandleVerification}
+          onClick={handleVerification}
           className="mt-8 w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
         >
           Sign Up & Verify Email

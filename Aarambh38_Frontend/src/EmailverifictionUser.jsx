@@ -1,85 +1,94 @@
 import axios from "axios";
 import bcrypt from "bcryptjs";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import SignupPageUser from "./SignupPageUser";
-
+import { useNavigate, useLocation } from "react-router-dom";
 
 export default function EmailVerificationUser() {
-  const Otp = Math.floor(Math.random() * 900000) + 100000;
-
   const [code, setCode] = useState("");
   const [message, setMessage] = useState("");
+  const [showMessage, setShowMessage] = useState(false);
   const [loading, setLoading] = useState(false);
-  const Navigate=useNavigate();
-  const verifydata=useSelector((store)=>store.verifyuser)
-//    console.log(verifydata.code)
-  
 
-   const handleSubmit = async (e) => {
-  e.preventDefault(); // Prevent the form from reloading the page
-  setLoading(true);
-  try {
-    const isTrue = await bcrypt.compare(code, verifydata.code);
-    if (isTrue) {
-      setMessage("✅ Email verified successfully!");
-      
-      const {fullName,gender,emailId,registration,newPassword,confirmPassword,collegeName,age}=verifydata
-// console.log(gender)
-    const res=await axios.post("http://localhost:5000/signupuser",{fullName,gender,emailId,registration,newPassword,confirmPassword,age,collegeName},{withCredentials:true})
-    //  console.log(res)
-      return Navigate("/landingpage")
-    } else {
-      setMessage("❌ Invalid verification code.");
+  const navigate = useNavigate();
+  const location = useLocation();
+  const verifydata = useSelector((store) => store.verifyuser);
+
+  // Show initial message if passed via navigation
+  useEffect(() => {
+    if (location.state?.message) {
+      setMessage(location.state.message);
+      setShowMessage(true);
     }
-  } catch (error) {
-    console.error("Verification error:", error);
-    setMessage("⚠️ Something went wrong during verification.");
-  }
-  setLoading(false);
-};
+  }, [location.state]);
 
+  // Auto-hide popup message
+  useEffect(() => {
+    if (showMessage) {
+      const timer = setTimeout(() => setShowMessage(false), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [showMessage]);
 
-  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const isTrue = await bcrypt.compare(code, verifydata.code);
+      if (isTrue) {
+        setMessage("✅ Email verified successfully!");
+        setShowMessage(true);
+
+        const { fullName, gender, emailId, registration, newPassword, confirmPassword, collegeName, age } = verifydata;
+
+        await axios.post(
+          "http://localhost:5000/signupuser",
+          { fullName, gender, emailId, registration, newPassword, confirmPassword, age, collegeName },
+          { withCredentials: true }
+        );
+
+        navigate("/landingpage");
+      } else {
+        setMessage("❌ Invalid verification code.");
+        setShowMessage(true);
+      }
+    } catch (error) {
+      console.error("Verification error:", error);
+      setMessage("⚠️ Something went wrong during verification.");
+      setShowMessage(true);
+    }
+    setLoading(false);
+  };
 
   const handleResend = async () => {
-    SignupPageUser.handleSubmit
-    console.log("Setting message...");
-    setMessage("📩 OTP resent successfully!");
+    const newOtp = Math.floor(Math.random() * 900000) + 100000;
+    const { emailId } = verifydata;
 
+    try {
+      await axios.post("http://localhost:5000/sendemail", { emailId, code: newOtp }, { withCredentials: true });
+      const hashedCode = await bcrypt.hash(newOtp.toString(), 10);
 
-    // const {emailId}=verifydata
-    // console.log(emailId)
-    console.log(Otp)
+      // Directly mutate store.verifyuser (if safe), or ideally re-dispatch to update Redux
+      verifydata.code = hashedCode;
 
-  // const res=await axios.post("http://localhost:5000/sendemail",{emailId,Otp},{withCredentials:true})
-  // console.log(res)
-  // Generate a 6-digit random code
-  
-  // const hashcode=  bcrypt.hash(code,10)
-
-  // Update form data with the code
-  
-  // const hashedCode = await bcrypt.hash(Otp.toString(), 10);
-  
-
-  // Update state
-  // verifydata.code=hashedCode;
-  
-
-  // setMessage("Otp resend successfully")
-  // Dispatch to Redux
-  
-
-  // Optional: for debugging
-  // console.log("Verification Code:", code);
-  
-  // return Navigate("/emailverification")
-};
+      setMessage(`📩 OTP resent to ${emailId}`);
+      setShowMessage(true);
+    } catch (err) {
+      console.error("OTP resend failed", err);
+      setMessage("❌ Failed to resend OTP.");
+      setShowMessage(true);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 relative">
+      {/* Floating popup */}
+      {showMessage && (
+        <div className="absolute top-6 bg-blue-100 border border-blue-300 text-blue-800 px-6 py-3 rounded-lg shadow-md animate-fade-in-out">
+          {message}
+        </div>
+      )}
+
       <div className="bg-white shadow-xl rounded-2xl p-8 w-full max-w-md">
         <h2 className="text-2xl font-bold text-center text-gray-800 mb-4">
           Verify Your Email
@@ -99,7 +108,7 @@ export default function EmailVerificationUser() {
             required
           />
 
-          <button 
+          <button
             type="submit"
             disabled={loading}
             className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
@@ -116,12 +125,6 @@ export default function EmailVerificationUser() {
             Didn’t receive a code? Resend
           </button>
         </div>
-
-        {message && (
-          <div className="mt-4 text-center text-sm text-gray-700">
-            {message}
-          </div>
-        )}
       </div>
     </div>
   );
