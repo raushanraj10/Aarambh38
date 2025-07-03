@@ -39,7 +39,7 @@ export default function SignupPageUser() {
   const HandleVerification = async () => {
     const emailId=formData.emailId
     // console.log(emailId)
-    // console.log(code)
+    console.log(code)
 
   const res=await axios.post("http://localhost:5000/sendemail",{emailId,code},{withCredentials:true})
   // console.log(res)
@@ -61,7 +61,7 @@ export default function SignupPageUser() {
   // Optional: for debugging
   // console.log("Verification Code:", code);
   
-  return Navigate("/emailverification")
+  return Navigate("/emailverificationuser")
 };
 
 

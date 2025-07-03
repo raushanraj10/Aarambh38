@@ -3,11 +3,11 @@ import bcrypt from "bcryptjs";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import SignupPageUser from "./SignupPageUser";
 
 
-export default function EmailVerification() {
-
-
+export default function EmailVerificationAlumini() {
+  
   const [code, setCode] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -24,10 +24,10 @@ export default function EmailVerification() {
     if (isTrue) {
       setMessage("✅ Email verified successfully!");
       
-      const {fullName,gender,emailId,registration,newPassword,confirmPassword,age,collegeName}=verifydata
+      const {fullName,gender,emailId,registration,newPassword,confirmPassword,collegeName,role,company,batch,photourl,about}=verifydata
 // console.log(gender)
-    const res=await axios.post("http://localhost:5000/signupuser",{fullName,gender,emailId,registration,newPassword,confirmPassword,age,collegeName},{withCredentials:true})
-    //  console.log(res)
+    const res=await axios.post("http://localhost:5000/signupalumini",{photourl,about,fullName,gender,emailId,registration,newPassword,confirmPassword,batch,collegeName,company,role},{withCredentials:true})
+     console.log(res)
       return Navigate("/landingpage")
     } else {
       setMessage("❌ Invalid verification code.");
@@ -42,9 +42,40 @@ export default function EmailVerification() {
 
   
 
-  const handleResend = () => {
-    setMessage("📩 Verification code resent to your email.");
-  };
+  const handleResend = async () => {
+    SignupPageUser.handleSubmit
+    console.log("Setting message...");
+    setMessage("📩 OTP resent successfully!");
+
+
+    // const {emailId}=verifydata
+    // console.log(emailId)
+    console.log(Otp)
+
+  // const res=await axios.post("http://localhost:5000/sendemail",{emailId,Otp},{withCredentials:true})
+  // console.log(res)
+  // Generate a 6-digit random code
+  
+  // const hashcode=  bcrypt.hash(code,10)
+
+  // Update form data with the code
+  
+  // const hashedCode = await bcrypt.hash(Otp.toString(), 10);
+  
+
+  // Update state
+  // verifydata.code=hashedCode;
+  
+
+  // setMessage("Otp resend successfully")
+  // Dispatch to Redux
+  
+
+  // Optional: for debugging
+  // console.log("Verification Code:", code);
+  
+  // return Navigate("/emailverification")
+};
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">

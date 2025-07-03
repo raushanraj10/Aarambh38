@@ -8,9 +8,13 @@ const EmailSlice=createSlice({
        pendinguser:(state,action)=>{
         return action.payload
        },
-       Verifieduser:()=>null
+       Verifieduser:()=>null,
+
+       updateCode: (state, action) => {
+      state.code = action.payload;
+    },
     }
 })
 
-export const {pendinguser,Verifieduser}=EmailSlice.actions
+export const {pendinguser,Verifieduser,updateCode}=EmailSlice.actions
 export default EmailSlice.reducer;

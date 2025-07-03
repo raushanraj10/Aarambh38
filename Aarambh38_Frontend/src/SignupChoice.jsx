@@ -12,7 +12,7 @@ export default function SignupChoice() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Alumni Option */}
           <Link
-            to="/signupalumni"
+            to="/signupalumini"
             className="flex flex-col items-center justify-between bg-white hover:bg-blue-50 border border-blue-200 rounded-xl p-6 shadow-md hover:shadow-lg transition min-h-[260px]"
           >
             <img
