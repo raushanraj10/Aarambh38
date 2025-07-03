@@ -47,7 +47,7 @@ export default function EmailVerificationUser() {
           { withCredentials: true }
         );
 
-        navigate("/landingpage");
+        navigate("/loginselectorpage");
       } else {
         setMessage("❌ Invalid verification code.");
         setShowMessage(true);

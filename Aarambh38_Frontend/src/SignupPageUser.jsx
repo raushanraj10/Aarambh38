@@ -39,6 +39,7 @@ export default function SignupPageUser() {
   };
 
   const handleVerification = async () => {
+    // console.log(code)
     setLoading(true);
     try {
       const { emailId } = formData;
@@ -56,7 +57,7 @@ export default function SignupPageUser() {
       // Delay shimmer just to simulate better UX
       setTimeout(() => {
         setLoading(false);
-        navigate("/emailverificationalumini", {
+        navigate("/emailverificationuser", {
         state: { message: `📩 OTP sent to ${formData.emailId}` },
         });
 

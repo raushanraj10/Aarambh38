@@ -61,8 +61,8 @@ const [showMessage, setShowMessage] = useState(!!initialMessage);
           { withCredentials: true }
         );
 
-        console.log(res);
-        return navigate("/landingpage");
+        // console.log(res);
+        return navigate("/loginselectorpage");
       } else {
         setMessage("❌ Invalid verification code.");
         setShowMessage(true);
