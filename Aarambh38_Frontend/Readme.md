@@ -1,0 +1,1 @@
+color code of Aarambh38=font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600 tracking-tight

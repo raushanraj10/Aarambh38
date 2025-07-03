@@ -3,7 +3,7 @@ import SignupPageUser from "./SignupPageUser"
  import Body from "./Body"
 import Navbar from "./Navbar"
 import Home from "./Home"
-import Login from "./Login"
+import Login from "./components/LoginAllRole/LoginUser"
 import SignupChoice from "./SignupChoice"
 import appStore from "./utils/appStore"
 import { Provider } from 'react-redux'
@@ -11,6 +11,11 @@ import LandingPage from "./LandingPage"
 import SignupPageAlumini from "./SignupPageAlumini"
 import EmailVerificationUser from "./EmailverifictionUser"
 import EmailVerificationAlumini from "./EmailVerificationAlumini"
+import LoginSelectorPage from "./LoginSelectorPage"
+import LoginUser from "./components/LoginAllRole/LoginUser"
+import LoginAdmin from "./components/LoginAllRole/LoginAdmin"
+import LoginAlumini from "./components/LoginAllRole/LoginAlumini"
+import Shimmer from "./Shimmer"
 
 function App() {
   
@@ -21,7 +26,11 @@ function App() {
       <Routes>
         <Route path="/" element={<Body />}>
         <Route path="/" element={<Home/>}/>
-        <Route path="/login" element={<Login/>}/>
+        <Route path="/loginuser" element={<LoginUser/>}/>
+        <Route path="/loginadmin" element={<LoginAdmin/>}/>
+        <Route path="/loginalumini" element={<LoginAlumini/>}/>
+        <Route path="/loginselectorpage" element={<LoginSelectorPage/>}/>
+        <Route path="/shimmer" element={<Shimmer/>}/>
         <Route path="/landingpage" element={<LandingPage/>}/>
         <Route path="/signupchoice" element={<SignupChoice/>} />
         <Route path="/emailverificationuser" element={<EmailVerificationUser/>} />

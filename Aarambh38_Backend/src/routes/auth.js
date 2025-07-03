@@ -4,6 +4,7 @@ const validate =require("validator");
 const validateBodyData = require("../utils/ValidateBodyData");
 const SendEmail =require("../utils/SendEmail");
 const ModelAlumini = require("../models/ModelAlumini");
+const bcrypt =require("bcrypt")
 
 const AuthRouter=express.Router()
 
@@ -36,6 +37,16 @@ AuthRouter.post("/signupuser",async (req,res)=>{
 
     if(req.body.newPassword!==req.body.confirmPassword)
         return res.status(400).send("Password not match")
+
+    const {newPassword,confirmPassword}=req.body
+
+    const hashnewPassword=await bcrypt.hash(newPassword,10)
+    const hashconfirmPassword=await bcrypt.hash(confirmPassword,10)
+
+    data.newPassword=hashnewPassword;
+    data.confirmPassword=hashconfirmPassword
+
+
     
     const finalData=ModelUser(data)
     await finalData.save()
@@ -65,6 +76,15 @@ AuthRouter.post("/signupalumini",async (req,res)=>{
 
     if(req.body.newPassword!==req.body.confirmPassword)
         return res.status(400).send("Password not match")
+
+
+    const {newPassword,confirmPassword}=req.body
+
+    const hashnewPassword=await bcrypt.hash(newPassword,10)
+    const hashconfirmPassword=await bcrypt.hash(confirmPassword,10)
+
+    data.newPassword=hashnewPassword;
+    data.confirmPassword=hashconfirmPassword
     
     const finalData=ModelAlumini(data)
     await finalData.save()
@@ -74,14 +94,49 @@ AuthRouter.post("/signupalumini",async (req,res)=>{
 
 })
 
-AuthRouter.post("/login",async (req,res)=>{
-    const {emailId,Password}=req.body
+AuthRouter.post("/loginuser",async (req,res)=>{
+    const {emailId,newPassword}=req.body
 const checkemail=await ModelUser.findOne({emailId:emailId})
+if(!checkemail)
+    return res.status(400).send("Email not Found Please Register")
+console.log(checkemail)
+const checkpassword= await bcrypt.compare(newPassword,checkemail.newPassword)
+if(!checkpassword)
+    return res.status(400).send("Password Not Match")
 
-const checkpassword= await bcrypt.compare(Password,checkemail.newPassword)
+return res.send(checkemail)
 
 })
 
+AuthRouter.post("/loginalumini",async (req,res)=>{
+    const {emailId,newPassword}=req.body
+const checkemail=await ModelAlumini.findOne({emailId:emailId})
+if(!checkemail)
+    return res.status(400).send("Email not Found Please Register")
+// console.log(checkemail)
+const checkpassword= await bcrypt.compare(newPassword,checkemail.newPassword)
+if(!checkpassword)
+    return res.status(400).send("Password Not Match")
+console.log(checkpassword)
+
+return res.send(checkemail)
+
+})
+
+
+AuthRouter.post("/loginadmin",async (req,res)=>{
+    const {emailId,newPassword}=req.body
+const checkemail=await ModelUser.findOne({emailId:emailId})
+if(!checkemail)
+    return res.status(400).send("Email not Found Please Register")
+console.log(checkemail)
+const checkpassword= await bcrypt.compare(newPassword,checkemail.newPassword)
+if(!checkpassword)
+    return res.status(400).send("Password Not Match")
+
+return res.send(checkemail)
+
+})
 
 
 module.exports=AuthRouter

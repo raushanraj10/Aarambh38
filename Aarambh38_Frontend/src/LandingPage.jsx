@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useSelector } from "react-redux";
+import LoginSelectorPage from "./LoginSelectorPage";
 
 const alumniList = [
   {
@@ -36,32 +38,35 @@ const alumniList = [
 ];
 
 export default function StudentLandingPage() {
-  const [message, setMessage] = useState("");
-  const [selectedAlumni, setSelectedAlumni] = useState(null);
+  const Studentdata = useSelector((store) => store.studentdata);
+  const Aluminidata = useSelector((store) => store.aluminidata);
+
   const [requestStatus, setRequestStatus] = useState({});
   const [acceptedStatus, setAcceptedStatus] = useState({});
+  const [messages, setMessages] = useState({});
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleSendRequest = (alumniId) => {
     if (requestStatus[alumniId]) return;
 
-    if (!message.trim()) {
+    const message = messages[alumniId]?.trim();
+    if (!message) {
       alert("Please write a message before sending.");
       return;
     }
 
-    setRequestStatus({ ...requestStatus, [alumniId]: true });
+    setRequestStatus((prev) => ({ ...prev, [alumniId]: true }));
 
+    // Simulate acceptance after delay
     setTimeout(() => {
       setAcceptedStatus((prev) => ({ ...prev, [alumniId]: true }));
-    }, 3000);
+    }, 2000);
 
-    setMessage("");
     alert("Request sent!");
   };
 
   const handleSendMessage = (alumniId) => {
-    alert(`Messaging alumni ID ${alumniId}`);
+    alert(`Messaging alumni ID ${alumniId}: ${messages[alumniId]}`);
   };
 
   const filteredAlumni = alumniList.filter((alumni) =>
@@ -70,13 +75,14 @@ export default function StudentLandingPage() {
       .includes(searchQuery.toLowerCase())
   );
 
+  if (!Studentdata && !Aluminidata) return <LoginSelectorPage />;
+
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-10">
       <h1 className="text-4xl font-bold text-blue-700 text-center mb-6">
         Connect with Alumni
       </h1>
 
-      {/* Search */}
       <div className="max-w-xl mx-auto mb-10">
         <input
           type="text"
@@ -87,7 +93,6 @@ export default function StudentLandingPage() {
         />
       </div>
 
-      {/* Alumni Cards */}
       <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
         {filteredAlumni.length === 0 ? (
           <p className="text-center text-gray-500 col-span-2">No alumni found.</p>
@@ -113,19 +118,21 @@ export default function StudentLandingPage() {
                 </div>
               </div>
 
-              {/* Message Input (if request not sent yet) */}
               {!requestStatus[alumni.id] && (
                 <textarea
                   className="w-full border border-gray-300 rounded-lg p-2 text-sm mb-4"
                   rows={3}
                   placeholder="Write your message to alumni..."
-                  value={selectedAlumni === alumni.id ? message : ""}
-                  onFocus={() => setSelectedAlumni(alumni.id)}
-                  onChange={(e) => setMessage(e.target.value)}
+                  value={messages[alumni.id] || ""}
+                  onChange={(e) =>
+                    setMessages((prev) => ({
+                      ...prev,
+                      [alumni.id]: e.target.value,
+                    }))
+                  }
                 />
               )}
 
-              {/* Buttons */}
               <div className="flex justify-between">
                 <button
                   disabled={requestStatus[alumni.id]}

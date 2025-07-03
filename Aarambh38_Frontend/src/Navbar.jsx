@@ -26,7 +26,7 @@ export default function Navbar() {
         {/* Auth Buttons */}
         <div className="flex items-center space-x-3">
           <Link
-            to="/login"
+            to="/loginselectorpage"
             className="px-4 py-1 border border-blue-600 text-blue-600 rounded-md hover:bg-blue-50 transition"
           >
             Login

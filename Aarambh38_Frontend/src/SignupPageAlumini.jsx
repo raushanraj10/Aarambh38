@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import bcrypt from "bcryptjs";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import Shimmer from "./Shimmer";
 
 export default function SignupPageAlumini() {
   const code = Math.floor(Math.random() * 900000) + 100000;
@@ -15,34 +16,51 @@ export default function SignupPageAlumini() {
     fullName: "abc",
     emailId: "r661157@gmail.com",
     collegeName: "abc",
-    registration: "123",
+    registration: "1213",
     batch: "2022",
-    company: "Google",
-    role: "Manager",
+    company: "abc",
+    role: "manager",
     gender: "Male",
     newPassword: "1234",
     confirmPassword: "1234",
     about: "I Am Alumini",
-    photourl: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Education%2C_Studying%2C_University%2C_Alumni_-_icon.png/2048px-Education%2C_Studying%2C_University%2C_Alumni_-_icon.png",
+    photourl: "https://www.shutterstock.com/image-vector/school-graduation-hat-cartoon-diploma-600nw-2355557719.jpg",
     code: ""
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false); // ✅ Track loading for shimmer
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const HandleVerification = async () => {
-    const { emailId } = formData;
-    console.log(code)
-    const res = await axios.post("http://localhost:5000/sendemail", { emailId, code }, { withCredentials: true });
-    const hashedCode = await bcrypt.hash(code.toString(), 10);
-    const updatedFormData = { ...formData, code: hashedCode };
-    setFormData(updatedFormData);
-    dispatch(pendinguser(updatedFormData));
-    return navigate("/emailverificationalumini");
+    try {
+      console.log(code)
+      setLoading(true); // ✅ Show shimmer
+      const { emailId } = formData;
+      const res = await axios.post(
+        "http://localhost:5000/sendemail",
+        { emailId, code },
+        { withCredentials: true }
+      );
+
+      const hashedCode = await bcrypt.hash(code.toString(), 10);
+      const updatedFormData = { ...formData, code: hashedCode };
+      setFormData(updatedFormData);
+      dispatch(pendinguser(updatedFormData));
+
+      navigate("/emailverificationalumini");
+    } catch (err) {
+      console.error("Verification error:", err.message);
+    } finally {
+      setLoading(false); // ✅ Hide shimmer
+    }
   };
+
+  // ✅ Show shimmer while loading
+  if (loading) return <Shimmer />;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center px-4 py-10">
