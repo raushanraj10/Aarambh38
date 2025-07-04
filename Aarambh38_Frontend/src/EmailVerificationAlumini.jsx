@@ -42,7 +42,7 @@ const [showMessage, setShowMessage] = useState(!!initialMessage);
           about,
         } = verifydata;
 
-        const res = await axios.post(
+        await axios.post(
           "http://localhost:5000/signupalumini",
           {
             photourl,

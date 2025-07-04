@@ -8,7 +8,7 @@ export default function Shimmer() {
 
       {/* Message */}
       <p className="text-lg text-gray-600 font-medium animate-pulse">
-        Stay connected and please wait...
+        Stay motivated and please wait...
       </p>
     </div>
   );
