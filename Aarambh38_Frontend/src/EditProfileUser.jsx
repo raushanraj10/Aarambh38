@@ -20,6 +20,7 @@ const EditProfileUser = () => {
   const [messageType, setMessageType] = useState("success"); // success | error
 
   useEffect(() => {
+    
     if (studentData) {
       setFormData({
         fullName: studentData.fullName || "",
@@ -30,7 +31,8 @@ const EditProfileUser = () => {
         photourl: studentData.photourl || "",
       });
     }
-  }, [studentData]);
+    else{return (Navigate("/loginselectorpage"))}
+  }, []);
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -54,8 +56,7 @@ const EditProfileUser = () => {
       setTimeout(() => setMessage(""), 3000);
     }
   };
- if(!studentData)
-  return Navigate("/loginselectorpage")
+
   return (
     <div className="max-w-7xl mx-auto mt-10 p-6 bg-white rounded shadow-md flex flex-col md:flex-row gap-10 relative">
       {/* Edit Form */}

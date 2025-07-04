@@ -93,19 +93,19 @@ export default function Navbar() {
                   </Link>
                   
                   <Link
-                    to="/#"
+                    to="#"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
                     Recieved Request
                   </Link>
                   <Link
-                    to="/#"
+                    to="#"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
                     You Mentoring
                   </Link>
                   <Link
-                    to="/#"
+                    to="#"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
                     Settings
@@ -135,19 +135,19 @@ export default function Navbar() {
                   </Link>
                   
                   <Link
-                    to="/#"
+                    to="#"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
                    Request Send
                   </Link>
                   <Link
-                    to="/#"
+                    to="#"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
                     Your Mentors
                   </Link>
                   <Link
-                    to="/#"
+                    to="#"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
                     Settings

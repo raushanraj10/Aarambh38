@@ -24,7 +24,7 @@ export default function LoginSelectorPage() {
   const roles = [
     {
       label: "Admin Login",
-      path: "/loginadmin",
+      path:"#",
       image: "https://cdn-icons-png.flaticon.com/512/1053/1053244.png",
     },
     {

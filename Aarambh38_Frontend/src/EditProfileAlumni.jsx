@@ -35,6 +35,7 @@ const EditProfileAlumni = () => {
         
       });
     }
+    else{return (Navigate("/loginselectorpage"))}
   }, [alumniData]);
 
   const handleChange = (e) => {
@@ -66,8 +67,7 @@ const EditProfileAlumni = () => {
       setTimeout(() => setMessage(""), 3000);
     }
   };
- if(!alumniData)
-  return Navigate("/loginselectorpage")
+ 
   return (
     <div className="max-w-7xl mx-auto mt-10 p-6 bg-white rounded shadow-md flex flex-col md:flex-row gap-10 relative">
       {/* Edit Form */}
