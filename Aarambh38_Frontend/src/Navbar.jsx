@@ -26,7 +26,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-white shadow-md z-50 relative">
+    <nav className="sticky top-0 bg-white shadow-md border-b z-50">
       <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
         {/* Logo */}
         <Link
@@ -36,7 +36,7 @@ export default function Navbar() {
           Aarambh38
         </Link>
 
-        {/* Navigation Links */}
+        {/* Navigation Links (Only when logged out) */}
         {!isLoggedIn && (
           <div className="flex items-center space-x-6">
             <Link to="/" className="text-gray-700 hover:text-blue-600 font-medium">
@@ -51,7 +51,7 @@ export default function Navbar() {
           </div>
         )}
 
-        {/* Right Side */}
+        {/* Right Side (Login/Signup or Profile Dropdown) */}
         <div className="flex items-center space-x-3 relative">
           {!isLoggedIn ? (
             <>
@@ -71,13 +71,14 @@ export default function Navbar() {
           ) : (
             <div className="relative">
               <img
-                src={Studentdata?.photourl || Alumnitdata.photourl}
+                src={Studentdata?.photourl || Alumnitdata?.photourl}
                 alt="User"
                 className="w-10 h-10 rounded-full border cursor-pointer"
                 onClick={() => setMenuOpen(!menuOpen)}
               />
-              {/* Dropdown menu for logged-in users */}
-              {(menuOpen && Alumnitdata)&&(
+
+              {/* Alumni Dropdown */}
+              {menuOpen && Alumnitdata && (
                 <div className="absolute right-0 mt-2 w-44 bg-white border rounded shadow-lg z-10">
                   <Link
                     to="/landingpage"
@@ -91,18 +92,17 @@ export default function Navbar() {
                   >
                     Profile
                   </Link>
-                  
                   <Link
                     to="#"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
-                    Recieved Request
+                    Received Requests
                   </Link>
                   <Link
                     to="#"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
-                    You Mentoring
+                    You're Mentoring
                   </Link>
                   <Link
                     to="#"
@@ -119,7 +119,9 @@ export default function Navbar() {
                   </button>
                 </div>
               )}
-              {(menuOpen && Studentdata)&&(
+
+              {/* Student Dropdown */}
+              {menuOpen && Studentdata && (
                 <div className="absolute right-0 mt-2 w-44 bg-white border rounded shadow-lg z-10">
                   <Link
                     to="/landingpage"
@@ -133,12 +135,11 @@ export default function Navbar() {
                   >
                     Profile
                   </Link>
-                  
                   <Link
                     to="#"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
-                   Request Send
+                    Requests Sent
                   </Link>
                   <Link
                     to="#"
@@ -159,7 +160,8 @@ export default function Navbar() {
                     <LogOut size={16} className="mr-2" />
                     Logout
                   </button>
-                </div>)}
+                </div>
+              )}
             </div>
           )}
         </div>

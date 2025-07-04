@@ -10,8 +10,8 @@ const UserAuth = require("./middleware/UserAuth");
 const ProfileRouter=express.Router()
 
 
-ProfileRouter.get("/getlistalumini",UserAuth,  async (req,res)=>{
-    const list=await ModelAlumini.find({}).select("fullName role collegeName batch photourl")
+ProfileRouter.get("/getlistalumni",UserAuth,  async (req,res)=>{
+    const list=await ModelAlumini.find({}).select("fullName role collegeName batch photourl age company gender about")
     // console.log(list)
     res.send(list)
 })
