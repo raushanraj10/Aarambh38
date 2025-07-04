@@ -22,7 +22,35 @@ ProfileRouter.get("/getliststudent",UserAuth,  async (req,res)=>{
     res.send(list)
 })
 
+ProfileRouter.put("/Edituser",UserAuth,async(req,res)=>{
+    const {fullName,gender,age,photourl}=req.body
+    const decode=req.decode
+    const data = await ModelUser.findOne({_id:decode})
+    data.fullName=fullName
+    data.gender=gender
+    data.age=age
+    data.photourl=photourl
+    const finaldata=ModelUser(data)
+    await finaldata.save();
+    res.send("Update Successfully")
+})
 
+ProfileRouter.put("/Editalumni",UserAuth,async(req,res)=>{
+    const {fullName,gender,age,photourl,about,company,role}=req.body
+    const decode=req.decode
+
+    const data = await ModelUser.findOne({_id:decode})
+    data.fullName=fullName
+    data.gender=gender
+    data.age=age
+    data.photourl=photourl
+    data.company=company
+    data.role=role
+    data.about=about
+    const finaldata=ModelAlumini(data)
+    await finaldata.save();
+    res.send("Update Successfully")
+})
 
 
 

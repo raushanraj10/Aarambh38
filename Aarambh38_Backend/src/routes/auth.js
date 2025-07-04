@@ -121,6 +121,7 @@ if(!checkemail)
 const checkpassword= await bcrypt.compare(newPassword,checkemail.newPassword)
 if(!checkpassword)
     return res.status(400).send("Password Not Match")
+console.log("alumini login")
 const token =await jwt.sign({_id:checkemail._id},"#raushanaarambh38")
 res.cookie("token",token)
 
@@ -146,6 +147,11 @@ res.cookie("token",token)
 
 return res.send(checkemail)
 
+})
+
+AuthRouter.get("/logout",async (req,res)=>{
+    res.cookie("token","",{maxAge:0})
+    res.send("Logout Successfully")
 })
 
 

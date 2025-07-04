@@ -16,6 +16,8 @@ import LoginUser from "./components/LoginAllRole/LoginUser"
 import LoginAdmin from "./components/LoginAllRole/LoginAdmin"
 import LoginAlumini from "./components/LoginAllRole/LoginAlumini"
 import Shimmer from "./Shimmer"
+import EditProfileAlumni from "./EditProfileAlumni"
+import EditProfileUser from "./EditProfileUser"
 
 function App() {
   
@@ -32,6 +34,8 @@ function App() {
         <Route path="/loginselectorpage" element={<LoginSelectorPage/>}/>
         <Route path="/shimmer" element={<Shimmer/>}/>
         <Route path="/landingpage" element={<LandingPage/>}/>
+        <Route path="editprofilealumni" element={<EditProfileAlumni/>}/>
+        <Route path="editprofileuser" element={<EditProfileUser/>}/>
         <Route path="/signupchoice" element={<SignupChoice/>} />
         <Route path="/emailverificationuser" element={<EmailVerificationUser/>} />
         <Route path="/emailverificationalumini" element={<EmailVerificationAlumini/>} />
