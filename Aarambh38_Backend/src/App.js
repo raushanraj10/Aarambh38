@@ -1,9 +1,11 @@
 const express=require("express")
+const cookieparser =require("cookie-parser")
 const app=express();
+
 
 const connectDb=require("./config/database")
 const cors =require("cors")
-
+app.use(cookieparser())
 app.use(cors({
   origin: 'http://localhost:5173',
   credentials: true
@@ -19,9 +21,11 @@ app.use(express.json())
 
 
 // this convert data into json to js for understand js console
-const AuthRouter =require("./routes/auth")
+const AuthRouter =require("./routes/auth");
+const ProfileRouter = require("./routes/Profile");
 
 app.use("/",AuthRouter)
+app.use("/",ProfileRouter)
 // app.get("/",(req,res)=>{
 //     console.log(req.body)
 //     res.send("This is the homepage")

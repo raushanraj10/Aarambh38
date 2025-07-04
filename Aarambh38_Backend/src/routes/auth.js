@@ -5,6 +5,8 @@ const validateBodyData = require("../utils/ValidateBodyData");
 const SendEmail =require("../utils/SendEmail");
 const ModelAlumini = require("../models/ModelAlumini");
 const bcrypt =require("bcrypt")
+const jwt =require("jsonwebtoken")
+const UserAuth=require("./middleware/UserAuth")
 
 const AuthRouter=express.Router()
 
@@ -103,6 +105,8 @@ console.log(checkemail)
 const checkpassword= await bcrypt.compare(newPassword,checkemail.newPassword)
 if(!checkpassword)
     return res.status(400).send("Password Not Match")
+const token =await jwt.sign({_id:checkemail._id},"#raushanaarambh38")
+res.cookie("token",token)
 
 return res.send(checkemail)
 
@@ -117,6 +121,10 @@ if(!checkemail)
 const checkpassword= await bcrypt.compare(newPassword,checkemail.newPassword)
 if(!checkpassword)
     return res.status(400).send("Password Not Match")
+const token =await jwt.sign({_id:checkemail._id},"#raushanaarambh38")
+res.cookie("token",token)
+
+
 console.log(checkpassword)
 
 return res.send(checkemail)
@@ -133,6 +141,8 @@ console.log(checkemail)
 const checkpassword= await bcrypt.compare(newPassword,checkemail.newPassword)
 if(!checkpassword)
     return res.status(400).send("Password Not Match")
+const token =await jwt.sign({_id:checkemail._id},"#raushanaarambh38")
+res.cookie("token",token)
 
 return res.send(checkemail)
 
