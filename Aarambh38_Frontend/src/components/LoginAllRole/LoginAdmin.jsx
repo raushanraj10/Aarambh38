@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function LoginAdmin() {
   const navigate = useNavigate();
@@ -11,11 +12,13 @@ export default function LoginAdmin() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
+    const emailId=formData.email
+    const newPassword=formData.password
     e.preventDefault();
     console.log("Login data:", formData);
-    // TODO: Handle API call
-    navigate("/landingpage");
+    await axios.post("http://localhost:5000/loginadmin",{emailId,newPassword},{withCredentials:true})
+    return navigate("/landingpage");
   };
 
   return (

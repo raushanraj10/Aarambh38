@@ -18,6 +18,8 @@ import LoginAlumini from "./components/LoginAllRole/LoginAlumini"
 import Shimmer from "./Shimmer"
 import EditProfileAlumni from "./EditProfileAlumni"
 import EditProfileUser from "./EditProfileUser"
+import EmailVerificationAdmin from "./EmailVerificationAdmin"
+import SignupPageAdmin from "./SignupPageAdmin"
 
 function App() {
   
@@ -39,8 +41,10 @@ function App() {
         <Route path="/signupchoice" element={<SignupChoice/>} />
         <Route path="/emailverificationuser" element={<EmailVerificationUser/>} />
         <Route path="/emailverificationalumini" element={<EmailVerificationAlumini/>} />
+        <Route path="/emailverificationadmin" element={<EmailVerificationAdmin/>} />
           <Route path="/signupuser" element={<SignupPageUser />} />
            <Route path="/signupalumini" element={<SignupPageAlumini/>} />
+           <Route path="/signupadmin" element={<SignupPageAdmin/>} />
         </Route>
       </Routes>
     </BrowserRouter>

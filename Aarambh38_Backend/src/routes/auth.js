@@ -6,7 +6,8 @@ const SendEmail =require("../utils/SendEmail");
 const ModelAlumini = require("../models/ModelAlumini");
 const bcrypt =require("bcrypt")
 const jwt =require("jsonwebtoken")
-const UserAuth=require("./middleware/UserAuth")
+const UserAuth=require("./middleware/UserAuth");
+const ModelAdmin = require("../models/ModelAdmin");
 
 const AuthRouter=express.Router()
 
@@ -96,6 +97,49 @@ AuthRouter.post("/signupalumini",async (req,res)=>{
 
 })
 
+
+
+
+
+
+AuthRouter.post("/signupadmin",async (req,res)=>{
+    const data=req.body;
+    // console.log(data)
+    const requiredFields=["fullName","gender","emailId","newPassword","confirmPassword","age"]
+    
+     const allFieldsPresent = requiredFields.every(field => field in data);
+
+    if (!allFieldsPresent) {
+        const missingFields = requiredFields.filter(field => !(field in data));
+        return res.status(400).send("Missing fields: " + missingFields.join(", "));
+    }
+    // .include not working because data is object and requiredfields are array use "in" keyword
+    validateBodyData(req,res);
+
+    // const checkemailid=await ModelUser.findOne({emailId:req.body.emailId})
+    // if(checkemailid)
+    //     return res.status(400).send("Email already exist")
+
+    if(req.body.newPassword!==req.body.confirmPassword)
+        return res.status(400).send("Password not match")
+
+
+    const {newPassword,confirmPassword}=req.body
+
+    const hashnewPassword=await bcrypt.hash(newPassword,10)
+    const hashconfirmPassword=await bcrypt.hash(confirmPassword,10)
+
+    data.newPassword=hashnewPassword;
+    data.confirmPassword=hashconfirmPassword
+    
+    const finalData=ModelAdmin(data)
+    await finalData.save()
+    
+    res.send("Signup Successfully")  
+
+})
+
+
 AuthRouter.post("/loginuser",async (req,res)=>{
     const {emailId,newPassword}=req.body
 const checkemail=await ModelUser.findOne({emailId:emailId})
@@ -135,7 +179,7 @@ return res.send(checkemail)
 
 AuthRouter.post("/loginadmin",async (req,res)=>{
     const {emailId,newPassword}=req.body
-const checkemail=await ModelUser.findOne({emailId:emailId})
+const checkemail=await ModelAdmin.findOne({emailId:emailId})
 if(!checkemail)
     return res.status(400).send("Email not Found Please Register")
 console.log(checkemail)

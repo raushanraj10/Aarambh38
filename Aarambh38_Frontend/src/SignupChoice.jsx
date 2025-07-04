@@ -59,7 +59,7 @@ export default function SignupChoice() {
           </Link>
 
           <Link
-            to="#"
+            to="/signupadmin"
             className="flex flex-col items-center bg-white hover:bg-yellow-50 border border-yellow-200 rounded-2xl p-6 shadow-md hover:shadow-xl transition-all duration-300"
           >
             <img
