@@ -25,40 +25,44 @@ export default function EmailVerificationUser() {
   // Auto-hide popup message
   useEffect(() => {
     if (showMessage) {
-      const timer = setTimeout(() => setShowMessage(false), 4000);
+      const timer = setTimeout(() => setShowMessage(false), 3000);
       return () => clearTimeout(timer);
     }
   }, [showMessage]);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      const isTrue = await bcrypt.compare(code, verifydata.code);
-      if (isTrue) {
-        setMessage("✅ Email verified successfully!");
-        setShowMessage(true);
+  e.preventDefault();
+  setLoading(true);
+  try {
+    const isTrue = await bcrypt.compare(code, verifydata.code);
+    if (isTrue) {
+      setMessage("✅ You’ve successfully joined Aarambh38! Redirecting to login...");
+      setShowMessage(true);
 
-        const { fullName, gender, emailId, registration, newPassword, confirmPassword, collegeName, age } = verifydata;
+      const { fullName, gender, emailId, registration, newPassword, confirmPassword, collegeName, age } = verifydata;
 
-        await axios.post(
-          "http://localhost:5000/signupuser",
-          { fullName, gender, emailId, registration, newPassword, confirmPassword, age, collegeName },
-          { withCredentials: true }
-        );
+      await axios.post(
+        "http://localhost:5000/signupuser",
+        { fullName, gender, emailId, registration, newPassword, confirmPassword, age, collegeName },
+        { withCredentials: true }
+      );
 
+      // Wait 1 second before navigating
+      setTimeout(() => {
         navigate("/loginselectorpage");
-      } else {
-        setMessage("❌ Invalid verification code.");
-        setShowMessage(true);
-      }
-    } catch (error) {
-      console.error("Verification error:", error);
-      setMessage("⚠️ Something went wrong during verification.");
+      }, 2000);
+    } else {
+      setMessage("❌ Invalid verification code.");
       setShowMessage(true);
     }
-    setLoading(false);
-  };
+  } catch (error) {
+    console.error("Verification error:", error);
+    setMessage("⚠️ Something went wrong during verification.");
+    setShowMessage(true);
+  }
+  setLoading(false);
+};
+
 
   const handleResend = async () => {
     const newOtp = Math.floor(Math.random() * 900000) + 100000;

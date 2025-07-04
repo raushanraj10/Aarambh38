@@ -19,61 +19,64 @@ const [showMessage, setShowMessage] = useState(!!initialMessage);
   const verifydata = useSelector((store) => store.verifyuser);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      const isTrue = await bcrypt.compare(code, verifydata.code);
-      if (isTrue) {
-        setMessage("✅ Email verified successfully!");
-        setShowMessage(true);
+  e.preventDefault();
+  setLoading(true);
+  try {
+    const isTrue = await bcrypt.compare(code, verifydata.code);
+    if (isTrue) {
+      setMessage("💕Welcome to the Aarambh38 family! where your journey becomes someone else’s inspiration💕");
+      setShowMessage(true);
 
-        const {
+      const {
+        fullName,
+        gender,
+        emailId,
+        registration,
+        newPassword,
+        confirmPassword,
+        collegeName,
+        role,
+        company,
+        batch,
+        photourl,
+        about,
+      } = verifydata;
+
+      await axios.post(
+        "http://localhost:5000/signupalumini",
+        {
+          photourl,
+          about,
           fullName,
           gender,
           emailId,
           registration,
           newPassword,
           confirmPassword,
-          collegeName,
-          role,
-          company,
           batch,
-          photourl,
-          about,
-        } = verifydata;
+          collegeName,
+          company,
+          role,
+        },
+        { withCredentials: true }
+      );
 
-        await axios.post(
-          "http://localhost:5000/signupalumini",
-          {
-            photourl,
-            about,
-            fullName,
-            gender,
-            emailId,
-            registration,
-            newPassword,
-            confirmPassword,
-            batch,
-            collegeName,
-            company,
-            role,
-          },
-          { withCredentials: true }
-        );
-
-        // console.log(res);
-        return navigate("/loginselectorpage");
-      } else {
-        setMessage("❌ Invalid verification code.");
-        setShowMessage(true);
-      }
-    } catch (error) {
-      console.error("Verification error:", error);
-      setMessage("⚠️ Something went wrong during verification.");
+      // Wait 1 second before navigating
+      setTimeout(() => {
+        navigate("/loginselectorpage");
+      }, 3000);
+    } else {
+      setMessage("❌ Invalid verification code.");
       setShowMessage(true);
     }
-    setLoading(false);
-  };
+  } catch (error) {
+    console.error("Verification error:", error);
+    setMessage("⚠️ Something went wrong during verification.");
+    setShowMessage(true);
+  }
+  setLoading(false);
+};
+
 
   const handleResend = async () => {
     const Otp = Math.floor(Math.random() * 900000) + 100000;

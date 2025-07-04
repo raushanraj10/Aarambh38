@@ -43,6 +43,7 @@ export default function SignupPageAlumini() {
   };
 
   const handleVerification = async () => {
+    console.log(code)
     setLoading(true);
     try {
       const { emailId } = formData;

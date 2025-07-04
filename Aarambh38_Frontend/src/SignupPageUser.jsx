@@ -39,7 +39,7 @@ export default function SignupPageUser() {
   };
 
   const handleVerification = async () => {
-    // console.log(code)
+    console.log(code)
     setLoading(true);
     try {
       const { emailId } = formData;
