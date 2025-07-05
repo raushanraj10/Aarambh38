@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Tuple } from "@reduxjs/toolkit";
 import { useNavigate } from "react-router-dom";
+import { addalumini } from "./utils/AluminiSlice";
 
 const EditProfileAlumni = () => {
   const alumniData = useSelector((store) => store.aluminidata);
   const Navigate=useNavigate()
+  const dispatch=useDispatch()
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -25,7 +27,7 @@ const EditProfileAlumni = () => {
     if (alumniData) {
       setFormData({
         fullName: alumniData.fullName || "",
-        email: alumniData.email || "",
+        email: alumniData.emailId || "",
         collegeName: alumniData.collegeName || "",
         company: alumniData.company || "",
         role: alumniData.role || "",
@@ -55,10 +57,14 @@ const EditProfileAlumni = () => {
     }
 
     try {
-      const {fullName,company,age,gender,role,about}=formData
-      axios.put("http://localhost:5000/editalumni",{fullName,company,age,gender,role,about},{withCredentials:true})
+      
+      const {fullName,company,age,gender,role,about,photourl}=formData
+      // console.log(fullName)
+      const res=await axios.patch("http://localhost:5000/editalumni",{fullName,company,age,gender,role,about,photourl},{withCredentials:true})
       setMessage("✅ Profile updated successfully.");
       setMessageType("success");
+      console.log(res)
+      dispatch(addalumini(res.data))
     } catch (err) {
       setMessage("❌ Failed to update profile.");
       setMessageType("error");
@@ -84,7 +90,7 @@ const EditProfileAlumni = () => {
           />
           <input
             name="emailId"
-            value={formData.emailId}
+            value={formData.email}
             // onChange={handleChange}
             className="w-full border rounded px-3 py-2"
             placeholder="Email"
@@ -117,11 +123,10 @@ const EditProfileAlumni = () => {
             onChange={handleChange}
             className="w-full border rounded px-3 py-2 bg-white"
           >
-            <option value="">Select Gender</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-            <option value="Other">Other</option>
-            <option value="Prefer not to say">Prefer not to say</option>
+             <option value="">Select Gender</option>
+             <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
           </select>
           <textarea
             name="about"
@@ -162,7 +167,7 @@ const EditProfileAlumni = () => {
           <p className="text-sm text-gray-600">{formData.collegeName || "College Name"}</p>
           <p className="text-sm text-gray-600">{formData.gender || "Gender"}</p>
           <p className="text-sm text-gray-500 mt-3 px-4">{formData.about || "About..."}</p>
-          <p className="text-xs text-gray-400 mt-2">{formData.emailId || "Email Address"}</p>
+          <p className="text-xs text-gray-400 mt-2">{formData.email || "Email Address"}</p>
         </div>
       </div>
 

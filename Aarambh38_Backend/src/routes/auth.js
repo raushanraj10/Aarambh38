@@ -131,7 +131,7 @@ AuthRouter.post("/signupadmin",async (req,res)=>{
 
     data.newPassword=hashnewPassword;
     data.confirmPassword=hashconfirmPassword
-    
+    console.log(req.gender)
     const finalData=ModelAdmin(data)
     await finalData.save()
     
@@ -145,7 +145,7 @@ AuthRouter.post("/loginuser",async (req,res)=>{
 const checkemail=await ModelUser.findOne({emailId:emailId})
 if(!checkemail)
     return res.status(400).send("Email not Found Please Register")
-console.log(checkemail)
+// console.log(checkemail)
 const checkpassword= await bcrypt.compare(newPassword,checkemail.newPassword)
 if(!checkpassword)
     return res.status(400).send("Password Not Match")
@@ -165,12 +165,12 @@ if(!checkemail)
 const checkpassword= await bcrypt.compare(newPassword,checkemail.newPassword)
 if(!checkpassword)
     return res.status(400).send("Password Not Match")
-console.log("alumini login")
+// console.log("alumini login")
 const token =await jwt.sign({_id:checkemail._id},"#raushanaarambh38")
 res.cookie("token",token)
 
 
-console.log(checkpassword)
+// console.log(checkpassword)
 
 return res.send(checkemail)
 
@@ -182,7 +182,7 @@ AuthRouter.post("/loginadmin",async (req,res)=>{
 const checkemail=await ModelAdmin.findOne({emailId:emailId})
 if(!checkemail)
     return res.status(400).send("Email not Found Please Register")
-console.log(checkemail)
+// console.log(checkemail)
 const checkpassword= await bcrypt.compare(newPassword,checkemail.newPassword)
 if(!checkpassword)
     return res.status(400).send("Password Not Match")

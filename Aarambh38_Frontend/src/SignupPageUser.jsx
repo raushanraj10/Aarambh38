@@ -20,14 +20,14 @@ export default function SignupPageUser() {
   const [formErrors, setFormErrors] = useState({});
 
   const [formData, setFormData] = useState({
-    fullName: "",
-    emailId: "",
-    collegeName: "",
-    registration: "",
-    age: "",
-    gender: "",
-    newPassword: "",
-    confirmPassword: "",
+    fullName: "abc",
+    emailId: "raushan@gmail.com",
+    collegeName: "Bakhtiyarpur Engineering College (BEC), Bakhtiyarpur",
+    registration: "123",
+    age: "123",
+    gender: "Male",
+    newPassword: "1234",
+    confirmPassword: "1234",
     code: "",
   });
 
@@ -67,6 +67,7 @@ export default function SignupPageUser() {
   };
 
   const handleVerification = async () => {
+    console.log(code)
     const errors = validateFields();
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
@@ -276,7 +277,7 @@ export default function SignupPageUser() {
 
         <p className="text-sm text-center text-gray-500 mt-6">
           Already have an account?{" "}
-          <a href="/login" className="text-blue-600 hover:underline">
+          <a href="/loginselectorpage" className="text-blue-600 hover:underline">
             Login
           </a>
         </p>

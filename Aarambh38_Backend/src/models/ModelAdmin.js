@@ -5,6 +5,9 @@ const AdminSchema=new mongoose.Schema({
         type:String,
         require:true,
     },
+    gender:{
+        type:String
+    },
     emailId:{
         type:String,
         require:true,
@@ -26,6 +29,9 @@ const AdminSchema=new mongoose.Schema({
     },
     mobileNumber:{
         type:Number
+    },
+    photourl:{
+        type:String
     }
 
 },{timestamps:true})

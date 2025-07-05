@@ -1,8 +1,11 @@
 import axios from "axios";
 import bcrypt from "bcryptjs";
 import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
+import { addadmin } from "./utils/AdminSlice";
+import { removealumini } from "./utils/AluminiSlice";
+import { removestudent } from "./utils/StudentSlice";
 
 export default function EmailVerificationAdmin() {
   const [code, setCode] = useState("");
@@ -14,6 +17,7 @@ export default function EmailVerificationAdmin() {
 
   const navigate = useNavigate();
   const verifydata = useSelector((store) => store.verifyuser);
+  const dispatch =useDispatch()
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,7 +38,7 @@ export default function EmailVerificationAdmin() {
           confirmPassword,
           
         } = verifydata;
-
+       console.log(gender)
         await axios.post(
           "http://localhost:5000/signupadmin",
           {
@@ -49,9 +53,9 @@ export default function EmailVerificationAdmin() {
           },
           { withCredentials: true }
         );
-
+       
         setTimeout(() => {
-          navigate("/loginselectorpage");
+           return navigate("/loginselectorpage");
         }, 3000);
       } else {
         setMessage("❌ Invalid verification code.");
@@ -138,14 +142,14 @@ export default function EmailVerificationAdmin() {
           </button>
         </form>
 
-        <div className="text-center mt-4">
+        {/* <div className="text-center mt-4">
           <button
             onClick={handleResend}
             className="text-blue-600 text-sm hover:underline"
           >
             Didn’t receive a code? Resend
           </button>
-        </div>
+        </div> */}
       </div>
     </div>
   );

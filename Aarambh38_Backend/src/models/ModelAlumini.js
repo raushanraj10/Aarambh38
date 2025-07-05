@@ -40,10 +40,10 @@ const AluminiSchema=new mongoose.Schema({
         // require:true,
         default:2022
     },
-    // age:{
-    //     type:Number,
-    //     // require:true,
-    // },
+    age:{
+        type:Number,
+        // require:true,
+    },
     registration:{
         type:Number,
         require:true,
@@ -65,6 +65,9 @@ const AluminiSchema=new mongoose.Schema({
     photourl:{
         type:String,
         default:"https://img.freepik.com/free-psd/contact-icon-illustration-isolated_23-2151903337.jpg?semt=ais_items_boosted&w=740"
+    },
+    about:{
+        type:String
     },
     mobileNumber:{
         type:Number

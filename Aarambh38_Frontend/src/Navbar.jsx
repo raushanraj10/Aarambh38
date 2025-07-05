@@ -6,22 +6,25 @@ import axios from "axios";
 import { Verifieduser } from "./utils/EmailSlice";
 import { removestudent } from "./utils/StudentSlice";
 import { removealumini } from "./utils/AluminiSlice";
+import { removeadmin } from "./utils/AdminSlice";
 
 export default function Navbar() {
   const Studentdata = useSelector((store) => store.studentdata);
   const Alumnitdata = useSelector((store) => store.aluminidata);
+  const Admindata=useSelector((store)=>store.admindata)
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const isLoggedIn = Studentdata || Alumnitdata;
+  const isLoggedIn = Studentdata || Alumnitdata || Admindata;
 
   const handleLogout = async () => {
     await axios.get("http://localhost:5000/logout", { withCredentials: true });
     dispatch(Verifieduser());
     dispatch(removestudent());
     dispatch(removealumini());
+    dispatch(removeadmin())
     return navigate("/loginselectorpage");
   };
 
@@ -71,7 +74,7 @@ export default function Navbar() {
           ) : (
             <div className="relative">
               <img
-                src={Studentdata?.photourl || Alumnitdata?.photourl}
+                src={Studentdata?.photourl || Alumnitdata?.photourl || Admindata?.photourl || "https://t3.ftcdn.net/jpg/06/99/46/60/360_F_699466075_DaPTBNlNQTOwwjkOiFEoOvzDV0ByXR9E.jpg"}
                 alt="User"
                 className="w-10 h-10 rounded-full border cursor-pointer"
                 onClick={() => setMenuOpen(!menuOpen)}
@@ -119,6 +122,52 @@ export default function Navbar() {
                   </button>
                 </div>
               )}
+
+              {menuOpen && Admindata && (
+                <div className="absolute right-0 mt-2 w-44 bg-white border rounded shadow-lg z-10">
+                  <Link
+                    to="/landingpage"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Dashboard
+                  </Link>
+                  <Link
+                    to="/editprofileadmin"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Profile
+                  </Link>
+                  <Link
+                    to="#"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    All Students
+                  </Link>
+                  <Link
+                    to="#"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    All Mentors
+                  </Link>
+                  <Link
+                    to="#"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Setting
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                  >
+                    <LogOut size={16} className="mr-2" />
+                    Logout
+                  </button>
+                </div>
+              )}
+
+
+
+
 
               {/* Student Dropdown */}
               {menuOpen && Studentdata && (

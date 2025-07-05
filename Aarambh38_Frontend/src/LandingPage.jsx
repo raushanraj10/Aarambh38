@@ -6,6 +6,7 @@ import axios from "axios";
 export default function StudentLandingPage() {
   const Studentdata = useSelector((store) => store.studentdata);
   const Aluminidata = useSelector((store) => store.aluminidata);
+  const Admindata = useSelector((store) => store.admindata);
 
   const [alumniList, setAlumniList] = useState([]);
   const [requestStatus, setRequestStatus] = useState({});
@@ -56,7 +57,7 @@ export default function StudentLandingPage() {
       .includes(searchQuery.toLowerCase())
   );
 
-  if (!Studentdata && !Aluminidata) return <LoginSelectorPage />;
+  if (!Studentdata && !Aluminidata&& !Admindata) return <LoginSelectorPage />;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-blue-50 to-green-100 px-4 py-10">

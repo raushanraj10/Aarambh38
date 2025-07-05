@@ -20,18 +20,18 @@ export default function SignupPageAlumini() {
   const [formErrors, setFormErrors] = useState({});
 
   const [formData, setFormData] = useState({
-    fullName: "",
-    emailId: "",
-    collegeName: "",
-    registration: "",
-    batch: "",
-    company: "",
-    role: "",
-    gender: "",
-    newPassword: "",
-    confirmPassword: "",
-    about: "",
-    photourl: "",
+    fullName: "abc",
+    emailId: "r661157@gmail.com",
+    collegeName: "Bakhtiyarpur Engineering College (BEC), Bakhtiyarpur",
+    registration: "123",
+    batch: "2022",
+    company: "google",
+    role: "maneger",
+    gender: "Male",
+    newPassword: "1234",
+    confirmPassword: "1234",
+    about: "I am alumini",
+    photourl: "https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcS0sQet7d_2RAgQyBQM092dn1Uo-N9Gk3xAdQV7YrSczH-LhdzZYeWIWfVE8B6sIvn1x6SZCpjN5TfBUe8",
     code: "",
   });
 
@@ -71,6 +71,7 @@ export default function SignupPageAlumini() {
   };
 
   const handleVerification = async () => {
+    console.log(code)
     const errors = validateFields();
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
@@ -263,7 +264,7 @@ export default function SignupPageAlumini() {
 
         <p className="text-sm text-center text-gray-600 mt-6">
           Already have an account?{" "}
-          <a href="/login" className="text-blue-600 hover:underline">
+          <a href="/loginselectorpage" className="text-blue-600 hover:underline">
             Login
           </a>
         </p>

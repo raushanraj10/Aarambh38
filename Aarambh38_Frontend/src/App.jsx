@@ -20,6 +20,7 @@ import EditProfileAlumni from "./EditProfileAlumni"
 import EditProfileUser from "./EditProfileUser"
 import EmailVerificationAdmin from "./EmailVerificationAdmin"
 import SignupPageAdmin from "./SignupPageAdmin"
+import EditProfileAdmin from "./EditProfileAdmin"
 
 function App() {
   
@@ -38,6 +39,7 @@ function App() {
         <Route path="/landingpage" element={<LandingPage/>}/>
         <Route path="editprofilealumni" element={<EditProfileAlumni/>}/>
         <Route path="editprofileuser" element={<EditProfileUser/>}/>
+        <Route path="editprofileadmin" element={<EditProfileAdmin/>}/>
         <Route path="/signupchoice" element={<SignupChoice/>} />
         <Route path="/emailverificationuser" element={<EmailVerificationUser/>} />
         <Route path="/emailverificationalumini" element={<EmailVerificationAlumini/>} />

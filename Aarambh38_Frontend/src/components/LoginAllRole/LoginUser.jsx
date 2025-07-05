@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -11,10 +11,14 @@ export default function LoginUser() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ emailId: "", newPassword: "" });
-  const [error, setError] = useState("");
+
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("info"); // "success" | "error" | "info"
+  const [showMessage, setShowMessage] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setShowMessage(false); // Clear message on input change
   };
 
   const handleSubmit = async (e) => {
@@ -30,19 +34,49 @@ export default function LoginUser() {
 
       dispatch(Verifieduser());
       dispatch(addstudent(res.data));
-      navigate("/landingpage");
+
+      setMessage("🎉 Welcome back! Redirecting...");
+      setMessageType("success");
+      setShowMessage(true);
+
+      setTimeout(() => {
+        navigate("/landingpage");
+      }, 2000);
     } catch (err) {
       const message =
         err.response?.data?.message || "❌ Invalid email or password.";
-      setError(message);
-
-      // Auto-dismiss after 4 seconds
-      setTimeout(() => setError(""), 4000);
+      setMessage(message);
+      setMessageType("error");
+      setShowMessage(true);
     }
   };
 
+  // Auto-hide message after 4 seconds
+  useEffect(() => {
+    if (showMessage) {
+      const timer = setTimeout(() => setShowMessage(false), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [showMessage]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-lime-100 flex items-center justify-center px-4 py-12 relative">
+      {/* 🌟 Floating Message */}
+      {showMessage && (
+        <div className="absolute top-6 left-1/2 transform -translate-x-1/2 z-50">
+          <div
+            className={`
+              px-6 py-3 rounded-xl shadow-lg text-sm font-medium text-center transition duration-300
+              ${messageType === "success" ? "bg-green-100 text-green-800 border border-green-300"
+                : messageType === "error" ? "bg-red-100 text-red-800 border border-red-300"
+                : "bg-blue-100 text-blue-800 border border-blue-300"}
+            `}
+          >
+            {message}
+          </div>
+        </div>
+      )}
+
       <div className="bg-white shadow-2xl rounded-3xl p-10 w-full max-w-md">
         <h1 className="text-3xl font-extrabold text-center text-green-700 mb-1">
           Welcome Back!
@@ -116,15 +150,6 @@ export default function LoginUser() {
           </a>
         </p>
       </div>
-
-      {/* Error Popup */}
-      {error && (
-        <div className="absolute top-6">
-          <div className="bg-red-100 text-red-700 px-6 py-3 rounded-lg shadow-lg border border-red-300 animate-bounce-in">
-            {error}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

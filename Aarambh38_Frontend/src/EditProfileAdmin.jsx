@@ -2,12 +2,12 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { addstudent } from "./utils/StudentSlice";
+import { addadmin } from "./utils/AdminSlice";
 
-const EditProfileUser = () => {
-  const studentData = useSelector((store) => store.studentdata);
+const EditProfileAdmin = () => {
+  const AdminData = useSelector((store) => store.admindata);
   const Navigate=useNavigate()
-  const dispatch=useDispatch()
+  const dispatch =useDispatch()
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -23,14 +23,14 @@ const EditProfileUser = () => {
 
   useEffect(() => {
     
-    if (studentData) {
+    if (AdminData) {
       setFormData({
-        fullName: studentData.fullName || "",
-        emailId: studentData.emailId || "",
-        collegeName: studentData.collegeName || "",
-        gender: studentData.gender || "",
-        age: studentData.age || "",
-        photourl: studentData.photourl || "",
+        fullName: AdminData.fullName || "",
+        emailId: AdminData.emailId || "",
+        collegeName: AdminData.collegeName || "",
+        gender: AdminData.gender || "",
+        age: AdminData.age || "",
+        photourl: AdminData?.photourl || "https://imgs.search.brave.com/djasU07Bne_5zm6B86JeorFTQOk4aRWysdG1rcDepGw/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9zdGF0/aWMudG9paW1nLmNv/bS90aHVtYi9pbWdz/aXplLTIzNDU2LG1z/aWQtMTA2MTEyMjQ5/LHdpZHRoLTYwMCxy/ZXNpemVtb2RlLTQv/MTA2MTEyMjQ5Lmpw/Zw",
       });
     }
     else{return (Navigate("/loginselectorpage"))}
@@ -47,10 +47,10 @@ const EditProfileUser = () => {
     const {fullName,age,gender,photourl}=formData
     e.preventDefault();
     try {
-     const res=await axios.patch("http://localhost:5000/edituser",{fullName,age,gender,photourl},{withCredentials:true})
+    const res = await axios.patch("http://localhost:5000/editadmin",{fullName,age,gender,photourl},{withCredentials:true})
       setMessage("✅ Profile updated successfully.");
       setMessageType("success");
-      dispatch(addstudent(res.data))
+      dispatch(addadmin(res.data))
     } catch (err) {
       setMessage("❌ Failed to update profile.");
       setMessageType("error");
@@ -82,20 +82,14 @@ const EditProfileUser = () => {
             placeholder="Email"
             type="email"
           />
-          <input
-            name="collegeName"
-            value={formData.collegeName}
-            // onChange={handleChange}
-            className="w-full border rounded px-3 py-2"
-            placeholder="College Name"
-          />
+          
           <select
       name="gender"
      value={formData.gender}
        onChange={handleChange}
      className="w-full border rounded px-3 py-2 bg-white"
     >
-     <option value="">Select Gender</option>
+      <option value="">Select Gender</option>
       <option value="Male">Male</option>
       <option value="Female">Female</option>
       <option value="Other">Other</option>
@@ -137,7 +131,7 @@ const EditProfileUser = () => {
           <p className="text-lg font-bold">{formData.fullName || "Full Name"}</p>
           <p className="text-sm text-gray-500">{formData.age || "Your Role"}</p>
           <p className="text-sm text-gray-600 mt-1">{formData.collegeName || "College Name"}</p>
-          <p className="text-sm text-gray-500 mt-3 px-4">{formData.gender || "Short Bio..."}</p>
+          <p className="text-sm text-gray-500 mt-3 px-4">{formData.gender || "Gender"}</p>
           <p className="text-xs text-gray-400 mt-2">{formData.emailId || "Email Address"}</p>
         </div>
       </div>
@@ -156,4 +150,4 @@ const EditProfileUser = () => {
   );
 };
 
-export default EditProfileUser;
+export default EditProfileAdmin;

@@ -12,18 +12,20 @@ export default function LoginAlumini() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ email: "", password: "" });
-  const [error, setError] = useState("");
+
+  const [message, setMessage] = useState(""); // Message content
+  const [messageType, setMessageType] = useState("info"); // "success", "error", "info"
+  const [showMessage, setShowMessage] = useState(false); // Control visibility
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setError("");
+    setShowMessage(false); // Hide message on new input
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const { email, password } = formData;
-      console.log(email + " " + password);
 
       const res = await axios.post(
         "http://localhost:5000/loginalumini",
@@ -33,30 +35,46 @@ export default function LoginAlumini() {
 
       dispatch(addalumini(res.data));
       dispatch(Verifieduser());
-      navigate("/landingpage");
+
+      setMessage("🎉 Welcome back! Redirecting...");
+      setMessageType("success");
+      setShowMessage(true);
+
+      setTimeout(() => {
+        navigate("/landingpage");
+      }, 2000);
     } catch (err) {
       const msg =
         err.response?.data ||
         err.message ||
         "❌ Something went wrong. Please try again.";
-      setError(msg);
+      setMessage(msg);
+      setMessageType("error");
+      setShowMessage(true);
     }
   };
 
   useEffect(() => {
-    if (error) {
-      const timer = setTimeout(() => setError(""), 4000);
+    if (showMessage) {
+      const timer = setTimeout(() => setShowMessage(false), 4000);
       return () => clearTimeout(timer);
     }
-  }, [error]);
+  }, [showMessage]);
 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-blue-50 to-cyan-100 flex items-center justify-center px-4 py-12">
-      {/* 🔔 Error Toast */}
-      {error && (
+      {/* 🌟 Floating Pop-up Message */}
+      {showMessage && (
         <div className="absolute top-6 left-1/2 transform -translate-x-1/2 z-50">
-          <div className="bg-red-100 text-red-800 border border-red-300 px-6 py-3 rounded-xl shadow-lg animate-fade-in-down">
-            {error}
+          <div
+            className={`
+              px-6 py-3 rounded-xl shadow-lg text-sm font-medium text-center transition duration-300
+              ${messageType === "success" ? "bg-green-100 text-green-800 border border-green-300"
+                : messageType === "error" ? "bg-red-100 text-red-800 border border-red-300"
+                : "bg-blue-100 text-blue-800 border border-blue-300"}
+            `}
+          >
+            {message}
           </div>
         </div>
       )}
