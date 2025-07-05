@@ -1,219 +1,133 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
+import { Menu, LogOut } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
-import { LogOut } from "lucide-react";
-import { useState } from "react";
-import axios from "axios";
-import { Verifieduser } from "./utils/EmailSlice";
 import { removestudent } from "./utils/StudentSlice";
 import { removealumini } from "./utils/AluminiSlice";
 import { removeadmin } from "./utils/AdminSlice";
+import axios from "axios";
+import { Verifieduser } from "./utils/EmailSlice";
 
 export default function Navbar() {
-  const Studentdata = useSelector((store) => store.studentdata);
-  const Alumnitdata = useSelector((store) => store.aluminidata);
-  const Admindata=useSelector((store)=>store.admindata)
-
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const [menuOpen, setMenuOpen] = useState(false);
+  const Studentdata = useSelector((store) => store.studentdata);
+  const Alumnidata = useSelector((store) => store.aluminidata);
+  const Admindata = useSelector((store) => store.admindata);
 
-  const isLoggedIn = Studentdata || Alumnitdata || Admindata;
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  const isLoggedIn = Studentdata || Alumnidata || Admindata;
 
   const handleLogout = async () => {
     await axios.get("http://localhost:5000/logout", { withCredentials: true });
     dispatch(Verifieduser());
     dispatch(removestudent());
     dispatch(removealumini());
-    dispatch(removeadmin())
-    return navigate("/loginselectorpage");
+    dispatch(removeadmin());
   };
 
+  // Close menu on outside click
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const closeMenu = () => setMenuOpen(false);
+
   return (
-    <nav className="sticky top-0 bg-white shadow-md border-b z-50">
+    <nav className="bg-white border-b shadow-md sticky top-0 z-50 transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
         {/* Logo */}
         <Link
           to="/"
-          className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600 tracking-tight"
+          className="text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-green-600"
         >
           Aarambh38
         </Link>
 
-        {/* Navigation Links (Only when logged out) */}
-        {!isLoggedIn && (
-          <div className="flex items-center space-x-6">
-            <Link to="/" className="text-gray-700 hover:text-blue-600 font-medium">
-              Home
-            </Link>
-            <Link to="/alumni" className="text-gray-700 hover:text-blue-600 font-medium">
-              About
-            </Link>
-            <Link to="/students" className="text-gray-700 hover:text-blue-600 font-medium">
-              Contact
-            </Link>
-          </div>
-        )}
+        {/* Hamburger icon */}
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          className="md:hidden text-gray-700"
+        >
+          <Menu size={28} />
+        </button>
 
-        {/* Right Side (Login/Signup or Profile Dropdown) */}
-        <div className="flex items-center space-x-3 relative">
+        {/* Desktop Menu */}
+        <div className="hidden md:flex space-x-6 items-center">
           {!isLoggedIn ? (
             <>
-              <Link
-                to="/loginselectorpage"
-                className="px-4 py-1 border border-blue-600 text-blue-600 rounded-md hover:bg-blue-50 transition"
-              >
-                Login
-              </Link>
-              <Link
-                to="/signupchoice"
-                className="px-4 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
-              >
-                Sign Up
-              </Link>
+              <Link to="/" className="text-gray-700 hover:text-blue-600">Home</Link>
+              <Link to="/alumni" className="text-gray-700 hover:text-blue-600">About</Link>
+              {/* <Link to="/students" className="text-gray-700 hover:text-blue-600">Contact</Link> */}
+              <Link to="/loginselectorpage" className="border border-blue-600 text-blue-600 px-4 py-1 rounded hover:bg-blue-50">Login</Link>
+              <Link to="/signupchoice" className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700">Sign Up</Link>
             </>
           ) : (
-            <div className="relative">
-              <img
-                src={Studentdata?.photourl || Alumnitdata?.photourl || Admindata?.photourl || "https://t3.ftcdn.net/jpg/06/99/46/60/360_F_699466075_DaPTBNlNQTOwwjkOiFEoOvzDV0ByXR9E.jpg"}
-                alt="User"
-                className="w-10 h-10 rounded-full border cursor-pointer"
-                onClick={() => setMenuOpen(!menuOpen)}
-              />
-
-              {/* Alumni Dropdown */}
-              {menuOpen && Alumnitdata && (
-                <div className="absolute right-0 mt-2 w-44 bg-white border rounded shadow-lg z-10">
-                  <Link
-                    to="/landingpage"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Dashboard
-                  </Link>
-                  <Link
-                    to="/editprofilealumni"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Profile
-                  </Link>
-                  <Link
-                    to="#"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Received Requests
-                  </Link>
-                  <Link
-                    to="#"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    You're Mentoring
-                  </Link>
-                  <Link
-                    to="#"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Settings
-                  </Link>
-                  <button
-                    onClick={handleLogout}
-                    className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-                  >
-                    <LogOut size={16} className="mr-2" />
-                    Logout
-                  </button>
-                </div>
-              )}
-
-              {menuOpen && Admindata && (
-                <div className="absolute right-0 mt-2 w-44 bg-white border rounded shadow-lg z-10">
-                  <Link
-                    to="/landingpage"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Dashboard
-                  </Link>
-                  <Link
-                    to="/editprofileadmin"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Profile
-                  </Link>
-                  <Link
-                    to="#"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    All Students
-                  </Link>
-                  <Link
-                    to="#"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    All Mentors
-                  </Link>
-                  <Link
-                    to="#"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Setting
-                  </Link>
-                  <button
-                    onClick={handleLogout}
-                    className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-                  >
-                    <LogOut size={16} className="mr-2" />
-                    Logout
-                  </button>
-                </div>
-              )}
-
-
-
-
-
-              {/* Student Dropdown */}
-              {menuOpen && Studentdata && (
-                <div className="absolute right-0 mt-2 w-44 bg-white border rounded shadow-lg z-10">
-                  <Link
-                    to="/landingpage"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Dashboard
-                  </Link>
-                  <Link
-                    to="/editprofileuser"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Profile
-                  </Link>
-                  <Link
-                    to="#"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Requests Sent
-                  </Link>
-                  <Link
-                    to="#"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Your Mentors
-                  </Link>
-                  <Link
-                    to="#"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Settings
-                  </Link>
-                  <button
-                    onClick={handleLogout}
-                    className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-                  >
-                    <LogOut size={16} className="mr-2" />
-                    Logout
-                  </button>
-                </div>
-              )}
-            </div>
+            <>
+              
+              <Link to={
+                Studentdata ? "/editprofileuser" :
+                Alumnidata ? "/editprofilealumni" :
+                "/editprofileadmin"
+              } className="text-gray-700 hover:text-blue-600">Profile</Link>
+              <Link to="/landingpage" className="text-gray-700 hover:text-blue-600">Dashboard</Link>
+              <button onClick={handleLogout} className="text-red-600 hover:text-red-800 flex items-center">
+                <LogOut size={16} className="mr-1" /> Logout
+              </button>
+            </>
           )}
         </div>
+      </div>
+
+      {/* Mobile Dropdown */}
+      <div
+        ref={menuRef}
+        className={`md:hidden overflow-hidden transition-[max-height] duration-300 ease-in-out bg-white px-4 ${
+          menuOpen ? "max-h-96 py-4" : "max-h-0"
+        }`}
+      >
+        {!isLoggedIn ? (
+          <div className="flex flex-col space-y-3">
+            <Link to="/" onClick={closeMenu} className="text-gray-700">Home</Link>
+            <Link to="/alumni" onClick={closeMenu} className="text-gray-700">About</Link>
+           <Link to="/landingpage" onClick={closeMenu} className="text-gray-700">Dashboard</Link>
+            <Link to="/loginselectorpage" onClick={closeMenu} className="text-blue-600 border border-blue-600 rounded px-4 py-1 text-center">Login</Link>
+            <Link to="/signupchoice" onClick={closeMenu} className="bg-blue-600 text-white rounded px-4 py-1 text-center">Sign Up</Link>
+          </div>
+        ) : (
+          <div className="flex flex-col space-y-3">
+            
+            <Link
+              to={
+                Studentdata ? "/editprofileuser" :
+                Alumnidata ? "/editprofilealumni" :
+                "/editprofileadmin"
+              }
+              onClick={closeMenu}
+              className="text-gray-700"
+            >
+              Profile
+            </Link>
+            <Link to="/landingpage" onClick={closeMenu} className="text-gray-700">Dashboard</Link>
+            <button
+              onClick={() => {
+                handleLogout();
+                closeMenu();
+              }}
+              className="text-red-600 flex items-center"
+            >
+              <LogOut size={16} className="mr-1" />
+              Logout
+            </button>
+          </div>
+        )}
       </div>
     </nav>
   );
