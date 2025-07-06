@@ -70,6 +70,32 @@ UserRouter.get("/mymentors",UserAuth,async (req,res)=>{
   }catch(err){res.send(err.message)}
 })
 
+UserRouter.get("/getalumnimentees",UserAuth,async (req,res)=>{
+  try{
+    const decode=req.decode._id
+  //direct fromuserId me nhi ho rha
+  const fromuserId=decode
+  const connections=await ModelUserSendConnection.find({touserId:fromuserId,status:"accepted"}).populate("fromuserId","_id photourl  fullName role company batch collegeName gender about").select("fromuserId")
+  const listoftouserIddetails = connections.map(conn => conn.fromuserId);
+  // console.log(listoftouserId)
+  res.send(listoftouserIddetails)
+
+  }catch(err){res.send(err.message)}
+})
+
+UserRouter.get("/alumnirecivedrequest",UserAuth,async (req,res)=>{
+  try{
+    const decode=req.decode._id
+  //direct fromuserId me nhi ho rha
+  const fromuserId=decode
+  const connections=await ModelUserSendConnection.find({touserId:fromuserId,status:"sended"}).populate("fromuserId","_id photourl  fullName role company batch collegeName gender about").select("fromuserId")
+  const listoftouserIddetails = connections.map(conn => conn.fromuserId);
+  // console.log(listoftouserId)
+  res.send(listoftouserIddetails)
+
+  }catch(err){res.send(err.message)}
+})
+
 
 
 module.exports=UserRouter

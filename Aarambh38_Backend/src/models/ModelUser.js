@@ -15,6 +15,9 @@ const UserSchema=new mongoose.Schema({
         //         return res.status(400).send("gender not valid")
         // }
     },
+    branch:{
+      type:String
+    },
     collegeName:{
         type:String,
         // require:true,

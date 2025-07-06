@@ -41,7 +41,7 @@ export default function LoginAlumini() {
       setShowMessage(true);
 
       setTimeout(() => {
-        navigate("/landingpage");
+        navigate("/alumnimentees");
       }, 2000);
     } catch (err) {
       const msg =
