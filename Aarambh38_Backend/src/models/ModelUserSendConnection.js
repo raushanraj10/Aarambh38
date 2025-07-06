@@ -1,13 +1,16 @@
 const mongoose=require("mongoose")
+const ModelAlumini = require("./ModelAlumini")
 
 
 const UserSendConnectionSchema=mongoose.Schema({
     fromuserId:{
         type:mongoose.Schema.Types.ObjectId,
+        ref:ModelAlumini,
         require:true
     },
     touserId:{
         type:mongoose.Schema.Types.ObjectId,
+        ref:ModelAlumini,
         require:true,
     },
     text:{

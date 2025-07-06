@@ -78,6 +78,7 @@ export default function Navbar() {
                 "/editprofileadmin"
               } className="text-gray-700 hover:text-blue-600">Profile</Link>
               <Link to="/landingpage" className="text-gray-700 hover:text-blue-600">Dashboard</Link>
+              <Link to="/mymentors" onClick={closeMenu} className="text-gray-700">My Mentors</Link>
               <button onClick={handleLogout} className="text-red-600 hover:text-red-800 flex items-center">
                 <LogOut size={16} className="mr-1" /> Logout
               </button>
@@ -115,7 +116,8 @@ export default function Navbar() {
             >
               Profile
             </Link>
-            <Link to="/landingpage" onClick={closeMenu} className="text-gray-700">Dashboard</Link>
+             <Link to="/landingpage" onClick={closeMenu} className="text-gray-700">Dashboard</Link>
+             <Link to="/mymentors" onClick={closeMenu} className="text-gray-700">My Mentors</Link>
             <button
               onClick={() => {
                 handleLogout();

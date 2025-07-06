@@ -57,6 +57,19 @@ UserRouter.get("/finallistusermessage",UserAuth,async (req,res)=>{
 })
 
 
+UserRouter.get("/mymentors",UserAuth,async (req,res)=>{
+  try{
+    const decode=req.decode._id
+  //direct fromuserId me nhi ho rha
+  const fromuserId=decode
+  const connections=await ModelUserSendConnection.find({fromuserId:fromuserId,status:"accepted"}).populate("touserId","_id photourl  fullName role company batch collegeName gender about").select("touserId")
+  const listoftouserIddetails = connections.map(conn => conn.touserId);
+  // console.log(listoftouserId)
+  res.send(listoftouserIddetails)
+
+  }catch(err){res.send(err.message)}
+})
+
 
 
 module.exports=UserRouter

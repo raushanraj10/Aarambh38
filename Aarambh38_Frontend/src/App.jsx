@@ -21,6 +21,7 @@ import EditProfileUser from "./EditProfileUser"
 import EmailVerificationAdmin from "./EmailVerificationAdmin"
 import SignupPageAdmin from "./SignupPageAdmin"
 import EditProfileAdmin from "./EditProfileAdmin"
+import MyMentors from "./MyMentors"
 
 function App() {
   
@@ -36,6 +37,7 @@ function App() {
         <Route path="/loginalumini" element={<LoginAlumini/>}/>
         <Route path="/loginselectorpage" element={<LoginSelectorPage/>}/>
         <Route path="/shimmer" element={<Shimmer/>}/>
+        <Route path="/mymentors" element={<MyMentors/>}/>
         <Route path="/landingpage" element={<LandingPage/>}/>
         <Route path="editprofilealumni" element={<EditProfileAlumni/>}/>
         <Route path="editprofileuser" element={<EditProfileUser/>}/>
