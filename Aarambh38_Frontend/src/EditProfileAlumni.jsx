@@ -38,7 +38,7 @@ const EditProfileAlumni = () => {
       });
     }
     else{return (Navigate("/loginselectorpage"))}
-  }, [alumniData]);
+  }, []);
 
   const handleChange = (e) => {
     setFormData((prev) => ({

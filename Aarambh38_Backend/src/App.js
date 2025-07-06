@@ -23,9 +23,14 @@ app.use(express.json())
 // this convert data into json to js for understand js console
 const AuthRouter =require("./routes/auth");
 const ProfileRouter = require("./routes/Profile");
+const UserRouter = require("./routes/UserWantConnection");
+const AlumniRouter=require("./routes/AlumniConnection")
+
 
 app.use("/",AuthRouter)
 app.use("/",ProfileRouter)
+app.use("/",UserRouter)
+app.use("/",AlumniRouter)
 // app.get("/",(req,res)=>{
 //     console.log(req.body)
 //     res.send("This is the homepage")

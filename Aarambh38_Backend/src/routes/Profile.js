@@ -18,7 +18,7 @@ ProfileRouter.get("/getlistalumni",UserAuth,  async (req,res)=>{
 })
 
 ProfileRouter.get("/getliststudent",UserAuth,  async (req,res)=>{
-    const list=await ModelUser.find({}).select("fullName collegeName batch photourl age gender")
+    const list=await ModelUser.find({}).select("_id fullName collegeName batch photourl age gender")
     // console.log(list)
     res.send(list)
 })

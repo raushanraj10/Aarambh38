@@ -5,9 +5,84 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Aarambh38</title>
+
+    <style>
+      @keyframes shimmer {
+        0% {
+          background-position: -200% 0;
+        }
+        100% {
+          background-position: 200% 0;
+        }
+      }
+
+      @keyframes pulse {
+        0%, 100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+
+      #shimmer-screen {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        min-height: 100vh;
+        background-color: white;
+        padding: 1rem;
+      }
+
+      .shimmer-text {
+  font-size: 6rem;
+  font-weight: 800;
+  background: linear-gradient(to right, #2563eb, #22c55e, #9333ea);
+  background-size: 300% 100%;
+  background-clip: text;              /* ✅ standard property */
+  -webkit-background-clip: text;      /* ✅ vendor-prefixed for Safari/Chrome */
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 2s linear infinite;
+  margin-bottom: 1rem;
+}
+
+
+      .pulse-text {
+        color: #4b5563;
+        font-size: 1rem;
+        font-weight: 500;
+        animation: pulse 2s ease-in-out infinite;
+      }
+    </style>
+
+    <script>
+      // Hide shimmer after React mounts
+      window.addEventListener("DOMContentLoaded", () => {
+        const observer = new MutationObserver(() => {
+          const reactRoot = document.getElementById("root");
+          if (reactRoot && reactRoot.children.length > 0) {
+            document.getElementById("shimmer-screen")?.remove();
+            observer.disconnect();
+          }
+        });
+
+        observer.observe(document.getElementById("root"), { childList: true });
+      });
+    </script>
   </head>
   <body>
-    <div id="root">Aarambh38</div>
+    <!-- Shimmer Splash Screen -->
+    <div id="shimmer-screen">
+      <h1 class="shimmer-text ">Aarambh38</h1>
+      <p class="pulse-text">Stay motivated and please wait...</p>
+    </div>
+
+    <!-- React root -->
+    <div id="root"></div>
+
+    <!-- Vite React entry -->
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
