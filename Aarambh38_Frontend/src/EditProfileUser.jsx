@@ -44,10 +44,10 @@ const EditProfileUser = () => {
   };
 
   const handleSubmit = async (e) => {
-    const {fullName,age,gender,photourl}=formData
+    const {fullName,age,gender,photourl,branch}=formData
     e.preventDefault();
     try {
-     const res=await axios.patch("http://localhost:5000/edituser",{fullName,age,gender,photourl},{withCredentials:true})
+     const res=await axios.patch("http://localhost:5000/edituser",{fullName,age,gender,photourl,branch},{withCredentials:true})
       setMessage("✅ Profile updated successfully.");
       setMessageType("success");
       dispatch(addstudent(res.data))
@@ -89,6 +89,16 @@ const EditProfileUser = () => {
             className="w-full border rounded px-3 py-2"
             placeholder="College Name"
           />
+
+          <input
+            name="branch"
+            value={formData.branch}
+            // onChange={handleChange}
+            className="w-full border rounded px-3 py-2"
+            placeholder="Branch"
+          />
+
+
           <select
       name="gender"
      value={formData.gender}

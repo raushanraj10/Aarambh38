@@ -76,10 +76,14 @@ export default function Navbar() {
     ];
 
     const roleLinks = Studentdata
-      ? [{ to: "/mymentors", label: "My Mentors" }]
-      : Alumnidata
-      ? [{ to: "/alumnimentees", label: "My Mentees" }]
-      : [{ to: "#", label: "All Alumni" }];
+  ? [{ to: "/mymentors", label: "My Mentors" }]
+  : Alumnidata
+  ? [
+      { to: "/alumnimentees", label: "My Mentees" },
+      { to: "/alumniblocked", label: "Blacklisted Students" }, // ✅ New route
+    ]
+  : [{ to: "#", label: "All Alumni" }];
+
 
     const logoutButton = (
       <button

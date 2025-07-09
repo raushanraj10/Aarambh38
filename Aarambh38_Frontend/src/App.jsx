@@ -24,6 +24,7 @@ import EditProfileAdmin from "./EditProfileAdmin"
 import MyMentors from "./MyMentors"
 import AlumniMentees from "./AlumniMentees"
 import AlumniReceivedRequest from "./AlumniRecievedRequest"
+import AlumniBlocked from "./AlumniBlocked"
 
 function App() {
   
@@ -41,6 +42,7 @@ function App() {
         <Route path="/shimmer" element={<Shimmer/>}/>
         <Route path="/mymentors" element={<MyMentors/>}/>
         <Route path="/alumnimentees" element={<AlumniMentees/>}/>
+        <Route path="/alumniblocked" element={<AlumniBlocked/>}/>
         <Route path="/alumnirecievedrequest" element={<AlumniReceivedRequest/>}/>
         <Route path="/landingpage" element={<LandingPage/>}/>
         <Route path="editprofilealumni" element={<EditProfileAlumni/>}/>

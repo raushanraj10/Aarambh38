@@ -52,6 +52,7 @@ export default function EmailVerificationUser() {
           confirmPassword,
           collegeName,
           age,
+          branch
         } = verifydata;
 
         await axios.post(
@@ -65,6 +66,7 @@ export default function EmailVerificationUser() {
             confirmPassword,
             collegeName,
             age,
+            branch
           },
           { withCredentials: true }
         );

@@ -28,6 +28,7 @@ export default function SignupPageUser() {
     gender: "Male",
     newPassword: "1234",
     confirmPassword: "1234",
+    branch:"CSE",
     code: "",
   });
 
@@ -173,6 +174,23 @@ export default function SignupPageUser() {
             />
             {formErrors.collegeName && <p className="text-xs text-red-500 mt-1">{formErrors.collegeName}</p>}
           </div>
+
+
+           <div>
+            <label className="text-sm font-medium text-gray-700">Branch</label>
+            <input
+              type="text"
+              name="branch"
+              value={formData.branch}
+              onChange={handleChange}
+              className={`w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none ${
+                formErrors.branch ? "border-red-500 ring-2 ring-red-300" : "border-gray-300 focus:ring-2 focus:ring-blue-500"
+              }`}
+              required
+            />
+            {formErrors.branch && <p className="text-xs text-red-500 mt-1">{formErrors.fullName}</p>}
+          </div>
+
 
           {/* Registration Number */}
           <div>
