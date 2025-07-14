@@ -6,8 +6,8 @@ import { addstudent } from "./utils/StudentSlice";
 
 const EditProfileUser = () => {
   const studentData = useSelector((store) => store.studentdata);
-  const Navigate=useNavigate()
-  const dispatch=useDispatch()
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -16,14 +16,16 @@ const EditProfileUser = () => {
     age: "",
     gender: "",
     photourl: "",
+    branch: ""
   });
 
   const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState("success"); // success | error
+  const [messageType, setMessageType] = useState("success");
 
   useEffect(() => {
-    
-    if (studentData) {
+    if (!studentData || !studentData.emailId) {
+      navigate("/loginselectorpage");
+    } else {
       setFormData({
         fullName: studentData.fullName || "",
         emailId: studentData.emailId || "",
@@ -31,10 +33,10 @@ const EditProfileUser = () => {
         gender: studentData.gender || "",
         age: studentData.age || "",
         photourl: studentData.photourl || "",
+        branch: studentData.branch || ""
       });
     }
-    else{return (Navigate("/loginselectorpage"))}
-  }, []);
+  }, [studentData]);
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -44,13 +46,19 @@ const EditProfileUser = () => {
   };
 
   const handleSubmit = async (e) => {
-    const {fullName,age,gender,photourl,branch}=formData
     e.preventDefault();
+    const { fullName, age, gender, photourl, branch } = formData;
+
     try {
-     const res=await axios.patch("http://localhost:5000/edituser",{fullName,age,gender,photourl,branch},{withCredentials:true})
+      const res = await axios.patch(
+        "http://localhost:5000/edituser",
+        { fullName, age, gender, photourl, branch },
+        { withCredentials: true }
+      );
+
       setMessage("✅ Profile updated successfully.");
       setMessageType("success");
-      dispatch(addstudent(res.data))
+      dispatch(addstudent(res.data));
     } catch (err) {
       setMessage("❌ Failed to update profile.");
       setMessageType("error");
@@ -77,40 +85,36 @@ const EditProfileUser = () => {
           <input
             name="emailId"
             value={formData.emailId}
-            // onChange={handleChange}
-            className="w-full border rounded px-3 py-2"
+            disabled
+            className="w-full border rounded px-3 py-2 bg-gray-100 cursor-not-allowed"
             placeholder="Email"
             type="email"
           />
           <input
             name="collegeName"
             value={formData.collegeName}
-            // onChange={handleChange}
-            className="w-full border rounded px-3 py-2"
+            disabled
+            className="w-full border rounded px-3 py-2 bg-gray-100 cursor-not-allowed"
             placeholder="College Name"
           />
-
           <input
             name="branch"
             value={formData.branch}
-            // onChange={handleChange}
+            onChange={handleChange}
             className="w-full border rounded px-3 py-2"
             placeholder="Branch"
           />
-
-
           <select
-      name="gender"
-     value={formData.gender}
-       onChange={handleChange}
-     className="w-full border rounded px-3 py-2 bg-white"
-    >
-     <option value="">Select Gender</option>
-      <option value="Male">Male</option>
-      <option value="Female">Female</option>
-      <option value="Other">Other</option>
-       </select>
-
+            name="gender"
+            value={formData.gender}
+            onChange={handleChange}
+            className="w-full border rounded px-3 py-2 bg-white"
+          >
+            <option value="">Select Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
           <input
             name="age"
             value={formData.age}
@@ -125,7 +129,6 @@ const EditProfileUser = () => {
             className="w-full border rounded px-3 py-2"
             placeholder="Photo URL"
           />
-          
           <button
             type="submit"
             className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full"
@@ -135,7 +138,7 @@ const EditProfileUser = () => {
         </form>
       </div>
 
-      {/* Live Preview Card */}
+      {/* Live Preview */}
       <div className="w-full md:w-1/2 bg-gray-50 p-5 rounded-lg shadow">
         <h3 className="text-xl font-semibold text-center mb-4 text-gray-700">Live Preview</h3>
         <div className="flex flex-col items-center text-center">
@@ -145,7 +148,7 @@ const EditProfileUser = () => {
             className="w-24 h-24 rounded-full object-cover border mb-4"
           />
           <p className="text-lg font-bold">{formData.fullName || "Full Name"}</p>
-          <p className="text-sm text-gray-500">{formData.age || "Your Role"}</p>
+          <p className="text-sm text-gray-500">{formData.age || "Your Age"}</p>
           <p className="text-sm text-gray-600 mt-1">{formData.collegeName || "College Name"}</p>
           <p className="text-sm text-gray-500 mt-3 px-4">{formData.gender || "Short Bio..."}</p>
           <p className="text-xs text-gray-400 mt-2">{formData.emailId || "Email Address"}</p>

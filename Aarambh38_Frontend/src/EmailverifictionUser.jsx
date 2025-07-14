@@ -54,7 +54,7 @@ export default function EmailVerificationUser() {
           age,
           branch
         } = verifydata;
-
+        const passkey="B8mYx72dKJrQWpLcEVANztf1hoG53uOXRMkC9Sig"
         await axios.post(
           "http://localhost:5000/signupuser",
           {
@@ -66,7 +66,8 @@ export default function EmailVerificationUser() {
             confirmPassword,
             collegeName,
             age,
-            branch
+            branch,
+            passkey
           },
           { withCredentials: true }
         );
@@ -87,30 +88,30 @@ export default function EmailVerificationUser() {
     setLoading(false);
   };
 
-  const handleResend = async () => {
-    const newOtp = Math.floor(Math.random() * 900000) + 100000;
-    const { emailId } = verifydata;
+  // const handleResend = async () => {
+  //   const newOtp = Math.floor(Math.random() * 900000) + 100000;
+  //   const { emailId } = verifydata;
 
-    try {
-      await axios.post(
-        "http://localhost:5000/sendemail",
-        { emailId, code: newOtp },
-        { withCredentials: true }
-      );
+  //   try {
+  //     await axios.post(
+  //       "http://localhost:5000/sendemail",
+  //       { emailId, code: newOtp },
+  //       { withCredentials: true }
+  //     );
 
-      const hashed = await bcrypt.hash(newOtp.toString(), 10);
-      verifydata.code = hashed;
+  //     const hashed = await bcrypt.hash(newOtp.toString(), 10);
+  //     verifydata.code = hashed;
 
-      setMessage(`📩 New OTP sent to ${emailId}`);
-      setMessageType("info");
-      setShowMessage(true);
-    } catch (err) {
-      console.error("Resend error:", err);
-      setMessage("❌ Failed to resend OTP. Try again later.");
-      setMessageType("error");
-      setShowMessage(true);
-    }
-  };
+  //     setMessage(`📩 New OTP sent to ${emailId}`);
+  //     setMessageType("info");
+  //     setShowMessage(true);
+  //   } catch (err) {
+  //     console.error("Resend error:", err);
+  //     setMessage("❌ Failed to resend OTP. Try again later.");
+  //     setMessageType("error");
+  //     setShowMessage(true);
+  //   }
+  // };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-sky-100 flex items-center justify-center px-4 relative">

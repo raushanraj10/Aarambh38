@@ -13,6 +13,7 @@ export default function MyMentors() {
         const res = await axios.get("http://localhost:5000/mymentors", {
           withCredentials: true,
         });
+        console.log(res)
         setMentors(res.data);
       } catch (error) {
         console.error("Failed to load mentors", error);

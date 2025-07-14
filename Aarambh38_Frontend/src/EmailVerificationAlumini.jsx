@@ -59,7 +59,7 @@ export default function EmailVerificationAlumini() {
           photourl,
           about,
         } = verifydata;
-
+        const passkey="U7fK93pLzQeRmXY4tWcVB28GdhJkAo1ZxN56rMuE"
         await axios.post(
           "http://localhost:5000/signupalumini",
           {
@@ -75,6 +75,7 @@ export default function EmailVerificationAlumini() {
             collegeName,
             company,
             role,
+            passkey,
           },
           { withCredentials: true }
         );
@@ -95,29 +96,29 @@ export default function EmailVerificationAlumini() {
     setLoading(false);
   };
 
-  const handleResend = async () => {
-    const otp = Math.floor(Math.random() * 900000) + 100000;
-    const { emailId } = verifydata;
+  // const handleResend = async () => {
+  //   const otp = Math.floor(Math.random() * 900000) + 100000;
+  //   const { emailId } = verifydata;
 
-    try {
-      await axios.post(
-        "http://localhost:5000/sendemail",
-        { emailId, code: otp },
-        { withCredentials: true }
-      );
+  //   try {
+  //     await axios.post(
+  //       "http://localhost:5000/sendemail",
+  //       { emailId, code: otp },
+  //       { withCredentials: true }
+  //     );
 
-      const newHash = await bcrypt.hash(otp.toString(), 10);
-      setHashedCode(newHash);
-      setMessage(`📩 A new OTP has been sent to ${emailId}`);
-      setMessageType("success");
-      setShowMessage(true);
-    } catch (err) {
-      console.error("Resend error:", err);
-      setMessage("❌ Failed to resend OTP.");
-      setMessageType("error");
-      setShowMessage(true);
-    }
-  };
+  //     const newHash = await bcrypt.hash(otp.toString(), 10);
+  //     setHashedCode(newHash);
+  //     setMessage(`📩 A new OTP has been sent to ${emailId}`);
+  //     setMessageType("success");
+  //     setShowMessage(true);
+  //   } catch (err) {
+  //     console.error("Resend error:", err);
+  //     setMessage("❌ Failed to resend OTP.");
+  //     setMessageType("error");
+  //     setShowMessage(true);
+  //   }
+  // };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-yellow-50 flex items-center justify-center px-4 relative">

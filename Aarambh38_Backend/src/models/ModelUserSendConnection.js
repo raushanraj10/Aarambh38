@@ -6,13 +6,13 @@ const ModelUser = require("./ModelUser")
 const UserSendConnectionSchema=mongoose.Schema({
     fromuserId:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:ModelAlumini,
+        // ref:ModelAlumini,
         ref:ModelUser,
         require:true
     },
     touserId:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:ModelAlumini,
+        // ref:ModelAlumini,
         ref:ModelUser,
         require:true,
     },

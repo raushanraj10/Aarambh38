@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { Tuple } from "@reduxjs/toolkit";
 import { useNavigate } from "react-router-dom";
 import { addalumini } from "./utils/AluminiSlice";
 
 const EditProfileAlumni = () => {
   const alumniData = useSelector((store) => store.aluminidata);
-  const Navigate=useNavigate()
-  const dispatch=useDispatch()
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -24,7 +24,9 @@ const EditProfileAlumni = () => {
   const [messageType, setMessageType] = useState("success");
 
   useEffect(() => {
-    if (alumniData) {
+    if (!alumniData || !alumniData.emailId) {
+      navigate("/loginselectorpage");
+    } else {
       setFormData({
         fullName: alumniData.fullName || "",
         email: alumniData.emailId || "",
@@ -34,11 +36,9 @@ const EditProfileAlumni = () => {
         about: alumniData.about || "",
         gender: alumniData.gender || "",
         photourl: alumniData.photourl || "",
-        
       });
     }
-    else{return (Navigate("/loginselectorpage"))}
-  }, []);
+  }, [alumniData]);
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -49,22 +49,18 @@ const EditProfileAlumni = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (formData.newPassword !== formData.confirmPassword) {
-      setMessage("❌ Passwords do not match.");
-      setMessageType("error");
-      setTimeout(() => setMessage(""), 3000);
-      return;
-    }
+    const { fullName, company, gender, role, about, photourl } = formData;
 
     try {
-      
-      const {fullName,company,age,gender,role,about,photourl}=formData
-      // console.log(fullName)
-      const res=await axios.patch("http://localhost:5000/editalumni",{fullName,company,age,gender,role,about,photourl},{withCredentials:true})
+      const res = await axios.patch(
+        "http://localhost:5000/editalumni",
+        { fullName, company, gender, role, about, photourl },
+        { withCredentials: true }
+      );
+
       setMessage("✅ Profile updated successfully.");
       setMessageType("success");
-      console.log(res)
-      dispatch(addalumini(res.data))
+      dispatch(addalumini(res.data));
     } catch (err) {
       setMessage("❌ Failed to update profile.");
       setMessageType("error");
@@ -73,10 +69,9 @@ const EditProfileAlumni = () => {
       setTimeout(() => setMessage(""), 3000);
     }
   };
- 
+
   return (
     <div className="max-w-7xl mx-auto mt-10 p-6 bg-white rounded shadow-md flex flex-col md:flex-row gap-10 relative">
-      {/* Edit Form */}
       <div className="w-full md:w-1/2">
         <h2 className="text-2xl font-bold mb-4 text-center text-blue-700">Edit Alumni Profile</h2>
 
@@ -89,18 +84,18 @@ const EditProfileAlumni = () => {
             placeholder="Full Name"
           />
           <input
-            name="emailId"
+            name="email"
             value={formData.email}
-            // onChange={handleChange}
-            className="w-full border rounded px-3 py-2"
+            disabled
+            className="w-full border rounded px-3 py-2 bg-gray-100 cursor-not-allowed"
             placeholder="Email"
             type="email"
           />
           <input
             name="collegeName"
             value={formData.collegeName}
-            // onChange={handleChange}
-            className="w-full border rounded px-3 py-2"
+            disabled
+            className="w-full border rounded px-3 py-2 bg-gray-100 cursor-not-allowed"
             placeholder="College Name"
           />
           <input
@@ -123,10 +118,10 @@ const EditProfileAlumni = () => {
             onChange={handleChange}
             className="w-full border rounded px-3 py-2 bg-white"
           >
-             <option value="">Select Gender</option>
-             <option value="Male">Male</option>
-              <option value="Female">Female</option>
-              <option value="Other">Other</option>
+            <option value="">Select Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
           </select>
           <textarea
             name="about"

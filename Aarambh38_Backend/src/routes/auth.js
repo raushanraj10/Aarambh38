@@ -21,9 +21,11 @@ AuthRouter.post("/sendemail",async (req,res)=>{
 })
 
 AuthRouter.post("/signupuser",async (req,res)=>{
+        if(!req.body.passkey|| req.body.passkey!=="B8mYx72dKJrQWpLcEVANztf1hoG53uOXRMkC9Sig")
+        return res.status(400).send("First verify Email")
     const data=req.body;
     // console.log(data)
-    const requiredFields=["fullName","gender","emailId","newPassword","confirmPassword","registration","age","collegeName","branch"]
+    const requiredFields=["fullName","gender","emailId","newPassword","confirmPassword","registration","age","collegeName","branch","passkey"]
     
      const allFieldsPresent = requiredFields.every(field => field in data);
 
@@ -43,6 +45,8 @@ AuthRouter.post("/signupuser",async (req,res)=>{
 
     const {newPassword,confirmPassword}=req.body
 
+
+
     const hashnewPassword=await bcrypt.hash(newPassword,10)
     const hashconfirmPassword=await bcrypt.hash(confirmPassword,10)
 
@@ -60,9 +64,11 @@ AuthRouter.post("/signupuser",async (req,res)=>{
 })
 
 AuthRouter.post("/signupalumini",async (req,res)=>{
+    if(!req.body.passkey || req.body.passkey!=="U7fK93pLzQeRmXY4tWcVB28GdhJkAo1ZxN56rMuE")
+     return res.status(400).send("First verify Email")
     const data=req.body;
     // console.log(data)
-    const requiredFields=["fullName","gender","emailId","newPassword","confirmPassword","registration","batch","collegeName","company","role","photourl","about"]
+    const requiredFields=["fullName","gender","emailId","newPassword","confirmPassword","registration","batch","collegeName","company","role","photourl","about","passkey"]
     
      const allFieldsPresent = requiredFields.every(field => field in data);
 
@@ -103,6 +109,9 @@ AuthRouter.post("/signupalumini",async (req,res)=>{
 
 
 AuthRouter.post("/signupadmin",async (req,res)=>{
+    if(!req.body.passkey || req.body.passkey!=="Z3rNxTp1VuEyKqW7gMdBL9AfRcJXy842hPn0vUsM")
+     return res.status(400).send("First verify Email")
+
     const data=req.body;
     // console.log(data)
     const requiredFields=["fullName","gender","emailId","newPassword","confirmPassword","age"]

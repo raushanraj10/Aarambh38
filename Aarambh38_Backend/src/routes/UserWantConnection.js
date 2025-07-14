@@ -1,6 +1,7 @@
 const express =require("express")
 const UserAuth = require("./middleware/UserAuth");
 const ModelUserSendConnection = require("../models/ModelUserSendConnection");
+const ModelAlumini = require("../models/ModelAlumini");
 
 const UserRouter=express.Router()
 
@@ -57,18 +58,33 @@ UserRouter.get("/finallistusermessage",UserAuth,async (req,res)=>{
 })
 
 
-UserRouter.get("/mymentors",UserAuth,async (req,res)=>{
-  try{
-    const decode=req.decode._id
-  //direct fromuserId me nhi ho rha
-  const fromuserId=decode
-  const connections=await ModelUserSendConnection.find({fromuserId:fromuserId,status:"accepted"}).populate("touserId","_id photourl  fullName role company batch collegeName gender about").select("touserId")
-  const listoftouserIddetails = connections.map(conn => conn.touserId);
-  // console.log(listoftouserId)
-  res.send(listoftouserIddetails)
+UserRouter.get("/mymentors", UserAuth, async (req, res) => {
+  try {
+    const fromuserId = req.decode._id;
 
-  }catch(err){res.send(err.message)}
-})
+    const connections = await ModelUserSendConnection.find({
+      fromuserId: fromuserId,
+      status: "accepted"
+    }).select("touserId toModel");
+
+    const listoftouserIddetails = connections.map(conn => conn.touserId);
+
+    // Use Promise.all to resolve all async calls
+    const finaldata = await Promise.all(
+      listoftouserIddetails.map(async (ele) => {
+        return await ModelAlumini.findOne(
+          { _id: ele },
+          "_id fullName photourl role company batch collegeName gender about"
+        );
+      })
+    );
+
+    res.send(finaldata);
+  } catch (err) {
+    res.status(500).send({ error: err.message });
+  }
+});
+
 
 UserRouter.get("/getalumnimentees",UserAuth,async (req,res)=>{
   try{

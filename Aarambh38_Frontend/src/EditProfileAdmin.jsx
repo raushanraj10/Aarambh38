@@ -6,8 +6,8 @@ import { addadmin } from "./utils/AdminSlice";
 
 const EditProfileAdmin = () => {
   const AdminData = useSelector((store) => store.admindata);
-  const Navigate=useNavigate()
-  const dispatch =useDispatch()
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -19,22 +19,24 @@ const EditProfileAdmin = () => {
   });
 
   const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState("success"); // success | error
+  const [messageType, setMessageType] = useState("success");
 
   useEffect(() => {
-    
-    if (AdminData) {
+    if (!AdminData || !AdminData.emailId) {
+      navigate("/loginselectorpage");
+    } else {
       setFormData({
         fullName: AdminData.fullName || "",
         emailId: AdminData.emailId || "",
         collegeName: AdminData.collegeName || "",
         gender: AdminData.gender || "",
         age: AdminData.age || "",
-        photourl: AdminData?.photourl || "https://imgs.search.brave.com/djasU07Bne_5zm6B86JeorFTQOk4aRWysdG1rcDepGw/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9zdGF0/aWMudG9paW1nLmNv/bS90aHVtYi9pbWdz/aXplLTIzNDU2LG1z/aWQtMTA2MTEyMjQ5/LHdpZHRoLTYwMCxy/ZXNpemVtb2RlLTQv/MTA2MTEyMjQ5Lmpw/Zw",
+        photourl:
+          AdminData.photourl ||
+          "https://via.placeholder.com/100",
       });
     }
-    else{return (Navigate("/loginselectorpage"))}
-  }, []);
+  }, [AdminData]);
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -44,13 +46,18 @@ const EditProfileAdmin = () => {
   };
 
   const handleSubmit = async (e) => {
-    const {fullName,age,gender,photourl}=formData
     e.preventDefault();
+    const { fullName, age, gender, photourl } = formData;
+
     try {
-    const res = await axios.patch("http://localhost:5000/editadmin",{fullName,age,gender,photourl},{withCredentials:true})
+      const res = await axios.patch(
+        "http://localhost:5000/editadmin",
+        { fullName, age, gender, photourl },
+        { withCredentials: true }
+      );
       setMessage("✅ Profile updated successfully.");
       setMessageType("success");
-      dispatch(addadmin(res.data))
+      dispatch(addadmin(res.data));
     } catch (err) {
       setMessage("❌ Failed to update profile.");
       setMessageType("error");
@@ -65,7 +72,6 @@ const EditProfileAdmin = () => {
       {/* Edit Form */}
       <div className="w-full md:w-1/2">
         <h2 className="text-2xl font-bold mb-4 text-blue-700 text-center">Edit Profile</h2>
-
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             name="fullName"
@@ -77,24 +83,29 @@ const EditProfileAdmin = () => {
           <input
             name="emailId"
             value={formData.emailId}
-            // onChange={handleChange}
-            className="w-full border rounded px-3 py-2"
+            disabled
+            className="w-full border rounded px-3 py-2 bg-gray-100 cursor-not-allowed"
             placeholder="Email"
             type="email"
           />
-          
+          <input
+            name="collegeName"
+            value={formData.collegeName}
+            disabled
+            className="w-full border rounded px-3 py-2 bg-gray-100 cursor-not-allowed"
+            placeholder="College Name"
+          />
           <select
-      name="gender"
-     value={formData.gender}
-       onChange={handleChange}
-     className="w-full border rounded px-3 py-2 bg-white"
-    >
-      <option value="">Select Gender</option>
-      <option value="Male">Male</option>
-      <option value="Female">Female</option>
-      <option value="Other">Other</option>
-       </select>
-
+            name="gender"
+            value={formData.gender}
+            onChange={handleChange}
+            className="w-full border rounded px-3 py-2 bg-white"
+          >
+            <option value="">Select Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
           <input
             name="age"
             value={formData.age}
@@ -109,7 +120,6 @@ const EditProfileAdmin = () => {
             className="w-full border rounded px-3 py-2"
             placeholder="Photo URL"
           />
-          
           <button
             type="submit"
             className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full"
@@ -119,7 +129,7 @@ const EditProfileAdmin = () => {
         </form>
       </div>
 
-      {/* Live Preview Card */}
+      {/* Preview */}
       <div className="w-full md:w-1/2 bg-gray-50 p-5 rounded-lg shadow">
         <h3 className="text-xl font-semibold text-center mb-4 text-gray-700">Live Preview</h3>
         <div className="flex flex-col items-center text-center">
@@ -129,14 +139,14 @@ const EditProfileAdmin = () => {
             className="w-24 h-24 rounded-full object-cover border mb-4"
           />
           <p className="text-lg font-bold">{formData.fullName || "Full Name"}</p>
-          <p className="text-sm text-gray-500">{formData.age || "Your Role"}</p>
+          <p className="text-sm text-gray-500">{formData.age || "Age"}</p>
           <p className="text-sm text-gray-600 mt-1">{formData.collegeName || "College Name"}</p>
           <p className="text-sm text-gray-500 mt-3 px-4">{formData.gender || "Gender"}</p>
           <p className="text-xs text-gray-400 mt-2">{formData.emailId || "Email Address"}</p>
         </div>
       </div>
 
-      {/* Toast Message */}
+      {/* Toast */}
       {message && (
         <div
           className={`fixed bottom-5 right-5 px-5 py-3 rounded shadow-md text-white z-50 transition-all duration-300 ${
@@ -151,3 +161,4 @@ const EditProfileAdmin = () => {
 };
 
 export default EditProfileAdmin;
+ 

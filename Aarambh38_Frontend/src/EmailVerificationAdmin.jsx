@@ -1,11 +1,11 @@
 import axios from "axios";
 import bcrypt from "bcryptjs";
 import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import {  useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
-import { addadmin } from "./utils/AdminSlice";
-import { removealumini } from "./utils/AluminiSlice";
-import { removestudent } from "./utils/StudentSlice";
+// import { addadmin } from "./utils/AdminSlice";
+// import { removealumini } from "./utils/AluminiSlice";
+// import { removestudent } from "./utils/StudentSlice";
 
 export default function EmailVerificationAdmin() {
   const [code, setCode] = useState("");
@@ -17,7 +17,7 @@ export default function EmailVerificationAdmin() {
 
   const navigate = useNavigate();
   const verifydata = useSelector((store) => store.verifyuser);
-  const dispatch =useDispatch()
+  // const dispatch =useDispatch()
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -38,7 +38,8 @@ export default function EmailVerificationAdmin() {
           confirmPassword,
           
         } = verifydata;
-       console.log(gender)
+        const passkey="Z3rNxTp1VuEyKqW7gMdBL9AfRcJXy842hPn0vUsM"
+      //  console.log(gender)
         await axios.post(
           "http://localhost:5000/signupadmin",
           {
@@ -49,6 +50,7 @@ export default function EmailVerificationAdmin() {
             age,
             newPassword,
             confirmPassword,
+            passkey
 
           },
           { withCredentials: true }
@@ -70,26 +72,26 @@ export default function EmailVerificationAdmin() {
     setLoading(false);
   };
 
-  const handleResend = async () => {
-    const Otp = Math.floor(Math.random() * 900000) + 100000;
-    const { emailId } = verifydata;
+  // const handleResend = async () => {
+  //   const Otp = Math.floor(Math.random() * 900000) + 100000;
+  //   const { emailId } = verifydata;
 
-    try {
-      await axios.post(
-        "http://localhost:5000/sendemail",
-        { emailId, code: Otp },
-        { withCredentials: true }
-      );
-      const hashedCode = await bcrypt.hash(Otp.toString(), 10);
-      verifydata.code = hashedCode;
-      setMessage(`📩 OTP resent to ${emailId}`);
-      setShowMessage(true);
-    } catch (err) {
-      console.error("OTP resend failed", err);
-      setMessage("❌ Failed to resend OTP.");
-      setShowMessage(true);
-    }
-  };
+  //   try {
+  //     await axios.post(
+  //       "http://localhost:5000/sendemail",
+  //       { emailId, code: Otp },
+  //       { withCredentials: true }
+  //     );
+  //     const hashedCode = await bcrypt.hash(Otp.toString(), 10);
+  //     verifydata.code = hashedCode;
+  //     setMessage(`📩 OTP resent to ${emailId}`);
+  //     setShowMessage(true);
+  //   } catch (err) {
+  //     console.error("OTP resend failed", err);
+  //     setMessage("❌ Failed to resend OTP.");
+  //     setShowMessage(true);
+  //   }
+  // };
 
   useEffect(() => {
     if (showMessage) {
