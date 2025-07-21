@@ -1,6 +1,8 @@
 const express=require("express")
 const cookieparser =require("cookie-parser")
 const app=express();
+const http=require("http")
+const IntializeSocket=require("./utils/IntializeSocket")
 
 
 const connectDb=require("./config/database")
@@ -35,9 +37,11 @@ app.use("/",AlumniRouter)
 //     console.log(req.body)
 //     res.send("This is the homepage")
 // })
+const server=http.createServer(app);
+IntializeSocket(server);
 
 
-connectDb().then(()=>{app.listen(5000,()=>{
+connectDb().then(()=>{server.listen(5000,()=>{
     console.log("Database connected successfully")
     console.log("App is listening on 5000")
 })})
