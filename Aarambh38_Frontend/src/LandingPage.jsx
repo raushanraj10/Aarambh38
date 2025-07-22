@@ -2,8 +2,11 @@ import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import LoginSelectorPage from "./LoginSelectorPage";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import ChatApp from "./components/Chat";
 
 export default function StudentLandingPage() {
+  const Navigate=useNavigate()
   const Studentdata = useSelector((store) => store.studentdata);
   const Aluminidata = useSelector((store) => store.aluminidata);
   const Admindata = useSelector((store) => store.admindata);
@@ -67,7 +70,9 @@ export default function StudentLandingPage() {
   };
 
   const handleSendMessage = (alumniId) => {
-    alert(`Messaging alumni ID ${alumniId}: ${messages[alumniId]}`);
+    
+  return Navigate(`/chat/${alumniId}`);
+    // alert(`Messaging alumni ID ${alumniId}: ${messages[alumniId]}`);
   };
 
   // ✅ Filter includes fullName, role, company, collegeName, batch, about

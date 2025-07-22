@@ -1,26 +1,87 @@
 import { useState, useEffect, useRef } from "react";
 import { MoreVertical } from "lucide-react";
+import { useSelector } from "react-redux";
+import axios from "axios";
+import { SocketConnection } from "../constants/Socketconnection";
+import { useParams } from "react-router-dom";
 
 const ChatApp = () => {
-  const [selectedUser, setSelectedUser] = useState("Raushan Raj");
-  const [messages, setMessages] = useState([
-    { from: "them", text: "Hi, I’m here to help!" },
-    { from: "me", text: "Thank you! I had a doubt regarding placements." },
-  ]);
+  const { touserId } = useParams();
+  const Studentdata = useSelector((store) => store.studentdata);
+  const Aluminidata = useSelector((store) => store.aluminidata);
+  const Admindata = useSelector((store) => store.admindata);
+
+  const [chatlist, setChatlist] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
-  const users = ["Raushan Raj", "Suman Kumar", "Ravi Singh"];
-  
+  // Fetch mentors for students
+  useEffect(() => {
+    const fetchMentors = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/mymentors", {
+          withCredentials: true,
+        });
+        setChatlist(res.data);
+      } catch (error) {
+        console.error("Failed to load mentors", error);
+      }
+    };
+
+    if (Studentdata) fetchMentors();
+  }, [Studentdata]);
+
+  // Fetch mentees for alumni
+  useEffect(() => {
+    const fetchMentees = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/getalumnimentees", {
+          withCredentials: true,
+        });
+        setChatlist(res.data);
+      } catch (err) {
+        console.error("Failed to fetch mentees", err);
+      }
+    };
+
+    if (Aluminidata) fetchMentees();
+  }, [Aluminidata]);
+
+  // Socket connection and listener
+  useEffect(() => {
+    const fromuserId = Studentdata?._id || Aluminidata?._id;
+    const targetuserId = selectedUser ? selectedUser._id : touserId;
+
+    const socket = SocketConnection();
+
+    socket.emit("joinchat", { fromuserId, targetuserId });
+
+    socket.on("messageRecieved", ({ fromuserId, text }) => {
+      console.log(text)
+      const myId = Studentdata?._id || Aluminidata?._id;
+      if (fromuserId === myId) return; // ignore self-message
+      setMessages((prev) => [...prev, { from: "them", text }]);
+    });
+
+    return () => socket.disconnect();
+  }, [Studentdata, Aluminidata, selectedUser, touserId]);
 
   const handleSend = () => {
-    if (input.trim()) {
-      setMessages([...messages, { from: "me", text: input }]);
-      setInput("");
-    }
+    if (!input.trim()) return;
+    const fromuserId = Studentdata?._id || Aluminidata?._id;
+    const targetuserId = selectedUser ? selectedUser._id : touserId;
+
+    const socket = SocketConnection();
+    socket.emit("sendmessage", { fromuserId, targetuserId, text: input });
+
+    setMessages((prev) => [...prev, { from: "me", text: input }]);
+    setInput("");
   };
 
+  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -38,15 +99,18 @@ const ChatApp = () => {
         <div className="p-4 text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600 tracking-tight">
           Connections
         </div>
-        {users.map((user) => (
+        {chatlist.map((user) => (
           <div
-            key={user}
-            onClick={() => setSelectedUser(user)}
+            key={user._id}
+            onClick={() => {
+              setSelectedUser(user);
+              setMessages([]); // Clear previous messages on new user select
+            }}
             className={`px-4 py-3 cursor-pointer hover:bg-gray-100 border-b ${
-              selectedUser === user ? "bg-gray-200" : ""
+              selectedUser?._id === user._id ? "bg-gray-200" : ""
             }`}
           >
-            {user}
+            {user.fullName || "Unnamed"}
           </div>
         ))}
       </div>
@@ -62,7 +126,7 @@ const ChatApp = () => {
 
           {/* Foreground Username */}
           <div className="z-10 text-xl font-extrabold tracking-tight">
-            {selectedUser}
+            {selectedUser?.fullName || "Select a user"}
           </div>
 
           {/* Dropdown Menu Button */}

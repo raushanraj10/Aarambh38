@@ -56,7 +56,7 @@ function App() {
           <Route path="/signupuser" element={<SignupPageUser />} />
            <Route path="/signupalumini" element={<SignupPageAlumini/>} />
            <Route path="/signupadmin" element={<SignupPageAdmin/>} />
-           <Route path="/chat/:touserid" element={<Chat/>} />
+           <Route path="/chat/:touserId" element={<Chat/>} />
         </Route>
       </Routes>
     </BrowserRouter>

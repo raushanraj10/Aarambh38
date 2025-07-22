@@ -37,28 +37,28 @@
       }
 
       .shimmer-text {
-  font-size: 6rem;
-  font-weight: 800;
-  background: linear-gradient(to right, #2563eb, #22c55e, #9333ea);
-  background-size: 300% 100%;
-  background-clip: text;              /* ✅ standard property */
-  -webkit-background-clip: text;      /* ✅ vendor-prefixed for Safari/Chrome */
-  -webkit-text-fill-color: transparent;
-  animation: shimmer 2s linear infinite;
-  margin-bottom: 1rem;
-}
-
+        font-size: clamp(2.5rem, 10vw, 6rem); /* responsive: 5xl to 8xl */
+        font-weight: 800; /* Tailwind's font-extrabold */
+        background: linear-gradient(to right, #2563eb, #22c55e, #2563eb);
+        background-size: 300% 100%;
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: shimmer 2s linear infinite;
+        margin-bottom: 1rem;
+        letter-spacing: 0.05em; /* tracking-wide */
+      }
 
       .pulse-text {
-        color: #4b5563;
-        font-size: 1rem;
+        font-size: clamp(1rem, 2.5vw, 1.125rem); /* sm:text-lg */
         font-weight: 500;
+        color: #4b5563; /* Tailwind's gray-600 */
         animation: pulse 2s ease-in-out infinite;
       }
     </style>
 
     <script>
-      // Hide shimmer after React mounts
+      // Automatically hide shimmer once React mounts
       window.addEventListener("DOMContentLoaded", () => {
         const observer = new MutationObserver(() => {
           const reactRoot = document.getElementById("root");
@@ -72,10 +72,11 @@
       });
     </script>
   </head>
+
   <body>
     <!-- Shimmer Splash Screen -->
     <div id="shimmer-screen">
-      <h1 class="shimmer-text ">Aarambh38</h1>
+      <h1 class="shimmer-text">Aarambh38</h1>
       <p class="pulse-text">Stay motivated and please wait...</p>
     </div>
 
