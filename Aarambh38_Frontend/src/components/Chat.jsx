@@ -12,6 +12,7 @@ const ChatApp = () => {
   const menuRef = useRef(null);
 
   const users = ["Raushan Raj", "Suman Kumar", "Ravi Singh"];
+  
 
   const handleSend = () => {
     if (input.trim()) {
