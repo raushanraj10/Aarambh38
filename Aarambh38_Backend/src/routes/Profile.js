@@ -7,6 +7,7 @@ const ModelAlumini = require("../models/ModelAlumini");
 const bcrypt =require("bcrypt");
 const UserAuth = require("./middleware/UserAuth");
 const ModelAdmin = require("../models/ModelAdmin");
+const ModelMessage = require("../models/ModelMessage");
 
 const ProfileRouter=express.Router()
 
@@ -76,6 +77,24 @@ ProfileRouter.patch("/editadmin",UserAuth,async(req,res)=>{
     res.send(realdata)}
     catch(err){res.send(err.message)}
 })
+
+ProfileRouter.get("/getmessageswith/:targetuserId", UserAuth, async (req, res) => {
+  try {
+    const fromuserId = req.decode; // Logged-in user ID
+    const { targetuserId } = req.params;
+
+    const messages = await ModelMessage.find({
+      $or: [
+        { fromuserId: fromuserId, targetuserId: targetuserId },
+        { fromuserId: targetuserId, targetuserId: fromuserId }
+      ],
+    }).sort({ createdAt: 1 });
+
+    res.send(messages);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
 
 
 
