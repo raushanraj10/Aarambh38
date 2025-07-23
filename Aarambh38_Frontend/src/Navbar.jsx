@@ -7,6 +7,7 @@ import { removealumini } from "./utils/AluminiSlice";
 import { removeadmin } from "./utils/AdminSlice";
 import axios from "axios";
 import { Verifieduser } from "./utils/EmailSlice";
+import {BASE_URL} from "../src/constants/AllUrl"
 
 export default function Navbar() {
   const dispatch = useDispatch();
@@ -18,7 +19,7 @@ export default function Navbar() {
   const menuRef = useRef(null);
 
   const handleLogout = async () => {
-    await axios.get("http://localhost:5000/logout", { withCredentials: true });
+    await axios.get(`${BASE_URL}logout`, { withCredentials: true });
     dispatch(Verifieduser());
     dispatch(removestudent());
     dispatch(removealumini());

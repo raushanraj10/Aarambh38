@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
+import { BASE_URL } from "./constants/AllUrl";
 
 export default function EmailVerificationAlumini() {
   const [code, setCode] = useState("");
@@ -61,24 +62,25 @@ export default function EmailVerificationAlumini() {
         } = verifydata;
         const passkey="U7fK93pLzQeRmXY4tWcVB28GdhJkAo1ZxN56rMuE"
         await axios.post(
-          "http://localhost:5000/signupalumini",
-          {
-            photourl,
-            about,
-            fullName,
-            gender,
-            emailId,
-            registration,
-            newPassword,
-            confirmPassword,
-            batch,
-            collegeName,
-            company,
-            role,
-            passkey,
-          },
-          { withCredentials: true }
-        );
+  `${BASE_URL}/signupalumini`,
+  {
+    photourl,
+    about,
+    fullName,
+    gender,
+    emailId,
+    registration,
+    newPassword,
+    confirmPassword,
+    batch,
+    collegeName,
+    company,
+    role,
+    passkey,
+  },
+  { withCredentials: true }
+);
+
 
         setTimeout(() => navigate("/loginselectorpage"), 3000);
       } else {

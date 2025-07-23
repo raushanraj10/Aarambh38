@@ -6,6 +6,7 @@ import { pendinguser } from "./utils/EmailSlice";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Shimmer from "./Shimmer";
+import { BASE_URL } from "./constants/AllUrl";
 
 export default function SignupPageAdmin() {
   const code = Math.floor(Math.random() * 900000) + 100000;
@@ -59,10 +60,11 @@ export default function SignupPageAdmin() {
     setLoading(true);
     try {
       await axios.post(
-        "http://localhost:5000/sendemail",
-        { email: formData.emailId, code },
-        { withCredentials: true }
-      );
+  `${BASE_URL}/sendemail`,
+  { email: formData.emailId, code },
+  { withCredentials: true }
+);
+
 
       const hashedCode = await bcrypt.hash(code.toString(), 10);
       const updatedData = { ...formData, code: hashedCode };

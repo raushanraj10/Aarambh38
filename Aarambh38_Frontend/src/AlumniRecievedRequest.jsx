@@ -3,6 +3,7 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { CheckCircle, XCircle, Ban } from "lucide-react";
+import { BASE_URL } from "./constants/AllUrl";
 
 export default function AlumniReceivedRequest() {
   const [requests, setRequests] = useState([]);
@@ -17,9 +18,10 @@ export default function AlumniReceivedRequest() {
 
     const fetchRequests = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/alumnirecivedrequest", {
-          withCredentials: true,
-        });
+        const res = await axios.get(`${BASE_URL}/alumnirecivedrequest`, {
+  withCredentials: true,
+});
+
         setRequests(res.data);
       } catch (err) {
         console.error("Error fetching requests:", err);
@@ -35,10 +37,11 @@ export default function AlumniReceivedRequest() {
 
     try {
       await axios.post(
-        `http://localhost:5000/alumni/${action}/${studentId}`,
-        {},
-        { withCredentials: true }
-      );
+  `${BASE_URL}/alumni/${action}/${studentId}`,
+  {},
+  { withCredentials: true }
+);
+
 
       // Remove from UI
       setRequests((prev) => prev.filter((req) => req.fromuserId._id !== studentId));

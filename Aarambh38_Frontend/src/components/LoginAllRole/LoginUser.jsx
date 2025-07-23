@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import axios from "axios";
 import { Verifieduser } from "../../utils/EmailSlice";
 import { addstudent } from "../../utils/StudentSlice";
+import { BASE_URL } from "../../constants/AllUrl";
 
 export default function LoginUser() {
   const dispatch = useDispatch();
@@ -27,10 +28,11 @@ export default function LoginUser() {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/loginuser",
-        { emailId, newPassword },
-        { withCredentials: true }
-      );
+  `${BASE_URL}/loginuser`,
+  { emailId, newPassword },
+  { withCredentials: true }
+);
+
 
       dispatch(Verifieduser());
       dispatch(addstudent(res.data));

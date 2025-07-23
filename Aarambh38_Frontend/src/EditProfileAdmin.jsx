@@ -3,6 +3,7 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { addadmin } from "./utils/AdminSlice";
+import { BASE_URL } from "./constants/AllUrl";
 
 const EditProfileAdmin = () => {
   const AdminData = useSelector((store) => store.admindata);
@@ -51,10 +52,11 @@ const EditProfileAdmin = () => {
 
     try {
       const res = await axios.patch(
-        "http://localhost:5000/editadmin",
-        { fullName, age, gender, photourl },
-        { withCredentials: true }
-      );
+  `${BASE_URL}/editadmin`,
+  { fullName, age, gender, photourl },
+  { withCredentials: true }
+);
+
       setMessage("✅ Profile updated successfully.");
       setMessageType("success");
       dispatch(addadmin(res.data));

@@ -4,6 +4,7 @@ import LoginSelectorPage from "./LoginSelectorPage";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import ChatApp from "./components/Chat";
+import { BASE_URL } from "./constants/AllUrl";
 
 export default function StudentLandingPage() {
   const Navigate=useNavigate()
@@ -20,21 +21,24 @@ export default function StudentLandingPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const alumniRes = await axios.get("http://localhost:5000/getlistalumni", {
-          withCredentials: true,
+        const alumniRes = await axios.get(`${BASE_URL}/getlistalumni`, {
+        withCredentials: true,
         });
+
         setAlumniList(alumniRes.data);
 
-        const sentRes = await axios.get("http://localhost:5000/finalsendrequestlist", {
-          withCredentials: true,
-        });
+        const sentRes = await axios.get(`${BASE_URL}/finalsendrequestlist`, {
+  withCredentials: true,
+});
+
         const sentObj = {};
         sentRes.data.forEach((id) => (sentObj[id] = true));
         setRequestStatus(sentObj);
 
-        const acceptedRes = await axios.get("http://localhost:5000/finallistusermessage", {
-          withCredentials: true,
-        });
+        const acceptedRes = await axios.get(`${BASE_URL}/finallistusermessage`, {
+  withCredentials: true,
+});
+
         const acceptedObj = {};
         acceptedRes.data.forEach((id) => (acceptedObj[id] = true));
         setAcceptedStatus(acceptedObj);
@@ -56,11 +60,12 @@ export default function StudentLandingPage() {
     }
 
     try {
-      await axios.post(
-        `http://localhost:5000/sendrequest/${alumniId}`,
-        { text: message },
-        { withCredentials: true }
-      );
+     await axios.post(
+  `${BASE_URL}/sendrequest/${alumniId}`,
+  { text: message },
+  { withCredentials: true }
+);
+
       setRequestStatus((prev) => ({ ...prev, [alumniId]: true }));
       alert("Request sent!");
     } catch (err) {

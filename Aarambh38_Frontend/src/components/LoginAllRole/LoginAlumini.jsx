@@ -5,6 +5,7 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { addalumini } from "../../utils/AluminiSlice";
 import { Verifieduser } from "../../utils/EmailSlice";
+import { BASE_URL } from "../../constants/AllUrl";
 
 export default function LoginAlumini() {
   const navigate = useNavigate();
@@ -28,10 +29,11 @@ export default function LoginAlumini() {
       const { email, password } = formData;
 
       const res = await axios.post(
-        "http://localhost:5000/loginalumini",
-        { emailId: email, newPassword: password },
-        { withCredentials: true }
-      );
+  `${BASE_URL}/loginalumini`,
+  { emailId: email, newPassword: password },
+  { withCredentials: true }
+);
+
 
       dispatch(addalumini(res.data));
       dispatch(Verifieduser());

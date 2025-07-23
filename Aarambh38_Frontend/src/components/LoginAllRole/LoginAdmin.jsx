@@ -7,6 +7,7 @@ import { addadmin } from "../../utils/AdminSlice";
 import { removealumini } from "../../utils/AluminiSlice";
 import { removestudent } from "../../utils/StudentSlice";
 import { Verifieduser } from "../../utils/EmailSlice";
+import { BASE_URL } from "../../constants/AllUrl";
 
 export default function LoginAdmin() {
   const navigate = useNavigate();
@@ -31,11 +32,12 @@ export default function LoginAdmin() {
     const newPassword = password;
 
     try {
-      const res=await axios.post(
-        "http://localhost:5000/loginadmin",
-        { emailId, newPassword },
-        { withCredentials: true }
-      );
+      const res = await axios.post(
+  `${BASE_URL}/loginadmin`,
+  { emailId, newPassword },
+  { withCredentials: true }
+);
+
 
       setMessage("🎉 Welcome Admin! Redirecting...");
       setMessageType("success");

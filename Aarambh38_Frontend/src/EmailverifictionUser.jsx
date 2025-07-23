@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
+import { BASE_URL } from "./constants/AllUrl";
 
 export default function EmailVerificationUser() {
   const [code, setCode] = useState("");
@@ -56,21 +57,22 @@ export default function EmailVerificationUser() {
         } = verifydata;
         const passkey="B8mYx72dKJrQWpLcEVANztf1hoG53uOXRMkC9Sig"
         await axios.post(
-          "http://localhost:5000/signupuser",
-          {
-            fullName,
-            gender,
-            emailId,
-            registration,
-            newPassword,
-            confirmPassword,
-            collegeName,
-            age,
-            branch,
-            passkey
-          },
-          { withCredentials: true }
-        );
+  `${BASE_URL}/signupuser`,
+  {
+    fullName,
+    gender,
+    emailId,
+    registration,
+    newPassword,
+    confirmPassword,
+    collegeName,
+    age,
+    branch,
+    passkey
+  },
+  { withCredentials: true }
+);
+
 
         setTimeout(() => navigate("/loginselectorpage"), 2000);
       } else {

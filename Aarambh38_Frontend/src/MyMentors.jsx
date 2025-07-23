@@ -3,6 +3,7 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import LoginSelectorPage from "./LoginSelectorPage";
 import { useNavigate } from "react-router-dom";
+import { BASE_URL } from "./constants/AllUrl";
 
 export default function MyMentors() {
   const Studentdata = useSelector((store) => store.studentdata);
@@ -12,9 +13,10 @@ export default function MyMentors() {
   useEffect(() => {
     const fetchMentors = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/mymentors", {
-          withCredentials: true,
-        });
+        const res = await axios.get(`${BASE_URL}/mymentors`, {
+  withCredentials: true,
+});
+
         console.log(res)
         setMentors(res.data);
       } catch (error) {

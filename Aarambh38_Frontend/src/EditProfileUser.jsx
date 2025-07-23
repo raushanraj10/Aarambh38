@@ -3,6 +3,7 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { addstudent } from "./utils/StudentSlice";
+import { BASE_URL } from "./constants/AllUrl";
 
 const EditProfileUser = () => {
   const studentData = useSelector((store) => store.studentdata);
@@ -51,10 +52,10 @@ const EditProfileUser = () => {
 
     try {
       const res = await axios.patch(
-        "http://localhost:5000/edituser",
-        { fullName, age, gender, photourl, branch },
-        { withCredentials: true }
-      );
+  `${BASE_URL}/edituser`,
+  { fullName, age, gender, photourl, branch },
+  { withCredentials: true }
+);
 
       setMessage("✅ Profile updated successfully.");
       setMessageType("success");

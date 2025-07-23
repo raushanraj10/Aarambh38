@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { BASE_URL } from "./constants/AllUrl";
 
 export default function AlumniBlocked() {
   const [blockedStudents, setBlockedStudents] = useState([]);
@@ -17,9 +18,9 @@ export default function AlumniBlocked() {
 
     const fetchBlocked = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/alumniblocked", {
-          withCredentials: true,
-        });
+        const res = await axios.get(`${BASE_URL}/alumniblocked`, {
+  withCredentials: true,
+});
         setBlockedStudents(res.data);
       } catch (err) {
         console.error("Error fetching blocked students:", err);
@@ -36,11 +37,11 @@ export default function AlumniBlocked() {
     if (!confirmed) return;
 
     try {
-      await axios.post(
-        `http://localhost:5000/alumni/accepted/${studentId}`,
-        {},
-        { withCredentials: true }
-      );
+     await axios.post(
+  `${BASE_URL}/alumni/accepted/${studentId}`,
+  {},
+  { withCredentials: true }
+);
 
       // Remove from local list
       setBlockedStudents((prev) =>

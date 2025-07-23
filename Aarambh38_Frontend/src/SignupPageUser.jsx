@@ -8,6 +8,7 @@ import axios from "axios";
 import governmentEngineeringColleges from "./constants/CollegeList";
 import Select from "react-select";
 import Shimmer from "./Shimmer";
+import { BASE_URL } from "./constants/AllUrl";
 
 export default function SignupPageUser() {
   const code = Math.floor(Math.random() * 900000) + 100000;
@@ -79,7 +80,8 @@ export default function SignupPageUser() {
     setLoading(true);
     try {
       const { emailId } = formData;
-      await axios.post("http://localhost:5000/sendemail", { emailId, code }, { withCredentials: true });
+      await axios.post(`${BASE_URL}/sendemail`, { emailId, code }, { withCredentials: true });
+
 
       const hashedCode = await bcrypt.hash(code.toString(), 10);
       const updatedFormData = { ...formData, code: hashedCode };

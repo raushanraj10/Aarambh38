@@ -6,6 +6,7 @@ import { SocketConnection } from "../constants/Socketconnection";
 import { useParams } from "react-router-dom";
 import moment from "moment";
 import LoginSelectorPage from "../LoginSelectorPage";
+import { BASE_URL } from "../constants/AllUrl";
 
 const ChatApp = () => {
   const { touserId } = useParams();
@@ -26,8 +27,9 @@ const ChatApp = () => {
     const fetchUsers = async () => {
       try {
         const endpoint = Studentdata
-          ? "http://localhost:5000/mymentors"
-          : "http://localhost:5000/getalumnimentees";
+  ? `${BASE_URL}/mymentors`
+  : `${BASE_URL}/getalumnimentees`;
+
 
         const res = await axios.get(endpoint, { withCredentials: true });
         setChatlist(res.data);
@@ -75,10 +77,11 @@ const ChatApp = () => {
   // Fetch messages when selecting a user
   const fetchMessages = async (targetUserId) => {
     try {
-      const res = await axios.get(
-        `http://localhost:5000/getmessageswith/${targetUserId}`,
-        { withCredentials: true }
-      );
+     const res = await axios.get(
+  `${BASE_URL}/getmessageswith/${targetUserId}`,
+  { withCredentials: true }
+);
+
 
       const formatted = res.data.map((msg) => ({
         from: msg.fromuserId === user._id ? "me" : "them",

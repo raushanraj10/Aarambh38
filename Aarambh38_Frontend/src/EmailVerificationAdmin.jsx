@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { useState, useEffect } from "react";
 import {  useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
+import { BASE_URL } from "./constants/AllUrl";
 // import { addadmin } from "./utils/AdminSlice";
 // import { removealumini } from "./utils/AluminiSlice";
 // import { removestudent } from "./utils/StudentSlice";
@@ -41,20 +42,19 @@ export default function EmailVerificationAdmin() {
         const passkey="Z3rNxTp1VuEyKqW7gMdBL9AfRcJXy842hPn0vUsM"
       //  console.log(gender)
         await axios.post(
-          "http://localhost:5000/signupadmin",
-          {
-            
-            fullName,
-            gender,
-            emailId,
-            age,
-            newPassword,
-            confirmPassword,
-            passkey
+  `${BASE_URL}/signupadmin`,
+  {
+    fullName,
+    gender,
+    emailId,
+    age,
+    newPassword,
+    confirmPassword,
+    passkey
+  },
+  { withCredentials: true }
+);
 
-          },
-          { withCredentials: true }
-        );
        
         setTimeout(() => {
            return navigate("/loginselectorpage");

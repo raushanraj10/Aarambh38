@@ -3,6 +3,7 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import LoginSelectorPage from "./LoginSelectorPage";
 import { useNavigate } from "react-router-dom";
+import { BASE_URL } from "./constants/AllUrl";
 
 export default function AlumniMentees() {
   const navigate = useNavigate(); // ✅ fixed: lowercase
@@ -13,9 +14,10 @@ export default function AlumniMentees() {
   useEffect(() => {
     const fetchMentees = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/getalumnimentees", {
-          withCredentials: true,
-        });
+        const res = await axios.get(`${BASE_URL}/getalumnimentees`, {
+  withCredentials: true,
+});
+
         setMentees(res.data);
       } catch (err) {
         console.error("Failed to fetch mentees", err);

@@ -3,6 +3,7 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { addalumini } from "./utils/AluminiSlice";
+import { BASE_URL } from "./constants/AllUrl";
 
 const EditProfileAlumni = () => {
   const alumniData = useSelector((store) => store.aluminidata);
@@ -53,10 +54,11 @@ const EditProfileAlumni = () => {
 
     try {
       const res = await axios.patch(
-        "http://localhost:5000/editalumni",
-        { fullName, company, gender, role, about, photourl },
-        { withCredentials: true }
-      );
+  `${BASE_URL}/editalumni`,
+  { fullName, company, gender, role, about, photourl },
+  { withCredentials: true }
+);
+
 
       setMessage("✅ Profile updated successfully.");
       setMessageType("success");
