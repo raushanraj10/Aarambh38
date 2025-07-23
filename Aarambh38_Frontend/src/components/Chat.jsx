@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import { SocketConnection } from "../constants/Socketconnection";
 import { useParams } from "react-router-dom";
-import moment from "moment"; // You need to install moment.js
+import moment from "moment";
 import LoginSelectorPage from "../LoginSelectorPage";
 
 const ChatApp = () => {
@@ -19,6 +19,7 @@ const ChatApp = () => {
   const [input, setInput] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
+  const socketRef = useRef(null); // Persistent socket
 
   // Fetch chat users (mentors or mentees)
   useEffect(() => {
@@ -37,12 +38,47 @@ const ChatApp = () => {
     if (user) fetchUsers();
   }, [Studentdata, Aluminidata]);
 
-  // Fetch previous messages
+  // Initialize socket connection once
+  useEffect(() => {
+    if (!user) return;
+
+    socketRef.current = SocketConnection();
+
+    socketRef.current.on("messageRecieved", ({ fromuserId, text }) => {
+      if (fromuserId === user._id) return;
+      setMessages((prev) => [
+        ...prev,
+        {
+          from: "them",
+          text,
+          createdAt: new Date().toISOString(),
+          senderId: fromuserId,
+        },
+      ]);
+    });
+
+    return () => {
+      socketRef.current?.disconnect();
+    };
+  }, [user]);
+
+  // Join chat room when selectedUser changes
+  useEffect(() => {
+    if (!user || !selectedUser || !socketRef.current) return;
+
+    socketRef.current.emit("joinchat", {
+      fromuserId: user._id,
+      targetuserId: selectedUser._id,
+    });
+  }, [selectedUser, user]);
+
+  // Fetch messages when selecting a user
   const fetchMessages = async (targetUserId) => {
     try {
-      const res = await axios.get(`http://localhost:5000/getmessageswith/${targetUserId}`, {
-        withCredentials: true,
-      });
+      const res = await axios.get(
+        `http://localhost:5000/getmessageswith/${targetUserId}`,
+        { withCredentials: true }
+      );
 
       const formatted = res.data.map((msg) => ({
         from: msg.fromuserId === user._id ? "me" : "them",
@@ -50,53 +86,39 @@ const ChatApp = () => {
         createdAt: msg.createdAt,
         senderId: msg.fromuserId,
       }));
-    //  console.log(res.data)
+
       setMessages(formatted);
     } catch (err) {
       console.error("Failed to fetch messages", err);
     }
   };
 
-  // Handle selecting a user
   const handleSelectUser = (user) => {
     setSelectedUser(user);
-    setMessages([]); // Reset before loading new chat
+    setMessages([]);
     fetchMessages(user._id);
   };
-
-  // Socket join & receive
-  useEffect(() => {
-    if (!user || !selectedUser) return;
-
-    const fromuserId = user._id;
-    const targetuserId = selectedUser._id;
-    const socket = SocketConnection();
-
-    socket.emit("joinchat", { fromuserId, targetuserId });
-
-    socket.on("messageRecieved", ({ fromuserId, text }) => {
-      if (fromuserId === user._id) return;
-      setMessages((prev) => [
-        ...prev,
-        { from: "them", text, createdAt: new Date().toISOString(), senderId: fromuserId },
-      ]);
-    });
-
-    return () => socket.disconnect();
-  }, [user, selectedUser]);
 
   const handleSend = () => {
     if (!input.trim() || !selectedUser) return;
 
     const fromuserId = user._id;
     const targetuserId = selectedUser._id;
-    const socket = SocketConnection();
 
-    socket.emit("sendmessage", { fromuserId, targetuserId, text: input });
+    socketRef.current.emit("sendmessage", {
+      fromuserId,
+      targetuserId,
+      text: input,
+    });
 
     setMessages((prev) => [
       ...prev,
-      { from: "me", text: input, createdAt: new Date().toISOString(), senderId: fromuserId },
+      {
+        from: "me",
+        text: input,
+        createdAt: new Date().toISOString(),
+        senderId: fromuserId,
+      },
     ]);
 
     setInput("");
@@ -112,7 +134,9 @@ const ChatApp = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-   if (!Studentdata && !Aluminidata ) return <LoginSelectorPage />;
+
+  if (!Studentdata && !Aluminidata) return <LoginSelectorPage />;
+
   return (
     <div className="h-screen w-full flex bg-gray-100">
       {/* Sidebar */}
@@ -165,7 +189,7 @@ const ChatApp = () => {
           </div>
         </div>
 
-        {/* Messages Area */}
+        {/* Messages */}
         <div className="flex-1 p-4 overflow-y-auto space-y-3 z-10">
           {messages.map((msg, index) => (
             <div key={index} className={`flex flex-col ${msg.from === "me" ? "items-end" : "items-start"}`}>
