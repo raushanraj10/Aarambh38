@@ -48,7 +48,7 @@ export default function MyMentors() {
             >
               {/* Profile Image */}
               <img
-                src={mentor.photoUrl || "https://cdn-icons-png.flaticon.com/512/194/194938.png"}
+                src={mentor.photourl || "https://cdn-icons-png.flaticon.com/512/194/194938.png"}
                 alt="mentor"
                 className="w-24 h-24 rounded-full object-cover border-2 border-green-500"
               />
@@ -70,7 +70,7 @@ export default function MyMentors() {
                   onClick={() => handlemessage(mentor._id)}
                   className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 text-sm"
                 >
-                  Message
+                  Go To Chat
                 </button>
               </div>
             </div>

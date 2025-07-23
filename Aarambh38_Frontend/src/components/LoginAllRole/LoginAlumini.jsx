@@ -3,13 +3,15 @@ import { Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useDispatch } from "react-redux";
-import { addalumini } from "../../utils/AluminiSlice";
+import { addalumini, removealumini } from "../../utils/AluminiSlice";
 import { Verifieduser } from "../../utils/EmailSlice";
 import { BASE_URL } from "../../constants/AllUrl";
 
 export default function LoginAlumini() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  useEffect(()=>{dispatch(removealumini())},[])
 
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ email: "", password: "" });

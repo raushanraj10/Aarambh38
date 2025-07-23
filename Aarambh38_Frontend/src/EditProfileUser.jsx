@@ -24,6 +24,7 @@ const EditProfileUser = () => {
   const [messageType, setMessageType] = useState("success");
 
   useEffect(() => {
+    //  if (Object.keys(studentData).length === 0) return;
     if (!studentData || !studentData.emailId) {
       navigate("/loginselectorpage");
     } else {

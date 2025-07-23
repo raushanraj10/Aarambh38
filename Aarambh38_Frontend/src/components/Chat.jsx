@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { MoreVertical } from "lucide-react";
+import { MoreVertical, Menu } from "lucide-react";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { SocketConnection } from "../constants/Socketconnection";
@@ -9,7 +9,6 @@ import LoginSelectorPage from "../LoginSelectorPage";
 import { BASE_URL } from "../constants/AllUrl";
 
 const ChatApp = () => {
-  const { touserId } = useParams();
   const Studentdata = useSelector((store) => store.studentdata);
   const Aluminidata = useSelector((store) => store.aluminidata);
   const user = Studentdata || Aluminidata;
@@ -19,17 +18,17 @@ const ChatApp = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const menuRef = useRef(null);
-  const socketRef = useRef(null); // Persistent socket
+  const socketRef = useRef(null);
 
-  // Fetch chat users (mentors or mentees)
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const endpoint = Studentdata
-  ? `${BASE_URL}/mymentors`
-  : `${BASE_URL}/getalumnimentees`;
-
+          ? `${BASE_URL}/mymentors`
+          : `${BASE_URL}/getalumnimentees`;
 
         const res = await axios.get(endpoint, { withCredentials: true });
         setChatlist(res.data);
@@ -40,7 +39,6 @@ const ChatApp = () => {
     if (user) fetchUsers();
   }, [Studentdata, Aluminidata]);
 
-  // Initialize socket connection once
   useEffect(() => {
     if (!user) return;
 
@@ -64,7 +62,6 @@ const ChatApp = () => {
     };
   }, [user]);
 
-  // Join chat room when selectedUser changes
   useEffect(() => {
     if (!user || !selectedUser || !socketRef.current) return;
 
@@ -74,14 +71,12 @@ const ChatApp = () => {
     });
   }, [selectedUser, user]);
 
-  // Fetch messages when selecting a user
   const fetchMessages = async (targetUserId) => {
     try {
-     const res = await axios.get(
-  `${BASE_URL}/getmessageswith/${targetUserId}`,
-  { withCredentials: true }
-);
-
+      const res = await axios.get(
+        `${BASE_URL}/getmessageswith/${targetUserId}`,
+        { withCredentials: true }
+      );
 
       const formatted = res.data.map((msg) => ({
         from: msg.fromuserId === user._id ? "me" : "them",
@@ -100,6 +95,7 @@ const ChatApp = () => {
     setSelectedUser(user);
     setMessages([]);
     fetchMessages(user._id);
+    setSidebarOpen(false); // Hide sidebar on mobile
   };
 
   const handleSend = () => {
@@ -127,7 +123,6 @@ const ChatApp = () => {
     setInput("");
   };
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -140,22 +135,51 @@ const ChatApp = () => {
 
   if (!Studentdata && !Aluminidata) return <LoginSelectorPage />;
 
+  const filteredList = chatlist.filter((u) =>
+    u.fullName?.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
     <div className="h-screen w-full flex bg-gray-100">
       {/* Sidebar */}
-      <div className="w-1/4 bg-white border-r overflow-y-auto z-10">
+      <div
+        className={`bg-white border-r overflow-y-auto z-10 transition-all duration-300 ${
+          sidebarOpen ? "w-64" : "w-0"
+        } hidden sm:block sm:w-1/4`}
+      >
         <div className="p-4 text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600 tracking-tight">
           Connections
         </div>
-        {chatlist.map((user) => (
+        <div className="px-4 pb-2">
+          <input
+            type="text"
+            placeholder="Search connections..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full px-3 py-2 border rounded focus:outline-none text-sm"
+          />
+        </div>
+        {filteredList.map((user) => (
           <div
             key={user._id}
             onClick={() => handleSelectUser(user)}
-            className={`px-4 py-3 cursor-pointer hover:bg-gray-100 border-b ${
+            className={`flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-gray-100 border-b ${
               selectedUser?._id === user._id ? "bg-gray-200" : ""
             }`}
           >
-            {user.fullName || "Unnamed"}
+            <div className="relative group">
+              <div className="p-[2px] rounded-full bg-gradient-to-r from-blue-500 to-green-500">
+                <img
+                  src={user.photourl || "/default-avatar.png"}
+                  alt="avatar"
+                  className="w-10 h-10 rounded-full object-cover border-2 border-white"
+                />
+              </div>
+              <div className="absolute bottom-full left-0 mb-1 hidden group-hover:block text-xs text-white bg-black px-2 py-1 rounded whitespace-nowrap z-10">
+                {user.emailId}
+              </div>
+            </div>
+            <span className="text-sm font-medium">{user.fullName || "Unnamed"}</span>
           </div>
         ))}
       </div>
@@ -164,11 +188,23 @@ const ChatApp = () => {
       <div className="flex-1 flex flex-col relative z-0 overflow-hidden">
         {/* Top Navbar */}
         <div className="relative px-4 py-3 border-b bg-gradient-to-r from-blue-600 to-green-600 text-white flex justify-between items-center z-30">
+          <div className="sm:hidden block">
+            <Menu className="cursor-pointer" onClick={() => setSidebarOpen(!sidebarOpen)} />
+          </div>
           <div className="absolute inset-0 flex items-center justify-center opacity-10 text-5xl font-extrabold text-white pointer-events-none select-none">
             Aarambh38
           </div>
-          <div className="z-10 text-xl font-extrabold tracking-tight">
-            {selectedUser?.fullName || "Select a user"}
+          <div className="z-10 flex items-center gap-3">
+            {selectedUser && (
+              <img
+                src={selectedUser.photourl || "/default-avatar.png"}
+                alt="selected user"
+                className="w-9 h-9 rounded-full object-cover border"
+              />
+            )}
+            <span className="text-lg font-semibold">
+              {selectedUser?.fullName || "Select a user"}
+            </span>
           </div>
           <div className="relative z-50" ref={menuRef}>
             <MoreVertical
@@ -193,22 +229,63 @@ const ChatApp = () => {
         </div>
 
         {/* Messages */}
-        <div className="flex-1 p-4 overflow-y-auto space-y-3 z-10">
-          {messages.map((msg, index) => (
-            <div key={index} className={`flex flex-col ${msg.from === "me" ? "items-end" : "items-start"}`}>
-              <div
-                className={`max-w-xs px-4 py-2 rounded-lg shadow text-white text-sm ${
-                  msg.from === "me" ? "bg-green-600" : "bg-blue-600"
-                }`}
-              >
-                <div>{msg.text}</div>
+        <div className="flex-1 p-4 overflow-y-auto space-y-4 z-10">
+          {selectedUser ? (
+            messages.map((msg, index) => {
+              const isMe = msg.from === "me";
+              const sender = isMe ? user : selectedUser;
+
+              return (
+                <div
+                  key={index}
+                  className={`flex items-end gap-2 ${
+                    isMe ? "justify-end" : "justify-start"
+                  }`}
+                >
+                  {!isMe && (
+                    <img
+                      src={sender?.photourl || "/default-avatar.png"}
+                      alt="profile"
+                      className="w-8 h-8 rounded-full object-cover border"
+                    />
+                  )}
+
+                  <div className="flex flex-col max-w-xs">
+                    <div
+                      className={`px-4 py-2 rounded-lg shadow text-white text-sm ${
+                        isMe ? "bg-green-600 self-end" : "bg-blue-600"
+                      }`}
+                    >
+                      <div>{msg.text}</div>
+                    </div>
+                    <div
+                      className={`text-xs text-gray-500 mt-1 ${
+                        isMe ? "text-right" : "text-left"
+                      }`}
+                    >
+                      {isMe ? "You" : sender?.fullName || "Them"} •{" "}
+                      {moment(msg.createdAt).format("h:mm A")}
+                    </div>
+                  </div>
+
+                  {isMe && (
+                    <img
+                      src={sender?.photourl || "/default-avatar.png"}
+                      alt="profile"
+                      className="w-8 h-8 rounded-full object-cover border"
+                    />
+                  )}
+                </div>
+              );
+            })
+          ) : (
+            <div className="flex flex-col items-center justify-center h-full text-center text-gray-500">
+              <div className="text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600 mb-4">
+                Aarambh38
               </div>
-              <div className="text-xs text-gray-500 mt-1">
-                {msg.from === "me" ? "You" : selectedUser?.fullName || "Them"} •{" "}
-                {moment(msg.createdAt).format("h:mm A")}
-              </div>
+              <p className="text-lg">Select a user from the left panel to start chatting.</p>
             </div>
-          ))}
+          )}
         </div>
 
         {/* Input */}
@@ -217,12 +294,24 @@ const ChatApp = () => {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                handleSend();
+              }
+            }}
             placeholder="Type your message..."
             className="flex-1 px-4 py-2 border rounded-full focus:outline-none"
+            disabled={!selectedUser}
           />
           <button
             onClick={handleSend}
-            className="bg-gradient-to-r from-blue-600 to-green-600 text-white px-4 py-2 rounded-full"
+            disabled={!selectedUser}
+            className={`px-4 py-2 rounded-full text-white ${
+              selectedUser
+                ? "bg-gradient-to-r from-blue-600 to-green-600"
+                : "bg-gray-400 cursor-not-allowed"
+            }`}
           >
             Send
           </button>

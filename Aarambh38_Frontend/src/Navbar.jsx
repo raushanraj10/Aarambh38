@@ -19,7 +19,7 @@ export default function Navbar() {
   const menuRef = useRef(null);
 
   const handleLogout = async () => {
-    await axios.get(`${BASE_URL}logout`, { withCredentials: true });
+    await axios.get(`${BASE_URL}/logout`, { withCredentials: true });
     dispatch(Verifieduser());
     dispatch(removestudent());
     dispatch(removealumini());
@@ -46,7 +46,7 @@ export default function Navbar() {
       return (
         <div className={wrapClass}>
           <Link to="/" onClick={closeMenu} className={linkClass}>Home</Link>
-          <Link to="/alumni" onClick={closeMenu} className={linkClass}>About</Link>
+          <Link to="/about" onClick={closeMenu} className={linkClass}>About</Link>
           <Link to="/loginselectorpage" onClick={closeMenu} className={`${linkClass} border border-blue-600 px-4 py-1 rounded hover:bg-blue-50`}>
             Login
           </Link>
@@ -120,7 +120,7 @@ export default function Navbar() {
     <nav className="bg-white border-b shadow-md sticky top-0 z-50 transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
         <Link
-          to="/"
+          to="#"
           className="text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-green-600"
         >
           Aarambh38

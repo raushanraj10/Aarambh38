@@ -1,10 +1,11 @@
 const socket=require("socket.io")
-const ModelMessage=require("../models/ModelMessage")
+const ModelMessage=require("../models/ModelMessage");
+const BASE_URL = require("../constants/ALLURL");
 
 const IntializeSocket=(server)=>{
     const io=socket(server,{
         cors:{
-            origin:"http://localhost:5173",
+            origin:BASE_URL,
         }
     });
     io.on("connection",(socket)=>{

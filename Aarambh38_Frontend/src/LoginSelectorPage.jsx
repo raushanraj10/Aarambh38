@@ -1,7 +1,22 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { removestudent } from "./utils/StudentSlice";
+import { removeadmin } from "./utils/AdminSlice";
+import { removealumini } from "./utils/AluminiSlice";
 
 export default function LoginSelectorPage() {
+
+  const Dispatch=useDispatch()
+
+  useEffect(()=>{
+    Dispatch(removestudent())
+    Dispatch(removeadmin())
+    Dispatch(removealumini())
+  },[])
+
+
+
   const navigate = useNavigate();
 
   const ads = [

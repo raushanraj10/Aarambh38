@@ -3,17 +3,51 @@ import { Outlet } from "react-router-dom";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import Shimmer from "./Shimmer";
+import { useDispatch } from "react-redux";
+import axios from "axios";
+import { BASE_URL } from "./constants/AllUrl";
+import { addstudent } from "./utils/StudentSlice";
+import { addalumini } from "./utils/AluminiSlice";
+import { addadmin } from "./utils/AdminSlice";
 
 const Body = () => {
   const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+
+  const callstudent = async () => {
+    try {
+      const res = await axios.get(`${BASE_URL}/getstudentprofile`, { withCredentials: true });
+      dispatch(addstudent(res.data));
+    } catch (error) {
+      console.error("Student fetch failed:", error);
+    }
+  };
+
+  const callalumni = async () => {
+    try {
+      const res = await axios.get(`${BASE_URL}/getalumniprofile`, { withCredentials: true });
+      dispatch(addalumini(res.data));
+    } catch (error) {
+      console.error("Alumni fetch failed:", error);
+    }
+  };
+
+  const calladmin = async () => {
+    try {
+      const res = await axios.get(`${BASE_URL}/getadminprofile`, { withCredentials: true });
+      dispatch(addadmin(res.data));
+    } catch (error) {
+      console.error("Admin fetch failed:", error);
+    }
+  };
 
   useEffect(() => {
-    // Simulate loading delay (you can adjust this or replace with actual async logic)
-    const timer = setTimeout(() => {
+    const loadData = async () => {
+      await Promise.all([callstudent(), callalumni(), calladmin()]);
       setLoading(false);
-    }, 2000); // 2 second delay
+    };
 
-    return () => clearTimeout(timer);
+    loadData();
   }, []);
 
   if (loading) return <Shimmer />;

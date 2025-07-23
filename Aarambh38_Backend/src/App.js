@@ -3,13 +3,14 @@ const cookieparser =require("cookie-parser")
 const app=express();
 const http=require("http")
 const IntializeSocket=require("./utils/IntializeSocket")
+const BASE_URL =require("./constants/ALLURL")
 
 
 const connectDb=require("./config/database")
 const cors =require("cors")
 app.use(cookieparser())
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: BASE_URL,
   credentials: true
 }));
 
@@ -26,7 +27,8 @@ app.use(express.json())
 const AuthRouter =require("./routes/auth");
 const ProfileRouter = require("./routes/Profile");
 const UserRouter = require("./routes/UserWantConnection");
-const AlumniRouter=require("./routes/AlumniConnection")
+const AlumniRouter=require("./routes/AlumniConnection");
+// const BASE_URL = require("./constants/ALLURL");
 
 
 app.use("/",AuthRouter)

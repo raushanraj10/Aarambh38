@@ -70,7 +70,7 @@ export default function AlumniMentees() {
                     onClick={() => handleMessageClick(student._id)}
                     className="bg-gradient-to-r from-blue-600 to-green-500 text-white font-medium px-6 py-2 rounded-xl shadow hover:shadow-md transition"
                   >
-                    Message
+                    Go To Chat
                   </button>
                 </div>
               </div>

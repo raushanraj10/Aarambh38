@@ -3,7 +3,7 @@ import { Eye, EyeOff, Verified } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { addadmin } from "../../utils/AdminSlice";
+import { addadmin, removeadmin } from "../../utils/AdminSlice";
 import { removealumini } from "../../utils/AluminiSlice";
 import { removestudent } from "../../utils/StudentSlice";
 import { Verifieduser } from "../../utils/EmailSlice";
@@ -12,6 +12,7 @@ import { BASE_URL } from "../../constants/AllUrl";
 export default function LoginAdmin() {
   const navigate = useNavigate();
   const dispatch=useDispatch()
+  useEffect(()=>{dispatch(removeadmin())},[])
   // const Admindata=useSelector((store)=>store.admindata)
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ email: "", password: "" });

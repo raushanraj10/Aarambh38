@@ -96,6 +96,41 @@ ProfileRouter.get("/getmessageswith/:targetuserId", UserAuth, async (req, res) =
   }
 });
 
+ProfileRouter.get("/getstudentprofile",UserAuth,async(req,res)=>{
+  try{
+  const fromuserId = req.decode;
+  const finaldata=await ModelUser.findOne({_id:fromuserId._id}).select("fullName emailId role collegeName batch photourl age company gender about")
+  if(!finaldata)
+    res.status(400).send("First Login")
+  res.send(finaldata)
+}
+  catch(err){res.send(err.message)}
+  
+})
+
+ProfileRouter.get("/getalumniprofile",UserAuth,async(req,res)=>{
+  try{
+  const fromuserId = req.decode;
+  const finaldata=await ModelAlumini.findOne({_id:fromuserId._id}).select("fullName emailId role collegeName batch photourl age company gender about")
+  if(!finaldata)
+    res.status(400).send("First Login")
+  res.send(finaldata)
+}
+  catch(err){res.send(err.message)}
+  
+})
+
+ProfileRouter.get("/getadminprofile",UserAuth,async(req,res)=>{
+  try{
+  const fromuserId = req.decode;
+  const finaldata=await ModelAdmin.findOne({_id:fromuserId._id}).select("fullName emailId role collegeName batch photourl age company gender about")
+  if(!finaldata)
+    res.status(400).send("First Login")
+  res.send(finaldata)
+}
+  catch(err){res.send(err.message)}
+  
+})
 
 
 

@@ -4,12 +4,21 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import axios from "axios";
 import { Verifieduser } from "../../utils/EmailSlice";
-import { addstudent } from "../../utils/StudentSlice";
+import { addstudent, removestudent } from "../../utils/StudentSlice";
 import { BASE_URL } from "../../constants/AllUrl";
 
 export default function LoginUser() {
+
+  
+
+
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  
+  useEffect(()=>{dispatch(removestudent())},[])
+
+
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ emailId: "", newPassword: "" });
 

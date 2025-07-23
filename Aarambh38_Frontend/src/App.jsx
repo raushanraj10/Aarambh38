@@ -26,6 +26,7 @@ import AlumniMentees from "./AlumniMentees"
 import AlumniReceivedRequest from "./AlumniRecievedRequest"
 import AlumniBlocked from "./AlumniBlocked"
 import Chat from "./components/Chat"
+import About from "../About"
 
 function App() {
   
@@ -57,6 +58,7 @@ function App() {
            <Route path="/signupalumini" element={<SignupPageAlumini/>} />
            <Route path="/signupadmin" element={<SignupPageAdmin/>} />
            <Route path="/chat/:touserId" element={<Chat/>} />
+           <Route path="/about" element={<About/>} />
         </Route>
       </Routes>
     </BrowserRouter>

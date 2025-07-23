@@ -170,7 +170,7 @@ export default function StudentLandingPage() {
                         : "bg-gray-300 text-gray-600 cursor-not-allowed"
                     }`}
                   >
-                    Message
+                    Go To Chat
                   </button>
                 </div>
               </div>
