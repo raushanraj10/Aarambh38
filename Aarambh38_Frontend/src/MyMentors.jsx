@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import LoginSelectorPage from "./LoginSelectorPage";
+import { useNavigate } from "react-router-dom";
 
 export default function MyMentors() {
   const Studentdata = useSelector((store) => store.studentdata);
   const [mentors, setMentors] = useState([]);
+  const Navigate=useNavigate()
 
   useEffect(() => {
     const fetchMentors = async () => {
@@ -22,6 +24,10 @@ export default function MyMentors() {
 
     fetchMentors();
   }, []);
+
+ const handlemessage = (touserId) => {
+  Navigate(`/chat/${touserId}`);
+};
 
   if (!Studentdata) return <LoginSelectorPage />;
 
@@ -59,7 +65,7 @@ export default function MyMentors() {
               {/* Message Button */}
               <div className="flex items-start sm:items-center">
                 <button
-                  onClick={() => alert(`Messaging ${mentor.fullName}`)}
+                  onClick={() => handlemessage(mentor._id)}
                   className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 text-sm"
                 >
                   Message
