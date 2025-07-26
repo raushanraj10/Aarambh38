@@ -26,7 +26,7 @@ import AlumniMentees from "./AlumniMentees"
 import AlumniReceivedRequest from "./AlumniRecievedRequest"
 import AlumniBlocked from "./AlumniBlocked"
 import Chat from "./components/Chat"
-import About from "../About"
+import About from "./About"
 
 function App() {
   

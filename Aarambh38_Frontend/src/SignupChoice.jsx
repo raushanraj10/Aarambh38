@@ -1,6 +1,20 @@
 import { Link } from "react-router-dom";
+import { removestudent } from "./utils/StudentSlice";
+import { removeadmin } from "./utils/AdminSlice";
+import { removealumini } from "./utils/AluminiSlice";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+
 
 export default function SignupChoice() {
+  const Dispatch=useDispatch()
+      useEffect(()=>{
+        Dispatch(removestudent())
+        Dispatch(removeadmin())
+        Dispatch(removealumini())
+      },[])
+
+
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-blue-100 via-purple-100 to-indigo-100 flex items-center justify-center px-4 py-10 overflow-hidden">
       

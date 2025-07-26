@@ -3,10 +3,11 @@ import { MoreVertical, Menu } from "lucide-react";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { SocketConnection } from "../constants/Socketconnection";
-import { useParams } from "react-router-dom";
 import moment from "moment";
 import LoginSelectorPage from "../LoginSelectorPage";
 import { BASE_URL } from "../constants/AllUrl";
+
+// ... all imports remain the same
 
 const ChatApp = () => {
   const Studentdata = useSelector((store) => store.studentdata);
@@ -19,7 +20,7 @@ const ChatApp = () => {
   const [input, setInput] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
   const [search, setSearch] = useState("");
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const menuRef = useRef(null);
   const socketRef = useRef(null);
 
@@ -32,6 +33,7 @@ const ChatApp = () => {
 
         const res = await axios.get(endpoint, { withCredentials: true });
         setChatlist(res.data);
+        // Removed auto-select logic
       } catch (error) {
         console.error("Failed to load chat users", error);
       }
@@ -95,7 +97,7 @@ const ChatApp = () => {
     setSelectedUser(user);
     setMessages([]);
     fetchMessages(user._id);
-    setSidebarOpen(false); // Hide sidebar on mobile
+    setSidebarOpen(false);
   };
 
   const handleSend = () => {
@@ -140,23 +142,24 @@ const ChatApp = () => {
   );
 
   return (
-    <div className="h-screen w-full flex bg-gray-100">
+    <div className="h-screen w-full flex bg-gray-100 relative overflow-hidden">
       {/* Sidebar */}
       <div
-        className={`bg-white border-r overflow-y-auto z-10 transition-all duration-300 ${
-          sidebarOpen ? "w-64" : "w-0"
-        } hidden sm:block sm:w-1/4`}
+        className={`bg-white border-r overflow-y-auto z-40 fixed top-0 left-0 h-full sm:static sm:h-auto transition-all duration-300
+          ${sidebarOpen ? "w-64" : "w-0"} 
+          ${sidebarOpen ? "block" : "hidden"} 
+          sm:block sm:w-1/4`}
       >
         <div className="p-4 text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600 tracking-tight">
           Connections
         </div>
-        <div className="px-4 pb-2">
+        <div className="px-4 pb-3 sm:pb-2 sm:px-4">
           <input
             type="text"
             placeholder="Search connections..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full px-3 py-2 border rounded focus:outline-none text-sm"
+            className="w-full px-3 py-2 border rounded-md focus:outline-none text-sm"
           />
         </div>
         {filteredList.map((user) => (
@@ -183,6 +186,14 @@ const ChatApp = () => {
           </div>
         ))}
       </div>
+
+      {/* Backdrop */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-40 z-30 sm:hidden"
+          onClick={() => setSidebarOpen(false)}
+        ></div>
+      )}
 
       {/* Chat Area */}
       <div className="flex-1 flex flex-col relative z-0 overflow-hidden">
@@ -322,3 +333,4 @@ const ChatApp = () => {
 };
 
 export default ChatApp;
+

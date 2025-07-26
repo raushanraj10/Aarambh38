@@ -2,5 +2,8 @@ import {io} from "socket.io-client"
 import { BASE_URL } from "./AllUrl"
 
 export const SocketConnection=()=>{
-    return io(BASE_URL)
+    if(location.hostname==="localhost")
+        return io(BASE_URL)
+    else
+        return io("/",{path:"api/socket.io"})
 }

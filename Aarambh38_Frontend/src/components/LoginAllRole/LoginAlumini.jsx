@@ -6,12 +6,18 @@ import { useDispatch } from "react-redux";
 import { addalumini, removealumini } from "../../utils/AluminiSlice";
 import { Verifieduser } from "../../utils/EmailSlice";
 import { BASE_URL } from "../../constants/AllUrl";
+import { removeadmin } from "../../utils/AdminSlice";
+import { removestudent } from "../../utils/StudentSlice";
 
 export default function LoginAlumini() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  useEffect(()=>{dispatch(removealumini())},[])
+  useEffect(()=>{
+          dispatch(removeadmin())
+          dispatch(removealumini())
+          dispatch(removestudent())
+    },[])
 
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ email: "", password: "" });

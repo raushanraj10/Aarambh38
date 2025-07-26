@@ -9,8 +9,17 @@ import governmentEngineeringColleges from "./constants/CollegeList";
 import Select from "react-select";
 import Shimmer from "./Shimmer";
 import { BASE_URL } from "./constants/AllUrl";
+import { removestudent } from "./utils/StudentSlice";
+import { removeadmin } from "./utils/AdminSlice";
+import { removealumini } from "./utils/AluminiSlice";
 
 export default function SignupPageUser() {
+  const Dispatch=useDispatch()
+      useEffect(()=>{
+        Dispatch(removestudent())
+        Dispatch(removeadmin())
+        Dispatch(removealumini())
+      },[])
   const code = Math.floor(Math.random() * 900000) + 100000;
   const dispatch = useDispatch();
   const navigate = useNavigate();

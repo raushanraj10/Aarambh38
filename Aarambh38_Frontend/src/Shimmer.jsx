@@ -1,4 +1,19 @@
+import { removestudent } from "./utils/StudentSlice";
+import { removeadmin } from "./utils/AdminSlice";
+import { removealumini } from "./utils/AluminiSlice";
+import { useDispatch } from "react-redux";
+import { useEffect } from "react";
+
 export default function Shimmer() {
+  const Dispatch=useDispatch()
+    useEffect(()=>{
+      Dispatch(removestudent())
+      Dispatch(removeadmin())
+      Dispatch(removealumini())
+    },[])
+
+
+
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center px-4 text-center">
       {/* Animated App Name */}

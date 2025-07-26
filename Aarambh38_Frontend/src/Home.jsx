@@ -1,7 +1,17 @@
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
+import { removeadmin } from "./utils/AdminSlice";
+import { removealumini } from "./utils/AluminiSlice";
+import { removestudent } from "./utils/StudentSlice";
 
 export default function Home() {
+  const dispatch=useDispatch()
+  useEffect(()=>{
+        dispatch(removeadmin())
+        dispatch(removealumini())
+        dispatch(removestudent())
+  },[])
   const headings = [
     "Welcome to Aarambh38",
     "Connect Alumni and Students",

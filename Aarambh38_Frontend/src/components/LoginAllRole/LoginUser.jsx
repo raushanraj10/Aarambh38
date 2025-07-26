@@ -6,6 +6,8 @@ import axios from "axios";
 import { Verifieduser } from "../../utils/EmailSlice";
 import { addstudent, removestudent } from "../../utils/StudentSlice";
 import { BASE_URL } from "../../constants/AllUrl";
+import { removeadmin } from "../../utils/AdminSlice";
+import { removealumini } from "../../utils/AluminiSlice";
 
 export default function LoginUser() {
 
@@ -16,7 +18,11 @@ export default function LoginUser() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   
-  useEffect(()=>{dispatch(removestudent())},[])
+  useEffect(()=>{
+          dispatch(removeadmin())
+          dispatch(removealumini())
+          dispatch(removestudent())
+    },[])
 
 
   const [showPassword, setShowPassword] = useState(false);
