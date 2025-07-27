@@ -65,20 +65,21 @@ UserRouter.get("/mymentors", UserAuth, async (req, res) => {
     const connections = await ModelUserSendConnection.find({
       fromuserId: fromuserId,
       status: "accepted"
-    }).select("touserId toModel");
-
+    }).select("touserId");
+    //  console.log(connections)
     const listoftouserIddetails = connections.map(conn => conn.touserId);
-
+    //  console.log(listoftouserIddetails)
     // Use Promise.all to resolve all async calls
     const finaldata = await Promise.all(
       listoftouserIddetails.map(async (ele) => {
         return await ModelAlumini.findOne(
           { _id: ele },
-          "_id fullName photourl role company batch collegeName gender about"
+          "_id fullName photourl role company batch collegeName gender branch about"
         );
       })
     );
-
+    if(!finaldata)
+      return;
     res.send(finaldata);
   } catch (err) {
     res.status(500).send({ error: err.message });
@@ -94,6 +95,8 @@ UserRouter.get("/getalumnimentees",UserAuth,async (req,res)=>{
   const connections=await ModelUserSendConnection.find({touserId:fromuserId,status:"accepted"}).populate("fromuserId","_id photourl  fullName role company batch collegeName gender about").select("fromuserId")
   const listoftouserIddetails = connections.map(conn => conn.fromuserId);
   // console.log(listoftouserId)
+  if(!listoftouserIddetails)
+  return;
   res.send(listoftouserIddetails)
 
   }catch(err){res.send(err.message)}
@@ -107,6 +110,7 @@ UserRouter.get("/alumnirecivedrequest",UserAuth,async (req,res)=>{
   const connections=await ModelUserSendConnection.find({touserId:fromuserId,status:"sended"}).populate("fromuserId","_id photourl  fullName role company batch collegeName gender about").select("fromuserId text")
   // const listoftouserIddetails = connections.map(conn => conn.fromuserId);
   // console.log(connections)
+  if(!connections)return;
   res.send(connections)
 
   }catch(err){res.send(err.message)}
@@ -120,6 +124,7 @@ UserRouter.get("/alumniblocked",UserAuth,async (req,res)=>{
   const connections=await ModelUserSendConnection.find({touserId:fromuserId,status:"blocked"}).populate("fromuserId","_id photourl  fullName role company batch collegeName gender about").select("fromuserId text")
   // const listoftouserIddetails = connections.map(conn => conn.fromuserId);
   // console.log(connections)
+  if(!connections)return;
   res.send(connections)
 
   }catch(err){res.send(err.message)}

@@ -1,18 +1,53 @@
-
+import { useState, useRef, useEffect } from "react";
 
 export default function Footer() {
-  
+  const [showPrivacy, setShowPrivacy] = useState(false);
+  const popupRef = useRef();
+
+  // Close popup when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (popupRef.current && !popupRef.current.contains(event.target)) {
+        setShowPrivacy(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
-    <footer className="bg-white border-t border-gray-200 text-gray-600">
+    <footer className="relative bg-white border-t border-gray-200 text-gray-600">
       <div className="max-w-7xl mx-auto px-4 py-8 flex flex-col md:flex-row justify-between items-center">
         <p className="text-sm text-gray-500 mb-4 md:mb-0">
-          © {new Date().getFullYear()} <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600 tracking-tight">Aarambh38</span>. All rights reserved.
+          © {new Date().getFullYear()}{" "}
+          <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600 tracking-tight">
+            Aarambh38
+          </span>. All rights reserved.
         </p>
-        {/* <div className="flex gap-6 text-sm">
-          <a href="/about" className="hover:text-blue-600 transition font-medium">About</a>
-          <a href="#" className="hover:text-blue-600 transition font-medium">Contact</a>
-          <a href="#" className="hover:text-blue-600 transition font-medium">Privacy</a>
-        </div> */}
+
+        <div className="relative">
+          <button
+            onClick={() => setShowPrivacy(!showPrivacy)}
+            className="hover:text-blue-600 text-sm font-medium transition"
+          >
+            Privacy
+          </button>
+
+          {showPrivacy && (
+            <div
+              ref={popupRef}
+              className="absolute bottom-8 right-0 w-80 bg-white border border-gray-200 shadow-lg p-4 rounded-lg z-50"
+            >
+              <h3 className="text-base font-semibold mb-2">Privacy Policy</h3>
+              <p className="text-sm text-gray-600 mb-2">
+                We respect your privacy. Your data is safe and will not be shared with third parties.
+              </p>
+              <p className="text-sm text-gray-600">
+                Only students and alumni of <span className="font-semibold text-blue-600">Bihar Engineering University</span> are allowed to register and access this platform. Other users will not be accepted.
+              </p>
+            </div>
+          )}
+        </div>
       </div>
     </footer>
   );

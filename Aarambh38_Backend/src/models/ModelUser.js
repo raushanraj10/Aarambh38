@@ -16,7 +16,8 @@ const UserSchema=new mongoose.Schema({
         // }
     },
     branch:{
-      type:String
+      type:String,
+      require:true
     },
     collegeName:{
         type:String,
@@ -35,6 +36,7 @@ const UserSchema=new mongoose.Schema({
     registration:{
         type:Number,
         require:true,
+        minLength:11
     },
     emailId:{
         type:String,

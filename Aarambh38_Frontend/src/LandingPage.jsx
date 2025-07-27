@@ -2,12 +2,14 @@ import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import LoginSelectorPage from "./LoginSelectorPage";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import ChatApp from "./components/Chat";
+import { useNavigate, Link } from "react-router-dom";
 import { BASE_URL } from "./constants/AllUrl";
 
 export default function StudentLandingPage() {
-  const Navigate=useNavigate()
+  const capitalizeEachWord = (str) =>
+  str?.replace(/\b\w/g, (char) => char.toUpperCase()) || "";
+
+  const Navigate = useNavigate();
   const Studentdata = useSelector((store) => store.studentdata);
   const Aluminidata = useSelector((store) => store.aluminidata);
   const Admindata = useSelector((store) => store.admindata);
@@ -22,23 +24,20 @@ export default function StudentLandingPage() {
     const fetchData = async () => {
       try {
         const alumniRes = await axios.get(`${BASE_URL}/getlistalumni`, {
-        withCredentials: true,
+          withCredentials: true,
         });
-
         setAlumniList(alumniRes.data);
 
         const sentRes = await axios.get(`${BASE_URL}/finalsendrequestlist`, {
-  withCredentials: true,
-});
-
+          withCredentials: true,
+        });
         const sentObj = {};
         sentRes.data.forEach((id) => (sentObj[id] = true));
         setRequestStatus(sentObj);
 
         const acceptedRes = await axios.get(`${BASE_URL}/finallistusermessage`, {
-  withCredentials: true,
-});
-
+          withCredentials: true,
+        });
         const acceptedObj = {};
         acceptedRes.data.forEach((id) => (acceptedObj[id] = true));
         setAcceptedStatus(acceptedObj);
@@ -60,11 +59,11 @@ export default function StudentLandingPage() {
     }
 
     try {
-     await axios.post(
-  `${BASE_URL}/sendrequest/${alumniId}`,
-  { text: message },
-  { withCredentials: true }
-);
+      await axios.post(
+        `${BASE_URL}/sendrequest/${alumniId}`,
+        { text: message },
+        { withCredentials: true }
+      );
 
       setRequestStatus((prev) => ({ ...prev, [alumniId]: true }));
       alert("Request sent!");
@@ -75,12 +74,9 @@ export default function StudentLandingPage() {
   };
 
   const handleSendMessage = (alumniId) => {
-    
-  return Navigate(`/chat/${alumniId}`);
-    // alert(`Messaging alumni ID ${alumniId}: ${messages[alumniId]}`);
+    return Navigate(`/chat/${alumniId}`);
   };
 
-  // ✅ Filter includes fullName, role, company, collegeName, batch, about
   const filteredAlumni = alumniList.filter((alumni) =>
     `${alumni.fullName} ${alumni.role} ${alumni.company} ${alumni.collegeName} ${alumni.batch} ${alumni.about}`
       .toLowerCase()
@@ -111,27 +107,46 @@ export default function StudentLandingPage() {
           return (
             <div
               key={alumni._id}
-              className="w-full max-w-4xl bg-white rounded-2xl shadow-md border p-6 flex flex-col sm:flex-row gap-6"
+              className="w-full max-w-4xl bg-white rounded-2xl shadow-md border hover:shadow-lg transition"
             >
-              {/* Profile Image */}
-              <div className="shrink-0">
-                <img
-                  src="https://cdn-icons-png.flaticon.com/512/194/194938.png"
-                  alt="alumni"
-                  className="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover border-2 border-blue-500"
-                />
-              </div>
+              <Link
+                to={`/alumni/${alumni._id}`}
+                className="flex flex-col sm:flex-row gap-6 p-6"
+              >
+                {/* Profile Image */}
+                <div className="shrink-0">
+                  <img
+                    src={alumni.photourl||"https://media.istockphoto.com/id/1127115457/photo/black-hat-of-the-graduates-floating-in-the-sky.jpg?s=612x612&w=0&k=20&c=J_Hv0Lo4MAkJTygHEMZU70WqbiLaNG7HWPVJGf8Yq1g="}
+                    alt="alumni"
+                    className="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover border-2 border-blue-500"
+                  />
+                </div>
 
-              {/* Details */}
-              <div className="flex-1 space-y-1 text-sm text-gray-800">
-                <p><span className="font-semibold">👤 Name:</span> {alumni.fullName}</p>
-                <p><span className="font-semibold">🧑‍💼 Role:</span> {alumni.role}</p>
-                <p><span className="font-semibold">🏢 Company:</span> {alumni.company}</p>
-                <p><span className="font-semibold">🎓 Batch:</span> {alumni.batch}</p>
-                <p><span className="font-semibold">🏫 College:</span> {alumni.collegeName}</p>
-                <p><span className="font-semibold">⚧ Gender:</span> {alumni.gender}</p>
-                <p><span className="font-semibold">📄 About:</span> {alumni.about || "N/A"}</p>
+                {/* Details */}
+                <div className="flex-1 space-y-1 text-sm text-gray-800">
+                  <p><span className="font-semibold">👤 Name:</span> {alumni.fullName}</p>
+                  
 
+                  <p><span className="font-semibold">🎓 Batch:</span> {alumni.batch}</p>
+                  
+                  <p><span className="font-semibold">👤 Branch:</span> {alumni.branch}</p>
+                  <p><span className="font-semibold">🏫 College:</span> {alumni.collegeName}</p>
+                  <p><span className="font-semibold">⚧ Gender:</span> {alumni.gender}</p>
+                  
+<p className="text-base text-gray-800 font-medium mt-1">
+  <span className="font-semibold text-green-700">🏢 Company:</span>{" "}
+  {capitalizeEachWord(alumni.company)}
+</p>
+<p className="text-base text-gray-800 font-medium">
+  <span className="font-semibold text-blue-800">🧑‍💼 Role:</span>{" "}
+  {capitalizeEachWord(alumni.role)}
+</p>
+                  {/* <p><span className="font-semibold">📄 About:</span> {alumni.about || "N/A"}</p> */}
+                </div>
+              </Link>
+
+              {/* Message + Chat */}
+              <div className="px-6 pb-4">
                 {!isRequestSent && !isAccepted && (
                   <textarea
                     rows={3}

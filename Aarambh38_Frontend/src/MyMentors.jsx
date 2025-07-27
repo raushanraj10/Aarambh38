@@ -60,6 +60,7 @@ export default function MyMentors() {
                 <p><strong>💼 Role:</strong> {mentor.role}</p>
                 <p><strong>🎓 Batch:</strong> {mentor.batch}</p>
                 <p><strong>🏫 College:</strong> {mentor.collegeName}</p>
+                <p><strong>🏫 Branch:</strong> {mentor.branch}</p>
                 <p><strong>⚧ Gender:</strong> {mentor.gender}</p>
                 <p><strong>📄 About:</strong> {mentor.about || "N/A"}</p>
               </div>

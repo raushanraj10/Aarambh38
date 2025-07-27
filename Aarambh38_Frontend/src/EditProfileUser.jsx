@@ -49,7 +49,7 @@ const EditProfileUser = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { fullName, age, gender, photourl, branch } = formData;
+    const { fullName, age, gender, photourl,branch } = formData;
 
     try {
       const res = await axios.patch(
@@ -102,7 +102,8 @@ const EditProfileUser = () => {
           <input
             name="branch"
             value={formData.branch}
-            onChange={handleChange}
+            // onChange={handleChange}
+            disabled
             className="w-full border rounded px-3 py-2"
             placeholder="Branch"
           />

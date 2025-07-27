@@ -12,6 +12,7 @@ import { BASE_URL } from "./constants/AllUrl";
 import { removestudent } from "./utils/StudentSlice";
 import { removeadmin } from "./utils/AdminSlice";
 import { removealumini } from "./utils/AluminiSlice";
+import BranchList from "./constants/BranchLIst";
 
 export default function SignupPageUser() {
   const Dispatch=useDispatch()
@@ -38,7 +39,7 @@ export default function SignupPageUser() {
     gender: "Male",
     newPassword: "1234",
     confirmPassword: "1234",
-    branch:"CSE",
+    branch:"Computer Science and Engineering (CSE)",
     code: "",
   });
 
@@ -188,19 +189,26 @@ export default function SignupPageUser() {
 
 
            <div>
-            <label className="text-sm font-medium text-gray-700">Branch</label>
-            <input
-              type="text"
-              name="branch"
-              value={formData.branch}
-              onChange={handleChange}
-              className={`w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none ${
-                formErrors.branch ? "border-red-500 ring-2 ring-red-300" : "border-gray-300 focus:ring-2 focus:ring-blue-500"
-              }`}
-              required
-            />
-            {formErrors.branch && <p className="text-xs text-red-500 mt-1">{formErrors.fullName}</p>}
-          </div>
+  <label className="text-sm font-medium text-gray-700">Branch</label>
+  <select
+    name="branch"
+    value={formData.branch}
+    onChange={handleChange}
+    className={`w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none ${
+      formErrors.branch ? "border-red-500 ring-2 ring-red-300" : "border-gray-300 focus:ring-2 focus:ring-blue-500"
+    }`}
+    required
+  >
+    <option value="">Select Branch</option>
+    {BranchList.map((branch) => (
+      <option key={branch} value={branch}>
+        {branch}
+      </option>
+    ))}
+  </select>
+  {formErrors.branch && <p className="text-xs text-red-500 mt-1">{formErrors.branch}</p>}
+</div>
+
 
 
           {/* Registration Number */}

@@ -12,16 +12,15 @@ import { BASE_URL } from "./constants/AllUrl";
 import { removestudent } from "./utils/StudentSlice";
 import { removeadmin } from "./utils/AdminSlice";
 import { removealumini } from "./utils/AluminiSlice";
-
+import BranchList from "./constants/BranchLIst";
 
 export default function SignupPageAlumini() {
-  const Dispatch=useDispatch()
-      useEffect(()=>{
-        Dispatch(removestudent())
-        Dispatch(removeadmin())
-        Dispatch(removealumini())
-      },[])
-
+  const Dispatch = useDispatch();
+  useEffect(() => {
+    Dispatch(removestudent());
+    Dispatch(removeadmin());
+    Dispatch(removealumini());
+  }, []);
 
   const code = Math.floor(Math.random() * 900000) + 100000;
   const dispatch = useDispatch();
@@ -39,8 +38,9 @@ export default function SignupPageAlumini() {
     registration: "123",
     batch: "2022",
     company: "google",
-    role: "maneger",
+    role: "manager",
     gender: "Male",
+    branch: "Computer Science and Engineering (CSE)",
     newPassword: "1234",
     confirmPassword: "1234",
     about: "I am alumini",
@@ -59,6 +59,10 @@ export default function SignupPageAlumini() {
     value: college,
     label: college,
   }));
+
+  const selectedCollege = collegeOptions.find(
+    (option) => option.value === formData.collegeName
+  );
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -84,7 +88,6 @@ export default function SignupPageAlumini() {
   };
 
   const handleVerification = async () => {
-    console.log(code)
     const errors = validateFields();
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
@@ -95,12 +98,12 @@ export default function SignupPageAlumini() {
     setLoading(true);
     try {
       const { emailId } = formData;
-     await axios.post(
-  `${BASE_URL}/sendemail`,
-  { emailId, code },
-  { withCredentials: true }
-);
 
+      await axios.post(
+        `${BASE_URL}/sendemail`,
+        { emailId, code },
+        { withCredentials: true }
+      );
 
       const hashedCode = await bcrypt.hash(code.toString(), 10);
       const updatedFormData = { ...formData, code: hashedCode };
@@ -125,7 +128,6 @@ export default function SignupPageAlumini() {
 
   return (
     <div className="min-h-screen bg-[#eaf3fb] flex items-center justify-center px-4 py-12 relative">
-      {/* Floating Popup */}
       {popupMessage && (
         <div className="absolute top-5 bg-blue-100 border border-blue-300 text-blue-800 px-6 py-2 rounded shadow-md">
           {popupMessage}
@@ -140,7 +142,8 @@ export default function SignupPageAlumini() {
           </span>
         </h2>
         <p className="text-center text-gray-600 text-sm mb-6">
-          🎓 Where journeys begin and stories inspire. Join the alumni network today and make a difference!
+          🎓 Where journeys begin and stories inspire. Join the alumni network
+          today and make a difference!
         </p>
 
         <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -155,7 +158,10 @@ export default function SignupPageAlumini() {
           ].map((field) => (
             <div key={field} className="col-span-1">
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                {field.replace(/([A-Z])/g, " $1").replace("Id", " ID").replace(/\b\w/g, (c) => c.toUpperCase())}
+                {field
+                  .replace(/([A-Z])/g, " $1")
+                  .replace("Id", " ID")
+                  .replace(/\b\w/g, (c) => c.toUpperCase())}
               </label>
               <input
                 type={field === "emailId" ? "email" : "text"}
@@ -169,30 +175,44 @@ export default function SignupPageAlumini() {
                 }`}
                 required
               />
-              {formErrors[field] && <p className="text-xs text-red-500 mt-1">{formErrors[field]}</p>}
+              {formErrors[field] && (
+                <p className="text-xs text-red-500 mt-1">
+                  {formErrors[field]}
+                </p>
+              )}
             </div>
           ))}
 
           <div className="col-span-1">
-            <label className="block text-sm font-medium text-gray-700 mb-1">College Name</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              College Name
+            </label>
             <Select
               options={collegeOptions}
               onChange={handleCollegeSelect}
-              defaultValue={{ label: formData.collegeName, value: formData.collegeName }}
+              value={selectedCollege}
               className="mt-1"
               styles={{
                 control: (base) => ({
                   ...base,
                   borderColor: formErrors.collegeName ? "red" : "#d1d5db",
-                  boxShadow: formErrors.collegeName ? "0 0 0 2px rgba(239,68,68,.5)" : "",
+                  boxShadow: formErrors.collegeName
+                    ? "0 0 0 2px rgba(239,68,68,.5)"
+                    : "",
                 }),
               }}
             />
-            {formErrors.collegeName && <p className="text-xs text-red-500 mt-1">{formErrors.collegeName}</p>}
+            {formErrors.collegeName && (
+              <p className="text-xs text-red-500 mt-1">
+                {formErrors.collegeName}
+              </p>
+            )}
           </div>
 
           <div className="col-span-1">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Gender
+            </label>
             <select
               name="gender"
               value={formData.gender}
@@ -209,11 +229,42 @@ export default function SignupPageAlumini() {
               <option value="Female">Female</option>
               <option value="Other">Other</option>
             </select>
-            {formErrors.gender && <p className="text-xs text-red-500 mt-1">{formErrors.gender}</p>}
+            {formErrors.gender && (
+              <p className="text-xs text-red-500 mt-1">{formErrors.gender}</p>
+            )}
+          </div>
+
+          <div className="col-span-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Branch
+            </label>
+            <select
+              name="branch"
+              value={formData.branch}
+              onChange={handleChange}
+              className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${
+                formErrors.branch
+                  ? "border-red-500 ring-2 ring-red-300"
+                  : "border-gray-300 focus:ring-2 focus:ring-blue-500"
+              }`}
+              required
+            >
+              <option value="">Select Branch</option>
+              {BranchList.map((branch) => (
+                <option key={branch} value={branch}>
+                  {branch}
+                </option>
+              ))}
+            </select>
+            {formErrors.branch && (
+              <p className="text-xs text-red-500 mt-1">{formErrors.branch}</p>
+            )}
           </div>
 
           <div className="col-span-1 md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">About</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              About
+            </label>
             <textarea
               name="about"
               rows={3}
@@ -227,11 +278,15 @@ export default function SignupPageAlumini() {
               placeholder="Write something about yourself..."
               required
             />
-            {formErrors.about && <p className="text-xs text-red-500 mt-1">{formErrors.about}</p>}
+            {formErrors.about && (
+              <p className="text-xs text-red-500 mt-1">{formErrors.about}</p>
+            )}
           </div>
 
           <div className="col-span-1 relative">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Password
+            </label>
             <input
               type={showPassword ? "text" : "password"}
               name="newPassword"
@@ -251,11 +306,17 @@ export default function SignupPageAlumini() {
             >
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </div>
-            {formErrors.newPassword && <p className="text-xs text-red-500 mt-1">{formErrors.newPassword}</p>}
+            {formErrors.newPassword && (
+              <p className="text-xs text-red-500 mt-1">
+                {formErrors.newPassword}
+              </p>
+            )}
           </div>
 
           <div className="col-span-1">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Confirm Password
+            </label>
             <input
               type="password"
               name="confirmPassword"
@@ -268,7 +329,11 @@ export default function SignupPageAlumini() {
               }`}
               required
             />
-            {formErrors.confirmPassword && <p className="text-xs text-red-500 mt-1">{formErrors.confirmPassword}</p>}
+            {formErrors.confirmPassword && (
+              <p className="text-xs text-red-500 mt-1">
+                {formErrors.confirmPassword}
+              </p>
+            )}
           </div>
         </form>
 

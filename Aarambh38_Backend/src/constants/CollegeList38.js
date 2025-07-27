@@ -38,3 +38,5 @@ const governmentEngineeringColleges = [
   "Government Engineering College (GEC), Sheohar",
   "Government Engineering College (GEC), West Champaran"
 ];
+
+module.exports=governmentEngineeringColleges

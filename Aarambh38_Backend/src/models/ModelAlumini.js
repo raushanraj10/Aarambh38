@@ -20,7 +20,10 @@ const AluminiSchema=new mongoose.Schema({
         require:true,
         default:"Bakhtiyarpur College Of Engineering"
     },
-    
+    branch:{
+        type:String,
+        require:true
+    },
     
     role:{
         type:String,
@@ -46,6 +49,7 @@ const AluminiSchema=new mongoose.Schema({
     },
     registration:{
         type:Number,
+        minLength:11,
         require:true,
     },
     emailId:{

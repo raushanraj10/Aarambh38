@@ -34,7 +34,8 @@ AuthRouter.post("/signupuser",async (req,res)=>{
         return res.status(400).send("Missing fields: " + missingFields.join(", "));
     }
     // .include not working because data is object and requiredfields are array use "in" keyword
-    validateBodyData(req,res);
+    const data1=validateBodyData(req,res);
+    if(data1)return
 
     // const checkemailid=await ModelUser.findOne({emailId:req.body.emailId})
     // if(checkemailid)
@@ -68,7 +69,7 @@ AuthRouter.post("/signupalumini",async (req,res)=>{
      return res.status(400).send("First verify Email")
     const data=req.body;
     // console.log(data)
-    const requiredFields=["fullName","gender","emailId","newPassword","confirmPassword","registration","batch","collegeName","company","role","photourl","about","passkey"]
+    const requiredFields=["fullName","gender","emailId","newPassword","confirmPassword","registration","batch","collegeName","company","role","photourl","about","passkey","branch"]
     
      const allFieldsPresent = requiredFields.every(field => field in data);
 
@@ -77,7 +78,9 @@ AuthRouter.post("/signupalumini",async (req,res)=>{
         return res.status(400).send("Missing fields: " + missingFields.join(", "));
     }
     // .include not working because data is object and requiredfields are array use "in" keyword
-    validateBodyData(req,res);
+    const data1=validateBodyData(req,res);
+    if(data1)
+        return;
 
     // const checkemailid=await ModelUser.findOne({emailId:req.body.emailId})
     // if(checkemailid)

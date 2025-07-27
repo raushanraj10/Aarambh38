@@ -48,6 +48,7 @@ export default function EmailVerificationAlumini() {
 
         const {
           fullName,
+          branch,
           gender,
           emailId,
           registration,
@@ -66,6 +67,7 @@ export default function EmailVerificationAlumini() {
   {
     photourl,
     about,
+    branch,
     fullName,
     gender,
     emailId,

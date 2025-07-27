@@ -13,13 +13,13 @@ const ProfileRouter=express.Router()
 
 
 ProfileRouter.get("/getlistalumni",UserAuth,  async (req,res)=>{
-    const list=await ModelAlumini.find({}).select("fullName role collegeName batch photourl age company gender about")
+    const list=await ModelAlumini.find({}).select("fullName role collegeName batch photourl age company gender about branch")
     // console.log(list)
     res.send(list)
 })
 
 ProfileRouter.get("/getliststudent",UserAuth,  async (req,res)=>{
-    const list=await ModelUser.find({}).select("_id fullName collegeName batch photourl age gender")
+    const list=await ModelUser.find({}).select("_id fullName collegeName batch photourl age gender branch")
     // console.log(list)
     res.send(list)
 })
@@ -99,7 +99,7 @@ ProfileRouter.get("/getmessageswith/:targetuserId", UserAuth, async (req, res) =
 ProfileRouter.get("/getstudentprofile",UserAuth,async(req,res)=>{
   try{
   const fromuserId = req.decode;
-  const finaldata=await ModelUser.findOne({_id:fromuserId._id}).select("fullName emailId role collegeName batch photourl age company gender about")
+  const finaldata=await ModelUser.findOne({_id:fromuserId._id}).select("fullName emailId branch role collegeName batch photourl age company gender about")
   if(!finaldata)
     res.status(400).send("First Login")
   res.send(finaldata)
@@ -111,7 +111,7 @@ ProfileRouter.get("/getstudentprofile",UserAuth,async(req,res)=>{
 ProfileRouter.get("/getalumniprofile",UserAuth,async(req,res)=>{
   try{
   const fromuserId = req.decode;
-  const finaldata=await ModelAlumini.findOne({_id:fromuserId._id}).select("fullName emailId role collegeName batch photourl age company gender about")
+  const finaldata=await ModelAlumini.findOne({_id:fromuserId._id}).select("fullName emailId role collegeName batch photourl age company gender about branch")
   if(!finaldata)
     res.status(400).send("First Login")
   res.send(finaldata)
@@ -123,7 +123,7 @@ ProfileRouter.get("/getalumniprofile",UserAuth,async(req,res)=>{
 ProfileRouter.get("/getadminprofile",UserAuth,async(req,res)=>{
   try{
   const fromuserId = req.decode;
-  const finaldata=await ModelAdmin.findOne({_id:fromuserId._id}).select("fullName emailId role collegeName batch photourl age company gender about")
+  const finaldata=await ModelAdmin.findOne({_id:fromuserId._id}).select("fullName emailId role collegeName batch photourl age company gender about branch")
   if(!finaldata)
     res.status(400).send("First Login")
   res.send(finaldata)

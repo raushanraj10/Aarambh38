@@ -163,6 +163,7 @@ const EditProfileAlumni = () => {
           <p className="text-sm text-gray-600">{formData.company || "Company"}</p>
           <p className="text-sm text-gray-600">{formData.collegeName || "College Name"}</p>
           <p className="text-sm text-gray-600">{formData.gender || "Gender"}</p>
+          <p className="text-sm text-gray-600">{formData.branch || "Branch"}</p>
           <p className="text-sm text-gray-500 mt-3 px-4">{formData.about || "About..."}</p>
           <p className="text-xs text-gray-400 mt-2">{formData.email || "Email Address"}</p>
         </div>

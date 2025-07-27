@@ -19,9 +19,8 @@ export default function AlumniReceivedRequest() {
     const fetchRequests = async () => {
       try {
         const res = await axios.get(`${BASE_URL}/alumnirecivedrequest`, {
-  withCredentials: true,
-});
-
+          withCredentials: true,
+        });
         setRequests(res.data);
       } catch (err) {
         console.error("Error fetching requests:", err);
@@ -37,11 +36,10 @@ export default function AlumniReceivedRequest() {
 
     try {
       await axios.post(
-  `${BASE_URL}/alumni/${action}/${studentId}`,
-  {},
-  { withCredentials: true }
-);
-
+        `${BASE_URL}/alumni/${action}/${studentId}`,
+        {},
+        { withCredentials: true }
+      );
 
       // Remove from UI
       setRequests((prev) => prev.filter((req) => req.fromuserId._id !== studentId));
@@ -105,6 +103,19 @@ export default function AlumniReceivedRequest() {
             </div>
           ))
         )}
+      </div>
+
+      {/* Footer */}
+      <div className="text-center mt-24">
+        <p className="text-xl font-semibold bg-clip-text bg-gradient-to-r from-blue-500 to-green-500 text-transparent">
+          Empowered by{" "}
+          <span className="underline font-bold bg-clip-text bg-gradient-to-r from-blue-600 to-green-600">
+            Aarambh38
+          </span>
+        </p>
+        <p className="text-sm text-gray-500 mt-1">
+          Guiding students through mentorship, one message at a time.
+        </p>
       </div>
     </div>
   );

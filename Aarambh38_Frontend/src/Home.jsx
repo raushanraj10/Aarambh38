@@ -13,11 +13,24 @@ export default function Home() {
         dispatch(removestudent())
   },[])
   const headings = [
-    "Welcome to Aarambh38",
-    "Connect Alumni and Students",
-    "Grow Together with Mentorship",
-    "Build Your Professional Network",
-  ];
+  "Welcome to Aarambh38",
+  "Connect Alumni and Students",
+  "Grow Together with Mentorship",
+  "Build Your Professional Network",
+  "Easily Ask for Referrals from Alumni",
+  "Explore Alumni Career Journeys",
+  "Get Personalized Guidance Anytime",
+  "Stay Motivated with Real Success Stories",
+  "Unlock Opportunities Through Connections",
+  "Learn, Connect, and Level Up Together",
+  "Ask Which Path is Right for Your Career Goal",
+  "Get Clarity on Your Dream Career from Alumni",
+  "Understand What It Takes to Achieve Your Aim",
+  "Plan Your Future with Alumni Who've Been There",
+  "Make Smarter Choices with Real-World Insights"
+]
+
+
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
