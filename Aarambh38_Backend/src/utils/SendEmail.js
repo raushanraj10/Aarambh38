@@ -30,7 +30,7 @@ const SendEmail = async (email, code) => {
       `,
     });
 
-    console.log("Email sent to:", email);
+    // console.log("Email sent to:", email);
   } catch (err) {
     console.error("Email send failed:", err.message);
   }

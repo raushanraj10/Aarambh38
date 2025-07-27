@@ -17,7 +17,7 @@ export default function MyMentors() {
   withCredentials: true,
 });
 
-        console.log(res)
+        // console.log(res)
         setMentors(res.data);
       } catch (error) {
         console.error("Failed to load mentors", error);

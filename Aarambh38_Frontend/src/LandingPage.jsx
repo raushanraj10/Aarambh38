@@ -64,6 +64,16 @@ export default function StudentLandingPage() {
         { text: message },
         { withCredentials: true }
       );
+     const fromuserId = Studentdata._id;
+    await axios.post(`${BASE_URL}/sendrequestbymail`, {
+      alumniId,
+  fromuserId,
+  message,
+}, {
+  withCredentials: true,
+});
+
+
 
       setRequestStatus((prev) => ({ ...prev, [alumniId]: true }));
       alert("Request sent!");

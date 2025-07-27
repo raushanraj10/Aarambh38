@@ -23,6 +23,7 @@ export default function SignupPageAdmin() {
 
 
   const code = Math.floor(Math.random() * 900000) + 100000;
+  
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -78,7 +79,7 @@ export default function SignupPageAdmin() {
   { withCredentials: true }
 );
 
-
+       console.log(code)
       const hashedCode = await bcrypt.hash(code.toString(), 10);
       const updatedData = { ...formData, code: hashedCode };
       dispatch(pendinguser(updatedData));

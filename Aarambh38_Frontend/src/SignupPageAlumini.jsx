@@ -23,6 +23,7 @@ export default function SignupPageAlumini() {
   }, []);
 
   const code = Math.floor(Math.random() * 900000) + 100000;
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -104,7 +105,7 @@ export default function SignupPageAlumini() {
         { emailId, code },
         { withCredentials: true }
       );
-
+      console.log(code)
       const hashedCode = await bcrypt.hash(code.toString(), 10);
       const updatedFormData = { ...formData, code: hashedCode };
 

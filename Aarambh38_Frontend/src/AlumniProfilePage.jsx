@@ -52,28 +52,46 @@ export default function AlumniProfilePage() {
     fetchAll();
   }, []);
 
-  const handleSendRequest = async (alumniId) => {
-    if (requestStatus[alumniId]) return;
+const handleSendRequest = async (alumniId) => {
+  if (requestStatus[alumniId]) return;
 
-    const message = messages[alumniId]?.trim();
-    if (!message) {
-      alert("Please write a message before sending.");
-      return;
-    }
+  const message = messages[alumniId]?.trim();
+  if (!message) {
+    alert("Please write a message before sending.");
+    return;
+  }
 
-    try {
-      await axios.post(
-        `${BASE_URL}/sendrequest/${alumniId}`,
-        { text: message },
-        { withCredentials: true }
-      );
-      setRequestStatus((prev) => ({ ...prev, [alumniId]: true }));
-      alert("Request sent!");
-    } catch (err) {
-      console.error("Error sending request:", err);
-      alert("Failed to send request.");
-    }
-  };
+  try {
+    const alumni = alumniList.find((a) => a._id === alumniId);
+    const fromuserId = Studentdata._id;
+    
+
+    // 1. Send connection request
+    await axios.post(
+      `${BASE_URL}/sendrequest/${alumniId}`,
+      { text: message },
+      { withCredentials: true }
+    );
+
+    // 2. Send connection email
+    await axios.post(
+      `${BASE_URL}/sendrequestbymail`,
+      {
+        alumniId,
+        fromuserId,
+        message,
+      },
+      { withCredentials: true }
+    );
+
+    setRequestStatus((prev) => ({ ...prev, [alumniId]: true }));
+    alert("Request sent and email notification delivered!");
+  } catch (err) {
+    console.error("Error sending request:", err);
+    alert("Failed to send request.");
+  }
+};
+
 
   const handleSendMessage = (alumniId) => {
     Navigate(`/chat/${alumniId}`);

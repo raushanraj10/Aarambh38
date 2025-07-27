@@ -8,6 +8,7 @@ const bcrypt =require("bcrypt");
 const UserAuth = require("./middleware/UserAuth");
 const ModelAdmin = require("../models/ModelAdmin");
 const ModelMessage = require("../models/ModelMessage");
+const SendRequestEmail=require("../utils/EmailTheConnection")
 
 const ProfileRouter=express.Router()
 
@@ -132,7 +133,15 @@ ProfileRouter.get("/getadminprofile",UserAuth,async(req,res)=>{
   
 })
 
+ProfileRouter.post("/sendrequestbymail",UserAuth,async (req,res)=>{
+  const {alumniId,fromuserId,message}=req.body
+  const dataAlumni=await ModelAlumini.findOne({_id:alumniId})
+  const data=await ModelUser.findOne({_id:fromuserId})
+  const emailId=dataAlumni.emailId
+ SendRequestEmail({emailId,data,message})
+ res.send("email sent")
 
+})
 
 
 

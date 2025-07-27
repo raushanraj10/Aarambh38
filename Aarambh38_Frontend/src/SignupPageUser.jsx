@@ -22,6 +22,7 @@ export default function SignupPageUser() {
         Dispatch(removealumini())
       },[])
   const code = Math.floor(Math.random() * 900000) + 100000;
+  
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -79,7 +80,7 @@ export default function SignupPageUser() {
   };
 
   const handleVerification = async () => {
-    console.log(code)
+    
     const errors = validateFields();
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
@@ -92,7 +93,7 @@ export default function SignupPageUser() {
       const { emailId } = formData;
       await axios.post(`${BASE_URL}/sendemail`, { emailId, code }, { withCredentials: true });
 
-
+     console.log(code)
       const hashedCode = await bcrypt.hash(code.toString(), 10);
       const updatedFormData = { ...formData, code: hashedCode };
 
