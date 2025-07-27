@@ -131,7 +131,7 @@ const About = () => {
   <p className="text-md text-gray-700 transition-opacity duration-1000 opacity-80 hover:opacity-100">
     Designed & Developed by{" "}
     <span className="font-semibold text-blue-600 hover:text-blue-700 transition-colors duration-300">
-      Raushan Raj
+      Raushan Raj, Shikha Kumari
     </span>{" "}
     <span className="text-gray-500 font-medium">&nbsp;from&nbsp;</span>
     <span className="font-semibold text-green-600 hover:text-green-700 transition-colors duration-300">
