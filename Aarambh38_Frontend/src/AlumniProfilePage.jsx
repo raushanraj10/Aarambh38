@@ -62,7 +62,7 @@ const handleSendRequest = async (alumniId) => {
   }
 
   try {
-    const alumni = alumniList.find((a) => a._id === alumniId);
+    // const alumni = alumniList.find((a) => a._id === alumniId);
     const fromuserId = Studentdata._id;
     
 

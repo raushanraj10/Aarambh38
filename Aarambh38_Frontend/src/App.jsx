@@ -6,7 +6,7 @@ import Home from "./Home"
 import Login from "./components/LoginAllRole/LoginUser"
 import SignupChoice from "./SignupChoice"
 import appStore from "./utils/appStore"
-import { Provider, useDispatch } from 'react-redux'
+import { Provider } from 'react-redux'
 import LandingPage from "./LandingPage"
 import SignupPageAlumini from "./SignupPageAlumini"
 import EmailVerificationUser from "./EmailverifictionUser"

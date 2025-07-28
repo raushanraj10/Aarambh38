@@ -1,14 +1,14 @@
-import { useEffect, useState } from "react";
+// import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
-import Shimmer from "./Shimmer";
-import { useDispatch } from "react-redux";
-import axios from "axios";
-import { BASE_URL } from "./constants/AllUrl";
-import { addstudent } from "./utils/StudentSlice";
-import { addalumini } from "./utils/AluminiSlice";
-import { addadmin } from "./utils/AdminSlice";
+// import Shimmer from "./Shimmer";
+// import { useDispatch } from "react-redux";
+// import axios from "axios";
+// import { BASE_URL } from "./constants/AllUrl";
+// import { addstudent } from "./utils/StudentSlice";
+// import { addalumini } from "./utils/AluminiSlice";
+// import { addadmin } from "./utils/AdminSlice";
 
 const Body = () => {
   // const [loading, setLoading] = useState(true);
