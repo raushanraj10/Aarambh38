@@ -1,6 +1,7 @@
 const mongoose=require("mongoose")
 const validator=require("validator")
 const AluminiSchema=new mongoose.Schema({
+    // "fullName gender collegeName branch role company batch age photourl about mobileNumber registration "
     fullName:{
         type:String,
         require:true,

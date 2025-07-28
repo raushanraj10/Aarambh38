@@ -7,7 +7,7 @@ import { removealumini } from "./utils/AluminiSlice";
 import { removeadmin } from "./utils/AdminSlice";
 import axios from "axios";
 import { Verifieduser } from "./utils/EmailSlice";
-import {BASE_URL} from "../src/constants/AllUrl"
+import { BASE_URL } from "../src/constants/AllUrl";
 
 export default function Navbar() {
   const dispatch = useDispatch();
@@ -57,12 +57,12 @@ export default function Navbar() {
       );
     }
 
-    // 👇 Role-based dashboard links
+    // Role-specific default dashboard links
     let dashboardLink = { to: "/landingpage", label: "Dashboard" };
     if (Alumnidata) {
       dashboardLink = { to: "/alumnirecievedrequest", label: "Received Requests" };
     } else if (Admindata) {
-      dashboardLink = { to: "#", label: "All Students" };
+      dashboardLink = { to: "/getalumnilist", label: "Alumnies" };
     }
 
     const baseLinks = [
@@ -77,14 +77,27 @@ export default function Navbar() {
     ];
 
     const roleLinks = Studentdata
-  ? [{ to: "/mymentors", label: "My Mentors" }]
-  : Alumnidata
-  ? [
-      { to: "/alumnimentees", label: "My Mentees" },
-      { to: "/alumniblocked", label: "Blacklisted Students" }, // ✅ New route
-    ]
-  : [{ to: "#", label: "All Alumni" }];
+      ? [{ to: "/mymentors", label: "My Mentors" }]
+      : Alumnidata
+      ? [
+          { to: "/alumnimentees", label: "My Mentees" },
+          { to: "/alumniblocked", label: "Blacklisted Students" },
+        ]
+      : [
+          { to: "/getstudentlist", label: "Students" },
+          { to: "/recivedrequestfromalumni", label: "Received Requests" }, // ✅ Admin specific
+        ];
 
+    // 🔔 Notification tab for student and alumni
+    // const notifications = (Studentdata || Alumnidata) && (
+    //   <Link
+    //     to="/notifications"
+    //     onClick={closeMenu}
+    //     className="text-yellow-600 hover:text-yellow-700 flex items-center"
+    //   >
+    //     🔔 Notifications
+    //   </Link>
+    // );
 
     const logoutButton = (
       <button
@@ -111,6 +124,7 @@ export default function Navbar() {
             {item.label}
           </Link>
         ))}
+        {/* {notifications} */}
         {logoutButton}
       </div>
     );
@@ -120,13 +134,13 @@ export default function Navbar() {
     <nav className="bg-white border-b shadow-md sticky top-0 z-50 transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
         <Link
-          to="#"
+          to="/"
           className="text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-green-600"
         >
           Aarambh38
         </Link>
 
-        {/* Hamburger */}
+        {/* Hamburger (mobile) */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}
           className="md:hidden text-gray-700"
@@ -134,7 +148,7 @@ export default function Navbar() {
           <Menu size={28} />
         </button>
 
-        {/* Desktop */}
+        {/* Desktop menu */}
         {renderLinks(false)}
       </div>
 

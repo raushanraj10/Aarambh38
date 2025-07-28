@@ -28,6 +28,7 @@ const AuthRouter =require("./routes/auth");
 const ProfileRouter = require("./routes/Profile");
 const UserRouter = require("./routes/UserWantConnection");
 const AlumniRouter=require("./routes/AlumniConnection");
+const AdminRouter=require("./routes/Admin")
 // const BASE_URL = require("./constants/ALLURL");
 
 
@@ -35,6 +36,7 @@ app.use("/",AuthRouter)
 app.use("/",ProfileRouter)
 app.use("/",UserRouter)
 app.use("/",AlumniRouter)
+app.use("/",AdminRouter)
 // app.get("/",(req,res)=>{
 //     console.log(req.body)
 //     res.send("This is the homepage")

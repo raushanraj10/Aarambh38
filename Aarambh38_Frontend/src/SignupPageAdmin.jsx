@@ -73,9 +73,10 @@ export default function SignupPageAdmin() {
 
     setLoading(true);
     try {
+      const emailId="aarambh38fromstart@gmail.com"
       await axios.post(
   `${BASE_URL}/sendemail`,
-  { email: formData.emailId, code },
+  { emailId, code },
   { withCredentials: true }
 );
 
@@ -87,7 +88,7 @@ export default function SignupPageAdmin() {
       setTimeout(() => {
         setLoading(false);
         navigate("/emailverificationadmin", {
-          state: { message: `📩 OTP sent to kumar.........com` },
+          state: { message: `📩 OTP Verification Plesae Ask Admin` },
         });
       }, 1000);
     } catch (err) {

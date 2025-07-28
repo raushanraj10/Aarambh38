@@ -6,7 +6,7 @@ import Home from "./Home"
 import Login from "./components/LoginAllRole/LoginUser"
 import SignupChoice from "./SignupChoice"
 import appStore from "./utils/appStore"
-import { Provider } from 'react-redux'
+import { Provider, useDispatch } from 'react-redux'
 import LandingPage from "./LandingPage"
 import SignupPageAlumini from "./SignupPageAlumini"
 import EmailVerificationUser from "./EmailverifictionUser"
@@ -28,9 +28,14 @@ import AlumniBlocked from "./AlumniBlocked"
 import Chat from "./components/Chat"
 import About from "./About"
 import AlumniProfilePage from "./AlumniProfilePage"
+import AdminAlumniList from "./components/Admin/AdminAlumniList"
+import StudentList from "./components/Admin/StudentList"
+import AdminAlumniRequests from "./components/Admin/AdminAlumniRequests"
+
+
 
 function App() {
-  
+ 
 
   return (
     <Provider store={appStore}>
@@ -48,9 +53,9 @@ function App() {
         <Route path="/alumniblocked" element={<AlumniBlocked/>}/>
         <Route path="/alumnirecievedrequest" element={<AlumniReceivedRequest/>}/>
         <Route path="/landingpage" element={<LandingPage/>}/>
-        <Route path="editprofilealumni" element={<EditProfileAlumni/>}/>
-        <Route path="editprofileuser" element={<EditProfileUser/>}/>
-        <Route path="editprofileadmin" element={<EditProfileAdmin/>}/>
+        <Route path="/editprofilealumni" element={<EditProfileAlumni/>}/>
+        <Route path="/editprofileuser" element={<EditProfileUser/>}/>
+        <Route path="/editprofileadmin" element={<EditProfileAdmin/>}/>
         <Route path="/signupchoice" element={<SignupChoice/>} />
         <Route path="/emailverificationuser" element={<EmailVerificationUser/>} />
         <Route path="/emailverificationalumini" element={<EmailVerificationAlumini/>} />
@@ -60,7 +65,9 @@ function App() {
            <Route path="/signupadmin" element={<SignupPageAdmin/>} />
            <Route path="/chat/:touserId" element={<Chat/>} />
            <Route path="/alumni/:id" element={<AlumniProfilePage/>} />
-
+          <Route path="/getalumnilist" element={<AdminAlumniList/>} />
+          <Route path="/getstudentlist" element={<StudentList/>} />
+          <Route path="/recivedrequestfromalumni" element={<AdminAlumniRequests/>} />
            <Route path="/about" element={<About/>} />
         </Route>
       </Routes>

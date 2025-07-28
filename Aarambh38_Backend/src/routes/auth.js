@@ -126,7 +126,7 @@ AuthRouter.post("/signupadmin",async (req,res)=>{
         return res.status(400).send("Missing fields: " + missingFields.join(", "));
     }
     // .include not working because data is object and requiredfields are array use "in" keyword
-    validateBodyData(req,res);
+    // validateBodyData(req,res);
 
     // const checkemailid=await ModelUser.findOne({emailId:req.body.emailId})
     // if(checkemailid)
@@ -143,7 +143,7 @@ AuthRouter.post("/signupadmin",async (req,res)=>{
 
     data.newPassword=hashnewPassword;
     data.confirmPassword=hashconfirmPassword
-    console.log(req.gender)
+    // console.log(req.gender)
     const finalData=ModelAdmin(data)
     await finalData.save()
     
@@ -193,7 +193,7 @@ AuthRouter.post("/loginadmin",async (req,res)=>{
     const {emailId,newPassword}=req.body
 const checkemail=await ModelAdmin.findOne({emailId:emailId})
 if(!checkemail)
-    return res.status(400).send("Email not Found Please Register")
+    return res.status(400).send("Email not Found Please Ask Admin")
 // console.log(checkemail)
 const checkpassword= await bcrypt.compare(newPassword,checkemail.newPassword)
 if(!checkpassword)

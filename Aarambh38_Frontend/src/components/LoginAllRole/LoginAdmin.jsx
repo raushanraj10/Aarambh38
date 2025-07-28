@@ -53,7 +53,7 @@ export default function LoginAdmin() {
       dispatch(addadmin(res.data))
 
       setTimeout(() => {
-        return navigate("/landingpage");
+        return navigate("/recivedrequestfromalumni");
       }, 2000);
     } catch (err) {
       const msg =

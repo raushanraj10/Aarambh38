@@ -3,7 +3,7 @@ const { transporter } = require("./Email.config");
 const SendEmail = async (email, code) => {
   try {
     const info = await transporter.sendMail({
-      from: '"Aarambh38" <kumarraushanraj10@gmail.com>',
+      from: '"Aarambh38" <aarambh38fromstart@gmail.com>',
       to: email,
       subject: "Aarambh38 Email Verification",
       text: `Your verification code is ${code}`, // fallback for clients that don't render HTML
