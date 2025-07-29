@@ -8,7 +8,8 @@ const bcrypt =require("bcrypt");
 const UserAuth = require("./middleware/UserAuth");
 const ModelAdmin = require("../models/ModelAdmin");
 const ModelMessage = require("../models/ModelMessage");
-const SendRequestEmail=require("../utils/EmailTheConnection")
+const SendRequestEmail=require("../utils/EmailTheConnection");
+const { cloudinary } = require("../utils/cloudinary");
 
 const ProfileRouter=express.Router()
 
@@ -33,13 +34,19 @@ ProfileRouter.patch("/edituser",UserAuth,async(req,res)=>{
     data.fullName=fullName
     data.gender=gender
     data.age=age
-    data.photourl=photourl
+    // data.photourl=photourl
+    if (photourl) {
+      const uploadedImage = await cloudinary.uploader.upload(photourl);
+      data.photourl=uploadedImage.secure_url
+    }
     const finaldata=ModelUser(data)
     await finaldata.save();
     const realdata=await ModelUser.findOne({_id:decode})
     res.send(realdata)}
     catch(err){res.send(err.message)}
 })
+
+
 
 ProfileRouter.patch("/editalumni",UserAuth,async(req,res)=>{
     try{

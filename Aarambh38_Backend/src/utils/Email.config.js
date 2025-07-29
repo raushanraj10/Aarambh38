@@ -1,7 +1,7 @@
-import nodemailer from "nodemailer"
+const nodemailer =require ("nodemailer")
 
 // Create a test account or replace with real credentials.
-export const transporter = nodemailer.createTransport({
+const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
   port: 587,
   secure: false, // true for 465, false for other ports
@@ -10,3 +10,5 @@ export const transporter = nodemailer.createTransport({
     pass: "bqeb wnhn tftq hcpv",
   },
 });
+
+module.exports={transporter}
