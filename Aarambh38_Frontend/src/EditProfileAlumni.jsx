@@ -48,6 +48,20 @@ const EditProfileAlumni = () => {
     }));
   };
 
+   const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData((prev) => ({
+          ...prev,
+          photourl: reader.result, // base64 string
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const { fullName, company, gender, role, about, photourl } = formData;
@@ -134,11 +148,10 @@ const EditProfileAlumni = () => {
             rows={3}
           />
           <input
-            name="photourl"
-            value={formData.photourl}
-            onChange={handleChange}
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
             className="w-full border rounded px-3 py-2"
-            placeholder="Photo URL"
           />
           <button
             type="submit"
