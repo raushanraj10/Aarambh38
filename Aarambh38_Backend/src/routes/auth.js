@@ -200,7 +200,9 @@ return res.send(checkemail)
 
 AuthRouter.post("/loginadmin",async (req,res)=>{
     const {emailId,newPassword}=req.body
+    // console.log(emailId)
 const checkemail=await ModelAdmin.findOne({emailId:emailId})
+// console.log(checkemail)
 if(!checkemail)
     return res.status(400).send("Email not Found Please Ask Admin")
 // console.log(checkemail)

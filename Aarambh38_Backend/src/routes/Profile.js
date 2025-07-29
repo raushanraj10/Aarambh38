@@ -15,8 +15,10 @@ const ProfileRouter=express.Router()
 
 
 ProfileRouter.get("/getlistalumni",UserAuth,  async (req,res)=>{
-    const list=await ModelAlumini.find({}).select("fullName role collegeName batch photourl age company gender about branch")
+    const list=await ModelAlumini.find({toshow:true}).select("fullName isshow role collegeName batch photourl age company gender about branch")
     // console.log(list)
+    // if(toshow===false)
+    //   return res.send("No such alumni")
     res.send(list)
 })
 
@@ -122,9 +124,11 @@ ProfileRouter.get("/getstudentprofile",UserAuth,async(req,res)=>{
 ProfileRouter.get("/getalumniprofile",UserAuth,async(req,res)=>{
   try{
   const fromuserId = req.decode;
-  const finaldata=await ModelAlumini.findOne({_id:fromuserId._id}).select("fullName emailId role collegeName batch photourl age company gender about branch")
+  const finaldata=await ModelAlumini.findOne({_id:fromuserId._id}).select("fullName emailId role collegeName batch photourl age company gender about branch toshow")
   if(!finaldata)
     res.status(400).send("First Login")
+  if(toshow===false)
+    return res.send("No such alumni")
   res.send(finaldata)
 }
   catch(err){res.send(err.message)}

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { ChevronDown, ChevronUp, Trash2, Mail } from "lucide-react";
+import { ChevronDown, ChevronUp, Trash2, Mail, X } from "lucide-react";
 import { BASE_URL } from "../../constants/AllUrl";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -10,17 +10,19 @@ const StudentList = () => {
   const [expandedId, setExpandedId] = useState(null);
   const [search, setSearch] = useState("");
 
-  // Modal States
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedEmail, setSelectedEmail] = useState("");
   const [emailSubject, setEmailSubject] = useState("");
   const [emailMessage, setEmailMessage] = useState("");
- 
-   const admin = useSelector((state) => state.admindata);
-     const navigate=useNavigate()
+
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  const admin = useSelector((state) => state.admindata);
+  const navigate = useNavigate();
+
   useEffect(() => {
     if (!admin) {
-      navigate("/loginselectorpage"); // import { useNavigate } from "react-router-dom";
+      navigate("/loginselectorpage");
     }
   }, [admin]);
 
@@ -93,7 +95,6 @@ const StudentList = () => {
           Student Management Panel
         </h1>
 
-        {/* 🔍 Search Input */}
         <div className="mb-6">
           <input
             type="text"
@@ -105,87 +106,99 @@ const StudentList = () => {
         </div>
 
         <div className="bg-white shadow rounded-lg divide-y">
-          {filteredAlumni.map((alum) => (
-            <div
-              key={alum._id}
-              className="py-4 transition-all duration-200 hover:bg-gray-50"
-            >
+          {filteredAlumni.length === 0 ? (
+            <div className="p-6 text-center text-gray-500">
+              No students found matching your search.
+            </div>
+          ) : (
+            filteredAlumni.map((alum) => (
               <div
-                onClick={() => toggleExpand(alum._id)}
-                className="flex items-center justify-between px-6 cursor-pointer"
+                key={alum._id}
+                className="py-4 transition-all duration-200 hover:bg-gray-50"
               >
-                <div className="flex items-center gap-4">
-                  {alum.photourl ? (
-                    <img
-                      src={alum.photourl}
-                      className="w-12 h-12 rounded-full object-cover shadow"
-                      alt={alum.fullName}
-                    />
-                  ) : (
-                    <div className="w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center text-lg font-bold shadow">
-                      {alum.fullName?.[0]?.toUpperCase() || "?"}
-                    </div>
-                  )}
+                <div
+                  onClick={() => toggleExpand(alum._id)}
+                  className="flex items-center justify-between px-6 cursor-pointer"
+                >
+                  <div className="flex items-center gap-4">
+                    {alum.photourl ? (
+                      <img
+                        src={alum.photourl}
+                        className="w-12 h-12 rounded-full object-cover shadow cursor-pointer"
+                        alt={alum.fullName}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedImage(alum.photourl);
+                        }}
+                      />
+                    ) : (
+                      <div className="w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center text-lg font-bold shadow">
+                        {alum.fullName?.[0]?.toUpperCase() || "?"}
+                      </div>
+                    )}
 
-                  <div>
-                    <p className="font-semibold">{alum.fullName}</p>
-                    <p className="text-sm text-gray-500">{alum.emailId}</p>
-                    <p className="text-sm text-gray-600">{alum.collegeName}</p>
+                    <div>
+                      <p className="font-semibold">{alum.fullName}</p>
+                      <p className="text-sm text-gray-500">{alum.emailId}</p>
+                      <p className="text-sm text-gray-600">
+                        {alum.collegeName}
+                      </p>
+                    </div>
                   </div>
+                  {expandedId === alum._id ? (
+                    <ChevronUp className="text-gray-500" />
+                  ) : (
+                    <ChevronDown className="text-gray-500" />
+                  )}
                 </div>
-                {expandedId === alum._id ? (
-                  <ChevronUp className="text-gray-500" />
-                ) : (
-                  <ChevronDown className="text-gray-500" />
+
+                {expandedId === alum._id && (
+                  <div className="bg-gray-50 px-6 mt-4 text-sm text-gray-700 space-y-1">
+                    <p>
+                      <strong>Gender:</strong> {alum.gender}
+                    </p>
+                    <p>
+                      <strong>College:</strong> {alum.collegeName}
+                    </p>
+                    <p>
+                      <strong>Branch:</strong> {alum.branch}
+                    </p>
+                    <p>
+                      <strong>Batch:</strong> {alum.batch}
+                    </p>
+                    <p>
+                      <strong>Age:</strong> {alum.age}
+                    </p>
+                    <p>
+                      <strong>Mobile:</strong> {alum.mobileNumber}
+                    </p>
+                    <p>
+                      <strong>Registration Number:</strong> {alum.registration}
+                    </p>
+
+                    <div className="flex gap-4 pt-4">
+                      <button
+                        onClick={() => deleteAlumni(alum._id)}
+                        className="flex items-center gap-2 px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded-md"
+                      >
+                        <Trash2 size={16} /> Delete Student
+                      </button>
+                      <button
+                        onClick={() => openEmailModal(alum.emailId)}
+                        className="flex items-center gap-2 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-md"
+                      >
+                        <Mail size={16} /> Send Email
+                      </button>
+                    </div>
+                  </div>
                 )}
               </div>
-
-              {expandedId === alum._id && (
-                <div className="bg-gray-50 px-6 mt-4 text-sm text-gray-700 space-y-1">
-                  <p>
-                    <strong>Gender:</strong> {alum.gender}
-                  </p>
-                  <p>
-                    <strong>College:</strong> {alum.collegeName}
-                  </p>
-                  <p>
-                    <strong>Branch:</strong> {alum.branch}
-                  </p>
-                  <p>
-                    <strong>Batch:</strong> {alum.batch}
-                  </p>
-                  <p>
-                    <strong>Age:</strong> {alum.age}
-                  </p>
-                  <p>
-                    <strong>Mobile:</strong> {alum.mobileNumber}
-                  </p>
-                  <p>
-                    <strong>Registration Number:</strong> {alum.registration}
-                  </p>
-
-                  <div className="flex gap-4 pt-4">
-                    <button
-                      onClick={() => deleteAlumni(alum._id)}
-                      className="flex items-center gap-2 px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded-md"
-                    >
-                      <Trash2 size={16} /> Delete Student
-                    </button>
-                    <button
-                      onClick={() => openEmailModal(alum.emailId)}
-                      className="flex items-center gap-2 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-md"
-                    >
-                      <Mail size={16} /> Send Email
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
 
-      {/* 📩 Modal */}
+      {/* 📩 Email Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md space-y-4">
@@ -230,6 +243,25 @@ const StudentList = () => {
                 Send
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* 🖼️ Image Modal */}
+      {selectedImage && (
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-80 flex items-center justify-center">
+          <div className="relative">
+            <button
+              onClick={() => setSelectedImage(null)}
+              className="absolute top-0 right-0 text-white bg-black bg-opacity-50 rounded-full p-1 m-2 hover:bg-opacity-75"
+            >
+              <X size={24} />
+            </button>
+            <img
+              src={selectedImage}
+              alt="Full view"
+              className="max-w-full max-h-[90vh] rounded-lg shadow-xl"
+            />
           </div>
         </div>
       )}

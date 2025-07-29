@@ -21,6 +21,7 @@ const EditProfileAdmin = () => {
 
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("success");
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 
   useEffect(() => {
     if (!AdminData || !AdminData.emailId) {
@@ -32,9 +33,7 @@ const EditProfileAdmin = () => {
         collegeName: AdminData.collegeName || "",
         gender: AdminData.gender || "",
         age: AdminData.age || "",
-        photourl:
-          AdminData.photourl ||
-          "https://via.placeholder.com/100",
+        photourl: AdminData.photourl || "https://via.placeholder.com/100",
       });
     }
   }, [AdminData]);
@@ -52,10 +51,10 @@ const EditProfileAdmin = () => {
 
     try {
       const res = await axios.patch(
-  `${BASE_URL}/editadmin`,
-  { fullName, age, gender, photourl },
-  { withCredentials: true }
-);
+        `${BASE_URL}/editadmin`,
+        { fullName, age, gender, photourl },
+        { withCredentials: true }
+      );
 
       setMessage("✅ Profile updated successfully.");
       setMessageType("success");
@@ -131,14 +130,15 @@ const EditProfileAdmin = () => {
         </form>
       </div>
 
-      {/* Preview */}
+      {/* Live Preview */}
       <div className="w-full md:w-1/2 bg-gray-50 p-5 rounded-lg shadow">
         <h3 className="text-xl font-semibold text-center mb-4 text-gray-700">Live Preview</h3>
         <div className="flex flex-col items-center text-center">
           <img
             src={formData.photourl || "https://via.placeholder.com/100"}
             alt="Preview"
-            className="w-24 h-24 rounded-full object-cover border mb-4"
+            className="w-24 h-24 rounded-full object-cover border mb-4 cursor-pointer hover:scale-105 transition"
+            onClick={() => setIsImageModalOpen(true)}
           />
           <p className="text-lg font-bold">{formData.fullName || "Full Name"}</p>
           <p className="text-sm text-gray-500">{formData.age || "Age"}</p>
@@ -147,6 +147,21 @@ const EditProfileAdmin = () => {
           <p className="text-xs text-gray-400 mt-2">{formData.emailId || "Email Address"}</p>
         </div>
       </div>
+
+      {/* Enlarged Image Modal */}
+      {isImageModalOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
+          onClick={() => setIsImageModalOpen(false)}
+        >
+          <img
+            src={formData.photourl}
+            alt="Full View"
+            className="max-w-full max-h-[90vh] rounded-lg shadow-lg border-4 border-white"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
 
       {/* Toast */}
       {message && (
@@ -163,4 +178,3 @@ const EditProfileAdmin = () => {
 };
 
 export default EditProfileAdmin;
- 
