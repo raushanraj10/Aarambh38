@@ -8,6 +8,7 @@ const bcrypt =require("bcrypt")
 const jwt =require("jsonwebtoken")
 const UserAuth=require("./middleware/UserAuth");
 const ModelAdmin = require("../models/ModelAdmin");
+const EmailAlumniRequest = require("../utils/EmailAlumniRequest");
 
 const AuthRouter=express.Router()
 
@@ -100,6 +101,7 @@ AuthRouter.post("/signupalumini",async (req,res)=>{
     
     const finalData=ModelAlumini(data)
     await finalData.save()
+    EmailAlumniRequest(req.body)
     
     res.send("Signup Successfully")
     
@@ -147,6 +149,7 @@ AuthRouter.post("/signupadmin",async (req,res)=>{
     const finalData=ModelAdmin(data)
     await finalData.save()
     
+    
     res.send("Signup Successfully")  
 
 })
@@ -172,11 +175,17 @@ AuthRouter.post("/loginalumini",async (req,res)=>{
     const {emailId,newPassword}=req.body
 const checkemail=await ModelAlumini.findOne({emailId:emailId})
 if(!checkemail)
-    return res.status(400).send("Email not Found Please Register")
+    return res.status(400).send("No account found with this email. Please register first")
+//  if(checkemail.toshow===false)
+//     return res.send("email not verified yet")
 // console.log(checkemail)
 const checkpassword= await bcrypt.compare(newPassword,checkemail.newPassword)
 if(!checkpassword)
-    return res.status(400).send("Password Not Match")
+    return res.status(400).send("Incorrect password. Please try again.")
+
+if(checkemail.toshow===false)
+    return res.send("Your account is pending verification by the admin")
+
 // console.log("alumini login")
 const token =await jwt.sign({_id:checkemail._id},"#raushanaarambh38")
 res.cookie("token",token)

@@ -1,7 +1,7 @@
 const mongoose=require("mongoose")
 const validator=require("validator")
 const AluminiSchema=new mongoose.Schema({
-    // "fullName gender collegeName branch role company batch age photourl about mobileNumber registration "
+    // "fullName gender toshow collegeName branch role company batch age photourl about mobileNumber registration "
     fullName:{
         type:String,
         require:true,
@@ -76,6 +76,11 @@ const AluminiSchema=new mongoose.Schema({
     },
     mobileNumber:{
         type:Number
+    },
+    toshow:{
+        type:Boolean,
+        require:true,
+        default:false
     }
 },{timestamps:true})
 
