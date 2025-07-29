@@ -81,7 +81,10 @@ ProfileRouter.patch("/editadmin",UserAuth,async(req,res)=>{
     data.fullName=fullName
     data.gender=gender
     data.age=age
-    data.photourl=photourl
+    if (photourl) {
+      const uploadedImage = await cloudinary.uploader.upload(photourl);
+      data.photourl=uploadedImage.secure_url
+    }
     const finaldata=ModelAdmin(data)
     await finaldata.save();
     const realdata=await ModelAdmin.findOne({_id:decode})
