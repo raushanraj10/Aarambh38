@@ -30,6 +30,7 @@ export default function EmailVerificationAlumini() {
 
   useEffect(() => {
     if (showMessage) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
       const timer = setTimeout(() => setShowMessage(false), 4000);
       return () => clearTimeout(timer);
     }
@@ -42,7 +43,9 @@ export default function EmailVerificationAlumini() {
     try {
       const isValid = await bcrypt.compare(code, hashedCode);
       if (isValid) {
-        setMessage("🎉 Welcome to the Aarambh38 family! Your journey starts here.");
+        setMessage(
+          "✅ We’ve received your alumni verification. Thank you for joining Aarambh38!"
+        );
         setMessageType("success");
         setShowMessage(true);
 
@@ -61,28 +64,29 @@ export default function EmailVerificationAlumini() {
           photourl,
           about,
         } = verifydata;
-        const passkey="U7fK93pLzQeRmXY4tWcVB28GdhJkAo1ZxN56rMuE"
-        await axios.post(
-  `${BASE_URL}/signupalumini`,
-  {
-    photourl,
-    about,
-    branch,
-    fullName,
-    gender,
-    emailId,
-    registration,
-    newPassword,
-    confirmPassword,
-    batch,
-    collegeName,
-    company,
-    role,
-    passkey,
-  },
-  { withCredentials: true }
-);
 
+        const passkey = "U7fK93pLzQeRmXY4tWcVB28GdhJkAo1ZxN56rMuE";
+
+        await axios.post(
+          `${BASE_URL}/signupalumini`,
+          {
+            photourl,
+            about,
+            branch,
+            fullName,
+            gender,
+            emailId,
+            registration,
+            newPassword,
+            confirmPassword,
+            batch,
+            collegeName,
+            company,
+            role,
+            passkey,
+          },
+          { withCredentials: true }
+        );
 
         setTimeout(() => navigate("/loginselectorpage"), 3000);
       } else {
@@ -100,42 +104,18 @@ export default function EmailVerificationAlumini() {
     setLoading(false);
   };
 
-  // const handleResend = async () => {
-  //   const otp = Math.floor(Math.random() * 900000) + 100000;
-  //   const { emailId } = verifydata;
-
-  //   try {
-  //     await axios.post(
-  //       "http://localhost:5000/sendemail",
-  //       { emailId, code: otp },
-  //       { withCredentials: true }
-  //     );
-
-  //     const newHash = await bcrypt.hash(otp.toString(), 10);
-  //     setHashedCode(newHash);
-  //     setMessage(`📩 A new OTP has been sent to ${emailId}`);
-  //     setMessageType("success");
-  //     setShowMessage(true);
-  //   } catch (err) {
-  //     console.error("Resend error:", err);
-  //     setMessage("❌ Failed to resend OTP.");
-  //     setMessageType("error");
-  //     setShowMessage(true);
-  //   }
-  // };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-yellow-50 flex items-center justify-center px-4 relative">
-      {/* Dynamic Toast */}
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-yellow-50 flex items-center justify-center px-4 py-8 relative">
+      {/* Toast */}
       {showMessage && (
-        <div className="absolute top-6 left-1/2 transform -translate-x-1/2 z-50">
+        <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50">
           <div
-            className={`px-6 py-3 rounded-xl shadow-md text-sm font-medium animate-fade-in-out
+            className={`px-6 py-3 rounded-xl shadow-lg text-sm font-medium transition-all duration-500
               ${messageType === "success"
-                ? "bg-emerald-100 border border-emerald-300 text-emerald-800"
+                ? "bg-green-100 border border-green-300 text-green-800"
                 : messageType === "error"
                 ? "bg-red-100 border border-red-300 text-red-800"
-                : "bg-purple-100 border border-purple-300 text-purple-800"
+                : "bg-blue-100 border border-blue-300 text-blue-800"
               }`}
           >
             {message}
@@ -143,7 +123,7 @@ export default function EmailVerificationAlumini() {
         </div>
       )}
 
-      <div className="bg-white shadow-2xl rounded-3xl p-10 w-full max-w-md">
+      <div className="bg-white shadow-xl rounded-3xl p-10 w-full max-w-md animate-fade-in">
         <h2 className="text-3xl font-bold text-center text-purple-700 mb-2">
           Alumni Verification
         </h2>
@@ -158,33 +138,30 @@ export default function EmailVerificationAlumini() {
             value={code}
             onChange={(e) => setCode(e.target.value)}
             placeholder="Enter code"
-            className="w-full px-4 py-3 border rounded-lg text-center text-xl tracking-widest focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="w-full px-5 py-3 border-2 border-gray-300 rounded-lg text-center text-xl tracking-widest focus:outline-none focus:ring-2 focus:ring-purple-600 transition duration-300"
             required
           />
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition disabled:opacity-50 font-semibold"
+            className="w-full bg-purple-600 text-white py-2.5 rounded-lg hover:bg-purple-700 transition disabled:opacity-50 font-semibold tracking-wide shadow"
           >
             {loading ? "Verifying..." : "Verify & Join"}
           </button>
         </form>
 
-        {/* <div className="text-center mt-4">
-          <button
-            onClick={handleResend}
-            className="text-purple-600 text-sm hover:underline"
-          >
-            Didn’t receive a code? Resend
-          </button>
-        </div> */}
-
         {/* Aarambh38 Promo Box */}
-        <div className="mt-8 bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-sm text-yellow-800 text-center shadow">
-          🌟 <strong className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600 tracking-tight">Aarambh38</strong> connects alumni and students to build a culture of inspiration, growth, and giving back.
+        <div className="mt-8 bg-yellow-50 border border-yellow-200 rounded-xl p-4 text-sm text-yellow-800 text-center shadow-inner">
+          🌟{" "}
+          <strong className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600 tracking-tight">
+            Aarambh38
+          </strong>{" "}
+          connects alumni and students to build a culture of inspiration, growth, and giving back.
           <br />
-          <span className="text-purple-600 font-semibold">You’re not just verifying—you're empowering futures. 💼🎓</span>
+          <span className="text-purple-600 font-semibold">
+            You’re not just verifying—you're empowering futures. 💼🎓
+          </span>
         </div>
       </div>
     </div>

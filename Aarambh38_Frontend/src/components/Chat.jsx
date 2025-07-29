@@ -7,8 +7,6 @@ import moment from "moment";
 import LoginSelectorPage from "../LoginSelectorPage";
 import { BASE_URL } from "../constants/AllUrl";
 
-// ... all imports remain the same
-
 const ChatApp = () => {
   const Studentdata = useSelector((store) => store.studentdata);
   const Aluminidata = useSelector((store) => store.aluminidata);
@@ -23,6 +21,7 @@ const ChatApp = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const menuRef = useRef(null);
   const socketRef = useRef(null);
+  const bottomRef = useRef(null); // 👈 added scroll ref
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -33,7 +32,6 @@ const ChatApp = () => {
 
         const res = await axios.get(endpoint, { withCredentials: true });
         setChatlist(res.data);
-        // Removed auto-select logic
       } catch (error) {
         console.error("Failed to load chat users", error);
       }
@@ -135,6 +133,13 @@ const ChatApp = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // 👇 Scroll to bottom on new message
+  useEffect(() => {
+    if (bottomRef.current) {
+      bottomRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
   if (!Studentdata && !Aluminidata) return <LoginSelectorPage />;
 
   const filteredList = chatlist.filter((u) =>
@@ -187,7 +192,6 @@ const ChatApp = () => {
         ))}
       </div>
 
-      {/* Backdrop */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-40 z-30 sm:hidden"
@@ -197,7 +201,6 @@ const ChatApp = () => {
 
       {/* Chat Area */}
       <div className="flex-1 flex flex-col relative z-0 overflow-hidden">
-        {/* Top Navbar */}
         <div className="relative px-4 py-3 border-b bg-gradient-to-r from-blue-600 to-green-600 text-white flex justify-between items-center z-30">
           <div className="sm:hidden block">
             <Menu className="cursor-pointer" onClick={() => setSidebarOpen(!sidebarOpen)} />
@@ -242,53 +245,56 @@ const ChatApp = () => {
         {/* Messages */}
         <div className="flex-1 p-4 overflow-y-auto space-y-4 z-10">
           {selectedUser ? (
-            messages.map((msg, index) => {
-              const isMe = msg.from === "me";
-              const sender = isMe ? user : selectedUser;
+            <>
+              {messages.map((msg, index) => {
+                const isMe = msg.from === "me";
+                const sender = isMe ? user : selectedUser;
 
-              return (
-                <div
-                  key={index}
-                  className={`flex items-end gap-2 ${
-                    isMe ? "justify-end" : "justify-start"
-                  }`}
-                >
-                  {!isMe && (
-                    <img
-                      src={sender?.photourl || "/default-avatar.png"}
-                      alt="profile"
-                      className="w-8 h-8 rounded-full object-cover border"
-                    />
-                  )}
+                return (
+                  <div
+                    key={index}
+                    className={`flex items-end gap-2 ${
+                      isMe ? "justify-end" : "justify-start"
+                    }`}
+                  >
+                    {!isMe && (
+                      <img
+                        src={sender?.photourl || "/default-avatar.png"}
+                        alt="profile"
+                        className="w-8 h-8 rounded-full object-cover border"
+                      />
+                    )}
 
-                  <div className="flex flex-col max-w-xs">
-                    <div
-                      className={`px-4 py-2 rounded-lg shadow text-white text-sm ${
-                        isMe ? "bg-green-600 self-end" : "bg-blue-600"
-                      }`}
-                    >
-                      <div>{msg.text}</div>
+                    <div className="flex flex-col max-w-xs">
+                      <div
+                        className={`px-4 py-2 rounded-lg shadow text-white text-sm ${
+                          isMe ? "bg-green-600 self-end" : "bg-blue-600"
+                        }`}
+                      >
+                        <div>{msg.text}</div>
+                      </div>
+                      <div
+                        className={`text-xs text-gray-500 mt-1 ${
+                          isMe ? "text-right" : "text-left"
+                        }`}
+                      >
+                        {isMe ? "You" : sender?.fullName || "Them"} •{" "}
+                        {moment(msg.createdAt).format("h:mm A")}
+                      </div>
                     </div>
-                    <div
-                      className={`text-xs text-gray-500 mt-1 ${
-                        isMe ? "text-right" : "text-left"
-                      }`}
-                    >
-                      {isMe ? "You" : sender?.fullName || "Them"} •{" "}
-                      {moment(msg.createdAt).format("h:mm A")}
-                    </div>
+
+                    {isMe && (
+                      <img
+                        src={sender?.photourl || "/default-avatar.png"}
+                        alt="profile"
+                        className="w-8 h-8 rounded-full object-cover border"
+                      />
+                    )}
                   </div>
-
-                  {isMe && (
-                    <img
-                      src={sender?.photourl || "/default-avatar.png"}
-                      alt="profile"
-                      className="w-8 h-8 rounded-full object-cover border"
-                    />
-                  )}
-                </div>
-              );
-            })
+                );
+              })}
+              <div ref={bottomRef} /> {/* 👈 Scroll target */}
+            </>
           ) : (
             <div className="flex flex-col items-center justify-center h-full text-center text-gray-500">
               <div className="text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600 mb-4">
@@ -333,4 +339,3 @@ const ChatApp = () => {
 };
 
 export default ChatApp;
-
