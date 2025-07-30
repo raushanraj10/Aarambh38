@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { addadmin } from "./utils/AdminSlice";
 import { BASE_URL } from "./constants/AllUrl";
-import Shimmer from "./Shimmer"; // adjust path if needed
 
 const EditProfileAdmin = () => {
   const AdminData = useSelector((store) => store.admindata);
@@ -23,7 +22,7 @@ const EditProfileAdmin = () => {
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("success");
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); // loading state
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (!AdminData || !AdminData.emailId) {
@@ -67,7 +66,7 @@ const EditProfileAdmin = () => {
 
     setIsLoading(true);
     try {
-      const res = await axios.patch(
+      const res = await axios.post(
         `${BASE_URL}/editadmin`,
         { fullName, age, gender, photourl },
         { withCredentials: true }
@@ -81,14 +80,10 @@ const EditProfileAdmin = () => {
       setMessageType("error");
       console.error(err);
     } finally {
-      setIsLoading(false);
       setTimeout(() => setMessage(""), 3000);
+      setIsLoading(false);
     }
   };
-
-  if (isLoading) {
-    return <Shimmer />;
-  }
 
   return (
     <div className="max-w-7xl mx-auto mt-10 p-6 bg-white rounded shadow-md flex flex-col md:flex-row gap-10 relative">
@@ -111,13 +106,6 @@ const EditProfileAdmin = () => {
             placeholder="Email"
             type="email"
           />
-          {/* <input
-            name="collegeName"
-            value={formData.collegeName}
-            disabled
-            className="w-full border rounded px-3 py-2 bg-gray-100 cursor-not-allowed"
-            placeholder="College Name"
-          /> */}
           <select
             name="gender"
             value={formData.gender}
@@ -151,23 +139,30 @@ const EditProfileAdmin = () => {
         </form>
       </div>
 
-      {/* Live Preview */}
-      <div className="w-full md:w-1/2 bg-gray-50 p-5 rounded-lg shadow">
-        <h3 className="text-xl font-semibold text-center mb-4 text-gray-700">Live Preview</h3>
-        <div className="flex flex-col items-center text-center">
-          <img
-            src={formData.photourl || "https://via.placeholder.com/100"}
-            alt="Preview"
-            className="w-24 h-24 rounded-full object-cover border mb-4 cursor-pointer hover:scale-105 transition"
-            onClick={() => setIsImageModalOpen(true)}
-          />
-          <p className="text-lg font-bold">{formData.fullName || "Full Name"}</p>
-          <p className="text-xs text-gray-400 mt-2">{formData.emailId || "Email Address"}</p>
-          <p className="text-sm text-gray-500">{formData.age || "Age"}</p>
-          {/* <p className="text-sm text-gray-600 mt-1">{formData.collegeName || "College Name"}</p> */}
-          <p className="text-sm text-gray-500 mt-3 px-4">{formData.gender || "Gender"}</p>
-          
-        </div>
+      {/* Live Preview or Shimmer */}
+      <div className="w-full md:w-1/2 bg-gray-50 p-5 rounded-lg shadow min-h-[300px] flex items-center justify-center">
+        {isLoading ? (
+          <div className="w-full flex flex-col items-center justify-center text-center animate-pulse">
+            <h1 className="text-4xl font-extrabold bg-gradient-to-r from-blue-600 to-green-600 bg-[length:300%_100%] bg-clip-text text-transparent animate-shimmer tracking-wide mb-2">
+              Aarambh38
+            </h1>
+            <p className="text-gray-500 text-base">Stay motivated and please wait...</p>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center text-center w-full">
+            <h3 className="text-xl font-semibold text-gray-700 mb-4">Live Preview</h3>
+            <img
+              src={formData.photourl || "https://via.placeholder.com/100"}
+              alt="Preview"
+              className="w-24 h-24 rounded-full object-cover border mb-4 cursor-pointer hover:scale-105 transition"
+              onClick={() => setIsImageModalOpen(true)}
+            />
+            <p className="text-lg font-bold">{formData.fullName || "Full Name"}</p>
+            <p className="text-xs text-gray-400 mt-2">{formData.emailId || "Email Address"}</p>
+            <p className="text-sm text-gray-500">{formData.age || "Age"}</p>
+            <p className="text-sm text-gray-500 mt-3 px-4">{formData.gender || "Gender"}</p>
+          </div>
+        )}
       </div>
 
       {/* Enlarged Image Modal */}

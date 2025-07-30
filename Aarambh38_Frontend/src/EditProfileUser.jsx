@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { addstudent } from "./utils/StudentSlice";
 import { BASE_URL } from "./constants/AllUrl";
-import Shimmer from "./Shimmer"; 
+
 const EditProfileUser = () => {
   const studentData = useSelector((store) => store.studentdata);
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ const EditProfileUser = () => {
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("success");
   const [showImageModal, setShowImageModal] = useState(false);
-  const [loading, setLoading] = useState(false); // 👈 shimmer toggle
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!studentData || !studentData.emailId) {
@@ -64,11 +64,11 @@ const EditProfileUser = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); // 👈 shimmer start
+    setLoading(true);
     const { fullName, age, gender, photourl, branch } = formData;
 
     try {
-      const res = await axios.patch(
+      const res = await axios.post(
         `${BASE_URL}/edituser`,
         { fullName, age, gender, photourl, branch },
         { withCredentials: true }
@@ -82,17 +82,16 @@ const EditProfileUser = () => {
       setMessageType("error");
       console.error(err);
     } finally {
-      setLoading(false); // 👈 shimmer stop
+      setLoading(false);
       setTimeout(() => setMessage(""), 3000);
     }
   };
 
   return (
-    <div className="max-w-7xl mx-auto mt-10 p-6 bg-white rounded shadow-md flex flex-col md:flex-row gap-10 relative">
-      {/* Left Side: Edit Form */}
+    <div className="max-w-7xl mx-auto mt-10 p-4 md:p-6 bg-white rounded shadow-md flex flex-col md:flex-row gap-6 md:gap-10 relative">
+      {/* Left Side: Form */}
       <div className="w-full md:w-1/2">
         <h2 className="text-2xl font-bold mb-4 text-blue-700 text-center">Edit Profile</h2>
-
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             name="fullName"
@@ -120,7 +119,7 @@ const EditProfileUser = () => {
             name="branch"
             value={formData.branch}
             disabled
-            className="w-full border rounded px-3 py-2"
+            className="w-full border rounded px-3 py-2 bg-gray-100 cursor-not-allowed"
             placeholder="Branch"
           />
           <select
@@ -157,32 +156,41 @@ const EditProfileUser = () => {
         </form>
       </div>
 
-      {/* Right Side: Live Preview or Shimmer */}
-      <div className="w-full md:w-1/2 bg-gray-50 p-5 rounded-lg shadow">
-        {loading ? (
-          <Shimmer />
-        ) : (
-          <>
-            <h3 className="text-xl font-semibold text-center mb-4 text-gray-700">Live Preview</h3>
-            <div className="flex flex-col items-center text-center">
-              <div className="w-48 h-48 mb-4 cursor-pointer" onClick={() => setShowImageModal(true)}>
-                <img
-                  src={formData.photourl || "https://via.placeholder.com/150"}
-                  alt="Preview"
-                  className="w-full h-full rounded-full object-cover border border-gray-300 shadow transition-transform duration-300 hover:scale-105"
-                />
-              </div>
-              <p className="text-lg font-bold">{formData.fullName || "Full Name"}</p>
-              <p className="text-sm text-gray-500">{formData.age || "Your Age"}</p>
-              <p className="text-sm text-gray-600 mt-1">{formData.collegeName || "College Name"}</p>
-              <p className="text-sm text-gray-500 mt-3 px-4">{formData.gender || "Short Bio..."}</p>
-              <p className="text-xs text-gray-400 mt-2">{formData.emailId || "Email Address"}</p>
+      {/* Right Side: Live Preview */}
+      <div className="w-full md:w-1/2 flex items-center justify-center">
+        <div className="w-full bg-gray-50 p-4 rounded-lg shadow overflow-hidden min-h-[400px] flex items-center justify-center">
+          {loading ? (
+            <div className="text-center">
+              <h1 className="text-4xl sm:text-5xl font-extrabold bg-gradient-to-r from-blue-600 to-green-600 bg-[length:300%_100%] bg-clip-text text-transparent animate-shimmer tracking-wide mb-4">
+                Aarambh38
+              </h1>
+              <p className="text-base sm:text-lg text-gray-600 font-medium animate-pulse">
+                Stay motivated and please wait...
+              </p>
             </div>
-          </>
-        )}
+          ) : (
+            <div className="w-full">
+              <h3 className="text-xl font-semibold text-center mb-4 text-gray-700">Live Preview</h3>
+              <div className="flex flex-col items-center text-center">
+                <div className="w-36 h-36 md:w-48 md:h-48 mb-4 cursor-pointer" onClick={() => setShowImageModal(true)}>
+                  <img
+                    src={formData.photourl || "https://via.placeholder.com/150"}
+                    alt="Preview"
+                    className="w-full h-full rounded-full object-cover border border-gray-300 shadow transition-transform duration-300 hover:scale-105"
+                  />
+                </div>
+                <p className="text-lg font-bold">{formData.fullName || "Full Name"}</p>
+                <p className="text-sm text-gray-500">{formData.age || "Your Age"}</p>
+                <p className="text-sm text-gray-600 mt-1">{formData.collegeName || "College Name"}</p>
+                <p className="text-sm text-gray-500 mt-3 px-4">{formData.gender || "Short Bio..."}</p>
+                <p className="text-xs text-gray-400 mt-2">{formData.emailId || "Email Address"}</p>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Modal Image */}
+      {/* Modal */}
       {showImageModal && (
         <div
           className="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center"

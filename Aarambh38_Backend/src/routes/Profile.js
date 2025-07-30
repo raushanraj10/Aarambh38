@@ -28,71 +28,100 @@ ProfileRouter.get("/getliststudent",UserAuth,  async (req,res)=>{
     res.send(list)
 })
 
-ProfileRouter.patch("/edituser",UserAuth,async(req,res)=>{
-    try{
-    const {fullName,gender,age,photourl}=req.body
-    const decode=req.decode
-    const data = await ModelUser.findOne({_id:decode})
-    data.fullName=fullName
-    data.gender=gender
-    data.age=age
-    // data.photourl=photourl
+ProfileRouter.post("/edituser", UserAuth, async (req, res) => {
+  try {
+    const { fullName, gender, age, photourl } = req.body;
+    const decode = req.decode;
+
+    const data = await ModelUser.findOne({ _id: decode });
+    if (!data) return res.status(404).send("User not found");
+
+    data.fullName = fullName;
+    data.gender = gender;
+    data.age = age;
+
+    // Upload new photo if provided
     if (photourl) {
       const uploadedImage = await cloudinary.uploader.upload(photourl);
-      data.photourl=uploadedImage.secure_url
+      data.photourl = uploadedImage.secure_url;
     }
-    const finaldata=ModelUser(data)
-    await finaldata.save();
-    const realdata=await ModelUser.findOne({_id:decode})
-    res.send(realdata)}
-    catch(err){res.send(err.message)}
-})
+
+    await data.save();
+
+    const updatedUser = await ModelUser.findOne({ _id: decode });
+    res.send(updatedUser);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send(err.message);
+  }
+});
 
 
 
-ProfileRouter.patch("/editalumni",UserAuth,async(req,res)=>{
-    try{
-    const {fullName,gender,age,photourl,about,company,role}=req.body
-    const decode=req.decode
-    console.log(photourl)
-    const data = await ModelAlumini.findOne({_id:decode})
-    console.log(data)
-    data.fullName=fullName
-    data.gender=gender
-    data.age=age
+
+ProfileRouter.post("/editalumni", UserAuth, async (req, res) => {
+  try {
+    const { fullName, gender, age, photourl, about, company, role } = req.body;
+    const decode = req.decode;
+
+    const data = await ModelAlumini.findOne({ _id: decode });
+    if (!data) return res.status(404).send("Alumni not found");
+
+    // Update fields
+    data.fullName = fullName;
+    data.gender = gender;
+    data.age = age;
+    data.company = company;
+    data.role = role;
+    data.about = about;
+
+    // If a new photo is provided, upload and update
     if (photourl) {
       const uploadedImage = await cloudinary.uploader.upload(photourl);
-      data.photourl=uploadedImage.secure_url
+      data.photourl = uploadedImage.secure_url;
     }
-    data.company=company
-    data.role=role
-    data.about=about
-    const finaldata=ModelAlumini(data)
-    await finaldata.save();
-    const realdata=await ModelAlumini.findOne({_id:decode})
-    res.send(realdata)}
-    catch(err){res.send(err.message)}
-})
+
+    await data.save();
+
+    const updatedData = await ModelAlumini.findOne({ _id: decode });
+    res.send(updatedData);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send(err.message);
+  }
+});
 
 
-ProfileRouter.patch("/editadmin",UserAuth,async(req,res)=>{
-    try{
-    const {fullName,gender,age,photourl}=req.body
-    const decode=req.decode
-    const data = await ModelAdmin.findOne({_id:decode})
-    data.fullName=fullName
-    data.gender=gender
-    data.age=age
+
+ProfileRouter.post("/editadmin", UserAuth, async (req, res) => {
+  try {
+    const { fullName, gender, age, photourl } = req.body;
+    const decode = req.decode;
+
+    const data = await ModelAdmin.findOne({ _id: decode });
+    if (!data) return res.status(404).send("Admin not found");
+
+    // Update fields
+    data.fullName = fullName;
+    data.gender = gender;
+    data.age = age;
+
+    // Optional photo upload
     if (photourl) {
       const uploadedImage = await cloudinary.uploader.upload(photourl);
-      data.photourl=uploadedImage.secure_url
+      data.photourl = uploadedImage.secure_url;
     }
-    const finaldata=ModelAdmin(data)
-    await finaldata.save();
-    const realdata=await ModelAdmin.findOne({_id:decode})
-    res.send(realdata)}
-    catch(err){res.send(err.message)}
-})
+
+    await data.save();
+
+    const updatedData = await ModelAdmin.findOne({ _id: decode });
+    res.send(updatedData);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send(err.message);
+  }
+});
+
 
 ProfileRouter.get("/getmessageswith/:targetuserId", UserAuth, async (req, res) => {
   try {

@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { addalumini } from "./utils/AluminiSlice";
 import { BASE_URL } from "./constants/AllUrl";
-import Shimmer from "./Shimmer";
 
 const EditProfileAlumni = () => {
   const alumniData = useSelector((store) => store.aluminidata);
@@ -71,7 +70,7 @@ const EditProfileAlumni = () => {
     setLoading(true);
 
     try {
-      const res = await axios.patch(
+      const res = await axios.post(
         `${BASE_URL}/editalumni`,
         { fullName, company, gender, role, about, photourl },
         { withCredentials: true }
@@ -91,10 +90,10 @@ const EditProfileAlumni = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-lg flex flex-col md:flex-row gap-10 relative">
+    <div className="max-w-6xl mx-auto mt-6 px-4 md:px-8 py-6 bg-white rounded-xl shadow-lg flex flex-col md:flex-row gap-8 relative overflow-hidden">
       {/* Form Section */}
       <div className="w-full md:w-1/2">
-        <h2 className="text-3xl font-semibold mb-6 text-blue-700 text-center">
+        <h2 className="text-2xl font-semibold mb-6 text-blue-700 text-center">
           Edit Alumni Profile
         </h2>
 
@@ -152,7 +151,7 @@ const EditProfileAlumni = () => {
             onChange={handleChange}
             className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="About You"
-            rows={4}
+            rows={3}
           />
           <input
             type="file"
@@ -164,25 +163,28 @@ const EditProfileAlumni = () => {
             type="submit"
             className="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition"
           >
-            Update Profile
+            {loading ? "Updating..." : "Update Profile"}
           </button>
         </form>
       </div>
 
-      {/* Live Preview Section */}
-      <div className="w-full md:w-1/2 bg-gray-50 p-6 rounded-xl shadow-md">
-        <h3 className="text-xl font-semibold text-center mb-4 text-gray-700">
-          Live Preview
-        </h3>
-
+      {/* Preview or Shimmer */}
+      <div className="w-full md:w-1/2 bg-gray-50 p-4 md:p-6 rounded-xl shadow-md flex justify-center items-center">
         {loading ? (
-          <Shimmer />
+          <div className="min-h-[200px] flex flex-col items-center justify-center text-center px-4">
+            <h1 className="text-4xl font-extrabold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent animate-shimmer tracking-wide mb-4">
+              Aarambh38
+            </h1>
+            <p className="text-base text-gray-600 font-medium animate-pulse">
+              Stay motivated and please wait...
+            </p>
+          </div>
         ) : (
-          <div className="flex flex-col items-center text-center">
+          <div className="flex flex-col items-center text-center space-y-1">
             <img
               src={formData.photourl || "https://via.placeholder.com/100"}
               alt="Preview"
-              className="w-28 h-28 rounded-full object-cover border-2 border-blue-500 mb-4 cursor-pointer hover:scale-105 transition-transform"
+              className="w-24 h-24 md:w-28 md:h-28 rounded-full object-cover border-2 border-blue-500 mb-2 cursor-pointer hover:scale-105 transition-transform"
               onClick={() => setShowImageModal(true)}
             />
             <p className="text-lg font-bold">{formData.fullName || "Full Name"}</p>
@@ -190,8 +192,8 @@ const EditProfileAlumni = () => {
             <p className="text-sm text-gray-600">{formData.company || "Company"}</p>
             <p className="text-sm text-gray-600">{formData.collegeName || "College Name"}</p>
             <p className="text-sm text-gray-600">{formData.gender || "Gender"}</p>
-            <p className="text-sm text-gray-500 mt-2 px-4">{formData.about || "About..."}</p>
-            <p className="text-xs text-gray-400 mt-2">{formData.email || "Email Address"}</p>
+            <p className="text-sm text-gray-500 px-2">{formData.about || "About..."}</p>
+            <p className="text-xs text-gray-400">{formData.email || "Email Address"}</p>
           </div>
         )}
       </div>
@@ -199,7 +201,7 @@ const EditProfileAlumni = () => {
       {/* Toast Message */}
       {message && (
         <div
-          className={`fixed bottom-6 right-6 px-6 py-3 rounded-lg shadow-md text-white z-50 transition-all duration-300 ${
+          className={`fixed bottom-4 right-4 px-5 py-2.5 rounded-md text-white shadow-lg z-50 transition-all duration-300 ${
             messageType === "success" ? "bg-green-600" : "bg-red-600"
           }`}
         >
@@ -216,7 +218,7 @@ const EditProfileAlumni = () => {
           <img
             src={formData.photourl}
             alt="Full Preview"
-            className="max-w-full max-h-full rounded shadow-xl"
+            className="max-w-[90%] max-h-[90%] rounded shadow-xl"
           />
         </div>
       )}
