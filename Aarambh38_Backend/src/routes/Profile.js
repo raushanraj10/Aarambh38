@@ -160,6 +160,25 @@ ProfileRouter.post("/sendrequestbymail",UserAuth,async (req,res)=>{
 
 })
 
+ProfileRouter.delete("/clearchat/:touserId",UserAuth,async(req,res)=>{
+  try{
+    // console.log("fdhsdjkfhsdfdf")
+  const fromuserId = req.decode._id;
+  // console.log(fromuserId)
+  const {touserId}=req.params;
+  // console.log(touserId)
+  await ModelMessage.deleteMany({
+  $or: [
+    { fromuserId, targetuserId:touserId },
+    { fromuserId: touserId, targetuserId: fromuserId }
+  ]
+});
+  res.send("Delete successfully")
+}
+  catch(err){res.send(err.message)}
+  
+})
+
 
 
 module.exports=ProfileRouter

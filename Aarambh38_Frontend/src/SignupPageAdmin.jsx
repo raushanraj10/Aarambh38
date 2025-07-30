@@ -22,6 +22,8 @@ export default function SignupPageAdmin() {
   }, [dispatch]);
 
   const [loading, setLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+
   const [formError, setFormError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
@@ -202,18 +204,34 @@ export default function SignupPageAdmin() {
           </div>
 
           {/* Photo URL */}
-          <div>
-            <label className="text-sm font-medium text-gray-700">Photo URL</label>
-            <input
-              type="text"
-              name="photourl"
-              value={formData.photourl}
-              onChange={handleChange}
-              placeholder="https://example.com/photo.jpg"
-              className="w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
+          
+<div>
+  <label className="text-sm font-medium text-gray-700">Photo URL</label>
+  <input
+    type="text"
+    name="photourl"
+    value={formData.photourl}
+    onChange={handleChange}
+    placeholder="https://example.com/photo.jpg"
+    className="w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+    required
+  />
+
+  {/* Live Image Preview */}
+  {formData.photourl && (
+  <div className="mt-3 flex justify-center">
+    <img
+      src={formData.photourl}
+      alt="Preview"
+      className="w-28 h-28 object-cover rounded-full border shadow cursor-pointer"
+      onClick={() => setShowModal(true)}
+      onError={(e) => (e.target.style.display = "none")}
+    />
+  </div>
+)}
+
+</div>
+
 
           {/* Submit */}
           <button
@@ -232,6 +250,24 @@ export default function SignupPageAdmin() {
           </a>
         </p>
       </div>
+      {showModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+    <div className="relative bg-white rounded-lg shadow-lg p-4">
+      <button
+        className="absolute top-2 right-2 text-gray-600 hover:text-black"
+        onClick={() => setShowModal(false)}
+      >
+        ✖
+      </button>
+      <img
+        src={formData.photourl}
+        alt="Full Preview"
+        className="max-w-[90vw] max-h-[80vh] rounded-lg"
+      />
+    </div>
+  </div>
+)}
+
     </div>
   );
 }

@@ -15,6 +15,8 @@ const ChatApp = () => {
   const [chatlist, setChatlist] = useState([]);
   //  const [previewImg, setPreviewImg] = useState(null)
   const [selectedUser, setSelectedUser] = useState(null);
+  const [previewImg, setPreviewImg] = useState(null);
+
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
@@ -188,10 +190,15 @@ const ChatApp = () => {
             <div className="relative group">
               <div className="p-[2px] rounded-full bg-gradient-to-r from-blue-500 to-green-500">
                 <img
-                  src={user.photourl || "/default-avatar.png"}
-                  alt="avatar"
-                  className="w-10 h-10 rounded-full object-cover border-2 border-white"
-                />
+  src={user.photourl || "/default-avatar.png"}
+  alt="avatar"
+  className="w-10 h-10 rounded-full object-cover border-2 border-white cursor-pointer hover:scale-105 transition-transform"
+  onClick={(e) => {
+    e.stopPropagation(); // prevent triggering selectUser
+    setPreviewImg(user.photourl || "/default-avatar.png");
+  }}
+/>
+
               </div>
               <div className="absolute bottom-full left-0 mb-1 hidden group-hover:block text-xs text-white bg-black px-2 py-1 rounded whitespace-nowrap z-10">
                 {user.emailId}
@@ -238,14 +245,26 @@ const ChatApp = () => {
             {menuOpen && (
               <div className="absolute right-0 mt-2 w-44 bg-white text-black border rounded-md shadow-xl z-50 py-1">
                 <ul className="text-sm">
-                  <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Block</li>
-                  <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Report</li>
+                  {/* <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Block</li>
+                  <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Report</li> */}
                   <li
-                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                    onClick={() => setMessages([])}
-                  >
-                    Clear Chat
-                  </li>
+  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+  onClick={async () => {
+    if (!selectedUser) return;
+    try {
+      await axios.delete(`${BASE_URL}/clearchat/${selectedUser._id}`, {
+        withCredentials: true,
+      });
+      setMessages([]);
+    } catch (err) {
+      console.error("Failed to clear chat:", err);
+    }
+  }}
+>
+  Clear Chat
+</li>
+
+
                 </ul>
               </div>
             )}
@@ -347,6 +366,21 @@ const ChatApp = () => {
           </button>
         </div>
       </div>
+      {previewImg && (
+  <div
+    className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center"
+    onClick={() => setPreviewImg(null)}
+  >
+    <div className="max-w-full max-h-full p-4" onClick={(e) => e.stopPropagation()}>
+      <img
+        src={previewImg}
+        alt="Preview"
+        className="rounded-lg object-contain max-w-[90vw] max-h-[90vh] shadow-lg"
+      />
+    </div>
+  </div>
+)}
+
     </div>
   );
 };
