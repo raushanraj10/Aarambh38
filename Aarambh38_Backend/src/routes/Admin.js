@@ -57,7 +57,7 @@ AdminRouter.delete("/deletealumni/:touserId", UserAuth,async (req,res)=>{
     const AdminId = req.decode;
     const Admindata=await ModelAdmin.findOne({_id:AdminId}) 
     const {touserId}=req.params
-    console.log(touserId)
+    // console.log(touserId)
     // if(Admindata.emailId==="aarambh38fromstart@gmail.com" || Admindata.emailId==="kumarraushanraj10@gamil.com")
     if(!Admindata)
         return res.status(400).send("Not Available Data")
@@ -72,7 +72,7 @@ AdminRouter.post("/sendemailtouser", UserAuth, async (req, res) => {
   const { to, subject, message } = req.body;
   try {
     // Use nodemailer or SendGrid etc.
-    console.log(message)
+    // console.log(message)
     await SendEmailToUserByAdmin({ to, subject,  message });
     res.status(200).send("Email sent successfully");
   } catch (err) {

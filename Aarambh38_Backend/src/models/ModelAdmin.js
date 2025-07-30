@@ -15,12 +15,12 @@ const AdminSchema=new mongoose.Schema({
     newPassword:{
         type:String,
         require:true,
-        // min:4,
+        minLength:6,
     },
     confirmPassword:{
         type:String,
         require:true,
-        // minLength:4,
+        minLength:6,
     },
     age:{
         type:Number,

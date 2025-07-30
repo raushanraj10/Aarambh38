@@ -37,7 +37,7 @@ const SendEmailToUserByAdmin = async ({ to, subject, message }) => {
       `,
     });
 
-    console.log("✅ Email successfully sent to:", to);
+    // console.log("✅ Email successfully sent to:", to);
   } catch (err) {
     console.error("❌ Email send failed:", err.message);
   }

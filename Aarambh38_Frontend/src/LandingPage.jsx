@@ -21,37 +21,50 @@ export default function StudentLandingPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [loadingAlumniId, setLoadingAlumniId] = useState(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [alumniRes, sentRes, acceptedRes] = await Promise.all([
-          axios.get(`${BASE_URL}/getlistalumni`, { withCredentials: true }),
-          axios.get(`${BASE_URL}/finalsendrequestlist`, { withCredentials: true }),
-          axios.get(`${BASE_URL}/finallistusermessage`, { withCredentials: true }),
-        ]);
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const [alumniRes, sentRes, acceptedRes] = await Promise.allSettled([
+        axios.get(`${BASE_URL}/getlistalumni`, { withCredentials: true }),
+        axios.get(`${BASE_URL}/finalsendrequestlist`, { withCredentials: true }),
+        axios.get(`${BASE_URL}/finallistusermessage`, { withCredentials: true }),
+      ]);
 
-        setAlumniList(alumniRes.data);
+      if (alumniRes.status === "fulfilled") {
+        setAlumniList(alumniRes.value.data);
+      } else {
+        console.error("Error fetching alumni list:", alumniRes.reason);
+      }
 
+      if (sentRes.status === "fulfilled") {
         const sentMap = {};
-        sentRes.data.forEach((id) => {
+        sentRes.value.data.forEach((id) => {
           const stringId = typeof id === "object" ? id._id : id;
           sentMap[stringId] = true;
         });
         setRequestStatus(sentMap);
+      } else {
+        console.error("Error fetching sent requests:", sentRes.reason);
+      }
 
+      if (acceptedRes.status === "fulfilled") {
         const acceptedMap = {};
-        acceptedRes.data.forEach((id) => {
+        acceptedRes.value.data.forEach((id) => {
           const stringId = typeof id === "object" ? id._id : id;
           acceptedMap[stringId] = true;
         });
         setAcceptedStatus(acceptedMap);
-      } catch (error) {
-        console.error("Error fetching data:", error);
+      } else {
+        console.error("Error fetching accepted requests:", acceptedRes.reason);
       }
-    };
+    } catch (error) {
+      console.error("Unexpected error:", error);
+    }
+  };
 
-    fetchData();
-  }, []);
+  fetchData();
+}, []);
+
 
   const handleSendRequest = async (alumniId) => {
     if (requestStatus[alumniId] || loadingAlumniId === alumniId) return;

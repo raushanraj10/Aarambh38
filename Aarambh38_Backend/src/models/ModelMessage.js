@@ -22,29 +22,18 @@ const messageSchema = new mongoose.Schema(
       enum: ["text", "image", "file", "video", "audio"],
       default: "text",
     },
-    mediaUrl: {
-      type: String, // URL or file path to image/file if messageType !== "text"
+    repliedmessageType: {
+      type: String,
+      enum: ["text", "image", "file", "video", "audio"],
+      default: "text",
     },
-    isRead: {
-      type: Boolean,
-      default: false,
+    repliedtext:{
+      type: String,
+      default: "",
     },
-    readAt: {
-      type: Date,
+    repliedById:{
+      type: mongoose.Schema.Types.ObjectId,
     },
-    isEdited: {
-      type: Boolean,
-      default: false,
-    },
-    editedAt: {
-      type: Date,
-    },
-    deletedBy: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
   },
   { timestamps: true }
 );

@@ -36,17 +36,17 @@ export default function SignupPageAlumini() {
 
 
   const [formData, setFormData] = useState({
-    fullName: "abc",
-    emailId: "r661157@gmail.com",
-    collegeName: "Bakhtiyarpur Engineering College (BEC), Bakhtiyarpur",
-    registration: "123",
-    batch: "2022",
-    company: "google",
-    role: "manager",
-    gender: "Male",
-    branch: "Computer Science and Engineering (CSE)",
-    newPassword: "1234",
-    confirmPassword: "1234",
+    fullName: "",
+    emailId: "",
+    collegeName: "",
+    registration: "",
+    batch: "",
+    company: "",
+    role: "",
+    gender: "",
+    branch: "",
+    newPassword: "",
+    confirmPassword: "",
     about: "I am alumini",
     photourl:
       "https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcS0sQet7d_2RAgQyBQM092dn1Uo-N9Gk3xAdQV7YrSczH-LhdzZYeWIWfVE8B6sIvn1x6SZCpjN5TfBUe8",
@@ -55,7 +55,7 @@ export default function SignupPageAlumini() {
 
   useEffect(() => {
     if (popupMessage) {
-      const timer = setTimeout(() => setPopupMessage(""), 4000);
+      const timer = setTimeout(() => setPopupMessage(""), 2000);
       return () => clearTimeout(timer);
     }
   }, [popupMessage]);
@@ -109,7 +109,7 @@ export default function SignupPageAlumini() {
         { emailId, code },
         { withCredentials: true }
       );
-     console.log(code)
+    //  console.log(code)
       const hashedCode = await bcrypt.hash(code.toString(), 10);
       const updatedFormData = { ...formData, code: hashedCode };
 

@@ -38,9 +38,9 @@ AuthRouter.post("/signupuser",async (req,res)=>{
     const data1=validateBodyData(req,res);
     if(data1)return
 
-    // const checkemailid=await ModelUser.findOne({emailId:req.body.emailId})
-    // if(checkemailid)
-    //     return res.status(400).send("Email already exist")
+    const checkemailid=await ModelUser.findOne({emailId:req.body.emailId})
+    if(checkemailid)
+        return res.status(400).send("Email already exist")
 
     if(req.body.newPassword!==req.body.confirmPassword)
         return res.status(400).send("Password not match")
@@ -83,9 +83,9 @@ AuthRouter.post("/signupalumini",async (req,res)=>{
     if(data1)
         return;
 
-    // const checkemailid=await ModelUser.findOne({emailId:req.body.emailId})
-    // if(checkemailid)
-    //     return res.status(400).send("Email already exist")
+    const checkemailid=await ModelAlumini.findOne({emailId:req.body.emailId})
+    if(checkemailid)
+        return res.status(400).send("Email already exist")
 
     if(req.body.newPassword!==req.body.confirmPassword)
         return res.status(400).send("Password not match")
@@ -130,9 +130,9 @@ AuthRouter.post("/signupadmin",async (req,res)=>{
     // .include not working because data is object and requiredfields are array use "in" keyword
     // validateBodyData(req,res);
 
-    // const checkemailid=await ModelUser.findOne({emailId:req.body.emailId})
-    // if(checkemailid)
-    //     return res.status(400).send("Email already exist")
+    const checkemailid=await ModelAdmin.findOne({emailId:req.body.emailId})
+    if(checkemailid)
+        return res.status(400).send("Email already exist")
 
     if(req.body.newPassword!==req.body.confirmPassword)
         return res.status(400).send("Password not match")

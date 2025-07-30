@@ -16,7 +16,7 @@ const validateBodyData=(req,res)=>{
     if(!BranchList.includes(branch))
         return res.status(400).send("Branch not found")
     
-    if(newPassword.length<=3)
+    if(newPassword.length<=5)
         return res.status(400).send("Password must be at least 3 characters long")
  
 }
