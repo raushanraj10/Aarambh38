@@ -7,6 +7,7 @@ import { BASE_URL } from "./constants/AllUrl";
 
 export default function AlumniReceivedRequest() {
   const [requests, setRequests] = useState([]);
+  const [loadingId, setLoadingId] = useState(null); // Track loading request
   const Aluminidata = useSelector((store) => store.aluminidata);
   const navigate = useNavigate();
 
@@ -28,11 +29,14 @@ export default function AlumniReceivedRequest() {
     };
 
     fetchRequests();
+   
   }, [Aluminidata, navigate]);
 
   const handleAction = async (studentId, action) => {
     const confirmed = window.confirm(`Are you sure you want to ${action} this request?`);
     if (!confirmed) return;
+
+    setLoadingId(studentId);
 
     try {
       await axios.post(
@@ -41,10 +45,11 @@ export default function AlumniReceivedRequest() {
         { withCredentials: true }
       );
 
-      // Remove from UI
       setRequests((prev) => prev.filter((req) => req.fromuserId._id !== studentId));
     } catch (err) {
       console.error("Error handling request:", err.response?.data || err.message);
+    } finally {
+      setLoadingId(null);
     }
   };
 
@@ -58,50 +63,70 @@ export default function AlumniReceivedRequest() {
         {requests.length === 0 ? (
           <p className="text-center text-gray-500 text-lg">No pending requests.</p>
         ) : (
-          requests.map((req) => (
-            <div
-              key={req._id}
-              className="bg-white shadow-lg rounded-2xl border p-6 md:p-8 flex flex-col gap-4 hover:shadow-xl transition"
-            >
-              <div className="text-gray-800 space-y-1 text-sm md:text-base">
-                <p><strong>👤 Name:</strong> {req.fromuserId.fullName}</p>
-                <p><strong>🎓 Batch:</strong> {req.fromuserId.batch}</p>
-                <p><strong>🏫 College:</strong> {req.fromuserId.collegeName}</p>
-                <p><strong>🏬 Branch:</strong> {req.fromuserId.branch}</p>
+          requests.map((req) => {
+            const isLoading = loadingId === req.fromuserId._id;
 
-                {/* Bigger Message Box */}
-                <div className="mt-4 bg-blue-50 border border-blue-200 rounded-md p-4 text-gray-700">
-                  <p className="font-semibold">💬 Message:</p>
-                  <p className="mt-1 whitespace-pre-line">{req.text}</p>
+            return (
+              <div
+                key={req._id}
+                className="relative bg-white shadow-lg rounded-2xl border p-6 md:p-8 flex flex-col gap-4 hover:shadow-xl transition"
+              >
+                {/* Shimmer Overlay */}
+                {isLoading && (
+                  <div className="absolute inset-0 bg-white bg-opacity-70 flex items-center justify-center rounded-2xl z-10">
+                    <div className="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full"></div>
+                  </div>
+                )}
+
+                <div className="text-gray-800 space-y-1 text-sm md:text-base">
+                  <p><strong>👤 Name:</strong> {req.fromuserId.fullName}</p>
+                  <p><strong>🎓 Batch:</strong> {req.fromuserId.batch}</p>
+                  <p><strong>🏫 College:</strong> {req.fromuserId.collegeName}</p>
+                  <p><strong>🏬 Branch:</strong> {req.fromuserId.branch}</p>
+
+                  <div className="mt-4 bg-blue-50 border border-blue-200 rounded-md p-4 text-gray-700">
+                    <p className="font-semibold">💬 Message:</p>
+                    <p className="mt-1 whitespace-pre-line">{req.text}</p>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-4 pt-4 z-0">
+                  <button
+                    onClick={() => handleAction(req.fromuserId._id, "accepted")}
+                    disabled={isLoading}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-md text-white font-medium transition ${
+                      isLoading ? "bg-green-300 cursor-wait" : "bg-green-600 hover:bg-green-700"
+                    }`}
+                  >
+                    <CheckCircle size={18} />
+                    Accept
+                  </button>
+
+                  <button
+                    onClick={() => handleAction(req.fromuserId._id, "rejected")}
+                    disabled={isLoading}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-md text-white font-medium transition ${
+                      isLoading ? "bg-yellow-300 cursor-wait" : "bg-yellow-500 hover:bg-yellow-600"
+                    }`}
+                  >
+                    <XCircle size={18} />
+                    Reject
+                  </button>
+
+                  <button
+                    onClick={() => handleAction(req.fromuserId._id, "blocked")}
+                    disabled={isLoading}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-md text-white font-medium transition ${
+                      isLoading ? "bg-red-300 cursor-wait" : "bg-red-600 hover:bg-red-700"
+                    }`}
+                  >
+                    <Ban size={18} />
+                    Block
+                  </button>
                 </div>
               </div>
-
-              {/* Action Buttons */}
-              <div className="flex flex-wrap gap-4 pt-4">
-                <button
-                  onClick={() => handleAction(req.fromuserId._id, "accepted")}
-                  className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-md transition"
-                >
-                  <CheckCircle size={18} />
-                  Accept
-                </button>
-                <button
-                  onClick={() => handleAction(req.fromuserId._id, "rejected")}
-                  className="flex items-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-white font-medium px-4 py-2 rounded-md transition"
-                >
-                  <XCircle size={18} />
-                  Reject
-                </button>
-                <button
-                  onClick={() => handleAction(req.fromuserId._id, "blocked")}
-                  className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded-md transition"
-                >
-                  <Ban size={18} />
-                  Block
-                </button>
-              </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
 

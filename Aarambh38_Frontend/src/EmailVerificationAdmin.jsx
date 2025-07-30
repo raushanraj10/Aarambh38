@@ -37,6 +37,7 @@ export default function EmailVerificationAdmin() {
           age,
           newPassword,
           confirmPassword,
+          photourl,
           
         } = verifydata;
         const passkey="Z3rNxTp1VuEyKqW7gMdBL9AfRcJXy842hPn0vUsM"
@@ -50,7 +51,8 @@ export default function EmailVerificationAdmin() {
     age,
     newPassword,
     confirmPassword,
-    passkey
+    passkey,
+    photourl
   },
   { withCredentials: true }
 );

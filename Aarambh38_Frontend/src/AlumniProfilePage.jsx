@@ -6,12 +6,10 @@ import LoginSelectorPage from "./LoginSelectorPage";
 import { BASE_URL } from "./constants/AllUrl";
 
 export default function AlumniProfilePage() {
-    const capitalizeEachWord = (str) =>
-  str?.replace(/\b\w/g, (char) => char.toUpperCase()) || "";
+  const capitalizeEachWord = (str) =>
+    str?.replace(/\b\w/g, (char) => char.toUpperCase()) || "";
 
-
-
-  const { id } = useParams(); // alumni ID from URL
+  const { id } = useParams();
   const Navigate = useNavigate();
 
   const Studentdata = useSelector((store) => store.studentdata);
@@ -22,6 +20,7 @@ export default function AlumniProfilePage() {
   const [requestStatus, setRequestStatus] = useState({});
   const [acceptedStatus, setAcceptedStatus] = useState({});
   const [messages, setMessages] = useState({});
+  const [showImageModal, setShowImageModal] = useState(false);
 
   useEffect(() => {
     const fetchAll = async () => {
@@ -52,46 +51,41 @@ export default function AlumniProfilePage() {
     fetchAll();
   }, []);
 
-const handleSendRequest = async (alumniId) => {
-  if (requestStatus[alumniId]) return;
+  const handleSendRequest = async (alumniId) => {
+    if (requestStatus[alumniId]) return;
 
-  const message = messages[alumniId]?.trim();
-  if (!message) {
-    alert("Please write a message before sending.");
-    return;
-  }
+    const message = messages[alumniId]?.trim();
+    if (!message) {
+      alert("Please write a message before sending.");
+      return;
+    }
 
-  try {
-    // const alumni = alumniList.find((a) => a._id === alumniId);
-    const fromuserId = Studentdata._id;
-    
+    try {
+      const fromuserId = Studentdata._id;
 
-    // 1. Send connection request
-    await axios.post(
-      `${BASE_URL}/sendrequest/${alumniId}`,
-      { text: message },
-      { withCredentials: true }
-    );
+      await axios.post(
+        `${BASE_URL}/sendrequest/${alumniId}`,
+        { text: message },
+        { withCredentials: true }
+      );
 
-    // 2. Send connection email
-    await axios.post(
-      `${BASE_URL}/sendrequestbymail`,
-      {
-        alumniId,
-        fromuserId,
-        message,
-      },
-      { withCredentials: true }
-    );
+      await axios.post(
+        `${BASE_URL}/sendrequestbymail`,
+        {
+          alumniId,
+          fromuserId,
+          message,
+        },
+        { withCredentials: true }
+      );
 
-    setRequestStatus((prev) => ({ ...prev, [alumniId]: true }));
-    alert("Request sent and email notification delivered!");
-  } catch (err) {
-    console.error("Error sending request:", err);
-    alert("Failed to send request.");
-  }
-};
-
+      setRequestStatus((prev) => ({ ...prev, [alumniId]: true }));
+      alert("Request sent and email notification delivered!");
+    } catch (err) {
+      console.error("Error sending request:", err);
+      alert("Failed to send request.");
+    }
+  };
 
   const handleSendMessage = (alumniId) => {
     Navigate(`/chat/${alumniId}`);
@@ -107,50 +101,63 @@ const handleSendRequest = async (alumniId) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-tr from-white via-blue-50 to-green-100 py-16 px-6">
+      {/* Modal for large image */}
+      {showImageModal && (
+        <div
+          onClick={() => setShowImageModal(false)}
+          className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50"
+        >
+          <img
+            src={alumni.photourl}
+            alt="alumni-large"
+            className="max-w-md w-full rounded-2xl shadow-2xl border-4 border-white"
+          />
+        </div>
+      )}
+
       <div className="max-w-3xl mx-auto bg-white rounded-3xl shadow-lg p-8 border">
         <div className="flex flex-col items-center gap-4">
           <img
             src={alumni.photourl}
             alt="alumni"
-            className="w-28 h-28 rounded-full object-cover border-2 border-blue-500 shadow-md"
+            onClick={() => setShowImageModal(true)}
+            className="w-28 h-28 rounded-full object-cover border-2 border-blue-500 shadow-md cursor-pointer hover:scale-105 transition-transform"
+            title="Click to enlarge"
           />
           <h2 className="text-2xl font-bold text-blue-700">{alumni.fullName}</h2>
+
           <div className="mt-6 w-full max-w-md mx-auto bg-white border border-gray-200 rounded-2xl shadow-md p-5 text-center space-y-2">
-  {/* Company Name Highlighted */}
-  <div className="text-2xl font-extrabold text-green-700 tracking-wide uppercase">
-    {capitalizeEachWord(alumni.company)}
-  </div>
-
-  {/* Role Description */}
-  <p className="text-base text-gray-700 font-medium">
-    {capitalizeEachWord(alumni.role)}{" "}
-    <span className="text-gray-500">at</span>{" "}
-    <span className="font-semibold text-gray-800">{capitalizeEachWord(alumni.company)}</span>
-  </p>
-</div>
-
-
-
+            <div className="text-2xl font-extrabold text-green-700 tracking-wide uppercase">
+              {capitalizeEachWord(alumni.company)}
+            </div>
+            <p className="text-base text-gray-700 font-medium">
+              {capitalizeEachWord(alumni.role)}{" "}
+              <span className="text-gray-500">at</span>{" "}
+              <span className="font-semibold text-gray-800">
+                {capitalizeEachWord(alumni.company)}
+              </span>
+            </p>
+          </div>
         </div>
 
         <div className="mt-6 space-y-2 text-gray-800 text-sm">
           <p><strong>🎓 College:</strong> {alumni.collegeName}</p>
           <p><strong>📅 Batch:</strong> {alumni.batch}</p>
-           <p><strong>📅 Branch:</strong> {alumni.branch}</p>
+          <p><strong>📅 Branch:</strong> {alumni.branch}</p>
           <p><strong>⚧ Gender:</strong> {alumni.gender}</p>
-          <div className="mt-6 bg-gray-50 border-l-4 border-blue-400 p-4 rounded-md shadow-sm">
-  <h3 className="text-lg font-semibold text-blue-700 flex items-center gap-2">
-    <span>📄</span> About Alumni
-  </h3>
-  <p className="text-gray-700 mt-2 text-sm leading-relaxed">
-    {alumni.about ? (
-      <span className="italic text-gray-800">"{alumni.about}"</span>
-    ) : (
-      <span className="text-gray-500 italic">This alumni hasn't shared an about section yet.</span>
-    )}
-  </p>
-</div>
 
+          <div className="mt-6 bg-gray-50 border-l-4 border-blue-400 p-4 rounded-md shadow-sm">
+            <h3 className="text-lg font-semibold text-blue-700 flex items-center gap-2">
+              <span>📄</span> About Alumni
+            </h3>
+            <p className="text-gray-700 mt-2 text-sm leading-relaxed">
+              {alumni.about ? (
+                <span className="italic text-gray-800">"{alumni.about}"</span>
+              ) : (
+                <span className="text-gray-500 italic">This alumni hasn't shared an about section yet.</span>
+              )}
+            </p>
+          </div>
         </div>
 
         {!isRequestSent && !isAccepted && (

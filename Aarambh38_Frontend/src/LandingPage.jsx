@@ -7,9 +7,9 @@ import { BASE_URL } from "./constants/AllUrl";
 
 export default function StudentLandingPage() {
   const capitalizeEachWord = (str) =>
-  str?.replace(/\b\w/g, (char) => char.toUpperCase()) || "";
+    str?.replace(/\b\w/g, (char) => char.toUpperCase()) || "";
 
-  const Navigate = useNavigate();
+  const navigate = useNavigate();
   const Studentdata = useSelector((store) => store.studentdata);
   const Aluminidata = useSelector((store) => store.aluminidata);
   const Admindata = useSelector((store) => store.admindata);
@@ -19,28 +19,32 @@ export default function StudentLandingPage() {
   const [acceptedStatus, setAcceptedStatus] = useState({});
   const [messages, setMessages] = useState({});
   const [searchQuery, setSearchQuery] = useState("");
+  const [loadingAlumniId, setLoadingAlumniId] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const alumniRes = await axios.get(`${BASE_URL}/getlistalumni`, {
-          withCredentials: true,
-        });
+        const [alumniRes, sentRes, acceptedRes] = await Promise.all([
+          axios.get(`${BASE_URL}/getlistalumni`, { withCredentials: true }),
+          axios.get(`${BASE_URL}/finalsendrequestlist`, { withCredentials: true }),
+          axios.get(`${BASE_URL}/finallistusermessage`, { withCredentials: true }),
+        ]);
+
         setAlumniList(alumniRes.data);
 
-        const sentRes = await axios.get(`${BASE_URL}/finalsendrequestlist`, {
-          withCredentials: true,
+        const sentMap = {};
+        sentRes.data.forEach((id) => {
+          const stringId = typeof id === "object" ? id._id : id;
+          sentMap[stringId] = true;
         });
-        const sentObj = {};
-        sentRes.data.forEach((id) => (sentObj[id] = true));
-        setRequestStatus(sentObj);
+        setRequestStatus(sentMap);
 
-        const acceptedRes = await axios.get(`${BASE_URL}/finallistusermessage`, {
-          withCredentials: true,
+        const acceptedMap = {};
+        acceptedRes.data.forEach((id) => {
+          const stringId = typeof id === "object" ? id._id : id;
+          acceptedMap[stringId] = true;
         });
-        const acceptedObj = {};
-        acceptedRes.data.forEach((id) => (acceptedObj[id] = true));
-        setAcceptedStatus(acceptedObj);
+        setAcceptedStatus(acceptedMap);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -50,7 +54,7 @@ export default function StudentLandingPage() {
   }, []);
 
   const handleSendRequest = async (alumniId) => {
-    if (requestStatus[alumniId]) return;
+    if (requestStatus[alumniId] || loadingAlumniId === alumniId) return;
 
     const message = messages[alumniId]?.trim();
     if (!message) {
@@ -58,33 +62,34 @@ export default function StudentLandingPage() {
       return;
     }
 
+    setLoadingAlumniId(alumniId);
+
     try {
       await axios.post(
         `${BASE_URL}/sendrequest/${alumniId}`,
         { text: message },
         { withCredentials: true }
       );
-     const fromuserId = Studentdata._id;
-    await axios.post(`${BASE_URL}/sendrequestbymail`, {
-      alumniId,
-  fromuserId,
-  message,
-}, {
-  withCredentials: true,
-});
 
-
+      const fromuserId = Studentdata._id;
+      await axios.post(
+        `${BASE_URL}/sendrequestbymail`,
+        { alumniId, fromuserId, message },
+        { withCredentials: true }
+      );
 
       setRequestStatus((prev) => ({ ...prev, [alumniId]: true }));
       alert("Request sent!");
     } catch (err) {
       console.error("Error sending request:", err);
       alert("Failed to send request.");
+    } finally {
+      setLoadingAlumniId(null);
     }
   };
 
   const handleSendMessage = (alumniId) => {
-    return Navigate(`/chat/${alumniId}`);
+    navigate(`/chat/${alumniId}`);
   };
 
   const filteredAlumni = alumniList.filter((alumni) =>
@@ -97,7 +102,6 @@ export default function StudentLandingPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-blue-50 to-green-100 px-4 py-10">
-      {/* Search */}
       <div className="max-w-2xl mx-auto mb-10">
         <input
           type="text"
@@ -108,103 +112,115 @@ export default function StudentLandingPage() {
         />
       </div>
 
-      {/* Alumni Cards */}
       <div className="flex flex-col gap-8 items-center">
-        {filteredAlumni.map((alumni) => {
-          const isRequestSent = requestStatus[alumni._id];
-          const isAccepted = acceptedStatus[alumni._id];
+        {filteredAlumni.length === 0 ? (
+          <div className="text-gray-600 text-center text-lg font-medium mt-10">
+            No alumni found matching your search.
+          </div>
+        ) : (
+          filteredAlumni.map((alumni) => {
+            const id = alumni._id;
+            const isRequestSent = requestStatus[id];
+            const isAccepted = acceptedStatus[id];
+            const isLoading = loadingAlumniId === id;
 
-          return (
-            <div
-              key={alumni._id}
-              className="w-full max-w-4xl bg-white rounded-2xl shadow-md border hover:shadow-lg transition"
-            >
-              <Link
-                to={`/alumni/${alumni._id}`}
-                className="flex flex-col sm:flex-row gap-6 p-6"
+            return (
+              <div
+                key={id}
+                className="relative w-full max-w-4xl bg-white rounded-2xl shadow-md border transform transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-[1.015]"
               >
-                {/* Profile Image */}
-                <div className="shrink-0">
-                  <img
-                    src={alumni.photourl||"https://media.istockphoto.com/id/1127115457/photo/black-hat-of-the-graduates-floating-in-the-sky.jpg?s=612x612&w=0&k=20&c=J_Hv0Lo4MAkJTygHEMZU70WqbiLaNG7HWPVJGf8Yq1g="}
-                    alt="alumni"
-                    className="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover border-2 border-blue-500"
-                  />
-                </div>
-
-                {/* Details */}
-                <div className="flex-1 space-y-1 text-sm text-gray-800">
-                  <p><span className="font-semibold">👤 Name:</span> {alumni.fullName}</p>
-                  
-
-                  <p><span className="font-semibold">🎓 Batch:</span> {alumni.batch}</p>
-                  
-                  <p><span className="font-semibold">👤 Branch:</span> {alumni.branch}</p>
-                  <p><span className="font-semibold">🏫 College:</span> {alumni.collegeName}</p>
-                  <p><span className="font-semibold">⚧ Gender:</span> {alumni.gender}</p>
-                  
-<p className="text-base text-gray-800 font-medium mt-1">
-  <span className="font-semibold text-green-700">🏢 Company:</span>{" "}
-  {capitalizeEachWord(alumni.company)}
-</p>
-<p className="text-base text-gray-800 font-medium">
-  <span className="font-semibold text-blue-800">🧑‍💼 Role:</span>{" "}
-  {capitalizeEachWord(alumni.role)}
-</p>
-                  {/* <p><span className="font-semibold">📄 About:</span> {alumni.about || "N/A"}</p> */}
-                </div>
-              </Link>
-
-              {/* Message + Chat */}
-              <div className="px-6 pb-4">
-                {!isRequestSent && !isAccepted && (
-                  <textarea
-                    rows={3}
-                    placeholder="Write your message..."
-                    value={messages[alumni._id] || ""}
-                    onChange={(e) =>
-                      setMessages((prev) => ({
-                        ...prev,
-                        [alumni._id]: e.target.value,
-                      }))
-                    }
-                    className="w-full mt-2 border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none"
-                  />
+                {isLoading && (
+                  <div className="absolute inset-0 bg-white bg-opacity-60 rounded-2xl flex items-center justify-center z-10">
+                    <div className="animate-spin w-8 h-8 border-4 border-blue-400 border-t-transparent rounded-full"></div>
+                  </div>
                 )}
 
-                <div className="flex flex-wrap gap-4 pt-3">
-                  {!isAccepted && (
+                <Link
+                  to={`/alumni/${id}`}
+                  className="flex flex-col sm:flex-row gap-6 p-6"
+                >
+                  <div className="shrink-0">
+                    <img
+                      src={
+                        alumni.photourl ||
+                        "https://media.istockphoto.com/id/1127115457/photo/black-hat-of-the-graduates-floating-in-the-sky.jpg?s=612x612&w=0&k=20&c=J_Hv0Lo4MAkJTygHEMZU70WqbiLaNG7HWPVJGf8Yq1g="
+                      }
+                      alt="alumni"
+                      className="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover border-2 border-blue-500 transition-transform duration-300 hover:scale-105"
+                    />
+                  </div>
+
+                  <div className="flex-1 space-y-1 text-sm text-gray-800">
+                    <p><span className="font-semibold">👤 Name:</span> {alumni.fullName}</p>
+                    <p><span className="font-semibold">🎓 Batch:</span> {alumni.batch}</p>
+                    <p><span className="font-semibold">👤 Branch:</span> {alumni.branch}</p>
+                    <p><span className="font-semibold">🏫 College:</span> {alumni.collegeName}</p>
+                    <p><span className="font-semibold">⚧ Gender:</span> {alumni.gender}</p>
+                    <p className="text-base text-gray-800 font-medium mt-1">
+                      <span className="font-semibold text-green-700">🏢 Company:</span> {capitalizeEachWord(alumni.company)}
+                    </p>
+                    <p className="text-base text-gray-800 font-medium">
+                      <span className="font-semibold text-blue-800">🧑‍💼 Role:</span> {capitalizeEachWord(alumni.role)}
+                    </p>
+                  </div>
+                </Link>
+
+                <div className="px-6 pb-4">
+                  {!isRequestSent && !isAccepted && (
+                    <textarea
+                      rows={3}
+                      placeholder="Write your message..."
+                      value={messages[id] || ""}
+                      onChange={(e) =>
+                        setMessages((prev) => ({
+                          ...prev,
+                          [id]: e.target.value,
+                        }))
+                      }
+                      className="w-full mt-2 border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none"
+                    />
+                  )}
+
+                  <div className="flex flex-wrap gap-4 pt-3">
+                    {!isAccepted && (
+                      <button
+                        onClick={() => handleSendRequest(id)}
+                        disabled={isRequestSent || isLoading}
+                        className={`px-4 py-2 rounded-md text-sm font-medium transition ${
+                          isRequestSent
+                            ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                            : isLoading
+                            ? "bg-blue-400 text-white animate-pulse cursor-wait"
+                            : "bg-blue-600 text-white hover:bg-blue-700"
+                        }`}
+                      >
+                        {isRequestSent
+                          ? "Request Sent"
+                          : isLoading
+                          ? "Sending..."
+                          : "Send Request"}
+                      </button>
+                    )}
+
                     <button
-                      onClick={() => handleSendRequest(alumni._id)}
-                      disabled={isRequestSent}
+                      onClick={() => handleSendMessage(id)}
+                      disabled={!isAccepted}
                       className={`px-4 py-2 rounded-md text-sm font-medium transition ${
-                        isRequestSent
-                          ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                          : "bg-blue-600 text-white hover:bg-blue-700"
+                        isAccepted
+                          ? "bg-green-600 text-white hover:bg-green-700"
+                          : "bg-gray-300 text-gray-600 cursor-not-allowed"
                       }`}
                     >
-                      {isRequestSent ? "Request Sent" : "Send Request"}
+                      Go To Chat
                     </button>
-                  )}
-                  <button
-                    onClick={() => handleSendMessage(alumni._id)}
-                    disabled={!isAccepted}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition ${
-                      isAccepted
-                        ? "bg-green-600 text-white hover:bg-green-700"
-                        : "bg-gray-300 text-gray-600 cursor-not-allowed"
-                    }`}
-                  >
-                    Go To Chat
-                  </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })
+        )}
       </div>
 
-      {/* Footer */}
       <div className="text-center mt-20">
         <p className="text-xl font-semibold bg-clip-text bg-gradient-to-r from-blue-500 to-green-500 text-transparent">
           Empowered by{" "}

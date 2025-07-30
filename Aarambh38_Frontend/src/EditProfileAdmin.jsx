@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { addadmin } from "./utils/AdminSlice";
 import { BASE_URL } from "./constants/AllUrl";
+import Shimmer from "./Shimmer"; // adjust path if needed
 
 const EditProfileAdmin = () => {
   const AdminData = useSelector((store) => store.admindata);
@@ -22,6 +23,7 @@ const EditProfileAdmin = () => {
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("success");
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // loading state
 
   useEffect(() => {
     if (!AdminData || !AdminData.emailId) {
@@ -52,7 +54,7 @@ const EditProfileAdmin = () => {
       reader.onloadend = () => {
         setFormData((prev) => ({
           ...prev,
-          photourl: reader.result, // base64 string
+          photourl: reader.result,
         }));
       };
       reader.readAsDataURL(file);
@@ -63,6 +65,7 @@ const EditProfileAdmin = () => {
     e.preventDefault();
     const { fullName, age, gender, photourl } = formData;
 
+    setIsLoading(true);
     try {
       const res = await axios.patch(
         `${BASE_URL}/editadmin`,
@@ -70,17 +73,22 @@ const EditProfileAdmin = () => {
         { withCredentials: true }
       );
 
-      setMessage("✅ Profile updated successfully.");
+      setMessage("Profile updated successfully.");
       setMessageType("success");
       dispatch(addadmin(res.data));
     } catch (err) {
-      setMessage("❌ Failed to update profile.");
+      setMessage("Failed to update profile.");
       setMessageType("error");
       console.error(err);
     } finally {
+      setIsLoading(false);
       setTimeout(() => setMessage(""), 3000);
     }
   };
+
+  if (isLoading) {
+    return <Shimmer />;
+  }
 
   return (
     <div className="max-w-7xl mx-auto mt-10 p-6 bg-white rounded shadow-md flex flex-col md:flex-row gap-10 relative">
@@ -103,13 +111,13 @@ const EditProfileAdmin = () => {
             placeholder="Email"
             type="email"
           />
-          <input
+          {/* <input
             name="collegeName"
             value={formData.collegeName}
             disabled
             className="w-full border rounded px-3 py-2 bg-gray-100 cursor-not-allowed"
             placeholder="College Name"
-          />
+          /> */}
           <select
             name="gender"
             value={formData.gender}
@@ -154,10 +162,11 @@ const EditProfileAdmin = () => {
             onClick={() => setIsImageModalOpen(true)}
           />
           <p className="text-lg font-bold">{formData.fullName || "Full Name"}</p>
-          <p className="text-sm text-gray-500">{formData.age || "Age"}</p>
-          <p className="text-sm text-gray-600 mt-1">{formData.collegeName || "College Name"}</p>
-          <p className="text-sm text-gray-500 mt-3 px-4">{formData.gender || "Gender"}</p>
           <p className="text-xs text-gray-400 mt-2">{formData.emailId || "Email Address"}</p>
+          <p className="text-sm text-gray-500">{formData.age || "Age"}</p>
+          {/* <p className="text-sm text-gray-600 mt-1">{formData.collegeName || "College Name"}</p> */}
+          <p className="text-sm text-gray-500 mt-3 px-4">{formData.gender || "Gender"}</p>
+          
         </div>
       </div>
 
@@ -176,7 +185,7 @@ const EditProfileAdmin = () => {
         </div>
       )}
 
-      {/* Toast */}
+      {/* Toast Message */}
       {message && (
         <div
           className={`fixed bottom-5 right-5 px-5 py-3 rounded shadow-md text-white z-50 transition-all duration-300 ${

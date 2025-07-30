@@ -13,6 +13,7 @@ const ChatApp = () => {
   const user = Studentdata || Aluminidata;
 
   const [chatlist, setChatlist] = useState([]);
+  //  const [previewImg, setPreviewImg] = useState(null)
   const [selectedUser, setSelectedUser] = useState(null);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -21,7 +22,7 @@ const ChatApp = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const menuRef = useRef(null);
   const socketRef = useRef(null);
-  const bottomRef = useRef(null); // 👈 added scroll ref
+  const bottomRef = useRef(null);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -29,7 +30,6 @@ const ChatApp = () => {
         const endpoint = Studentdata
           ? `${BASE_URL}/mymentors`
           : `${BASE_URL}/getalumnimentees`;
-
         const res = await axios.get(endpoint, { withCredentials: true });
         setChatlist(res.data);
       } catch (error) {
@@ -41,7 +41,6 @@ const ChatApp = () => {
 
   useEffect(() => {
     if (!user) return;
-
     socketRef.current = SocketConnection();
 
     socketRef.current.on("messageRecieved", ({ fromuserId, text }) => {
@@ -64,7 +63,6 @@ const ChatApp = () => {
 
   useEffect(() => {
     if (!user || !selectedUser || !socketRef.current) return;
-
     socketRef.current.emit("joinchat", {
       fromuserId: user._id,
       targetuserId: selectedUser._id,
@@ -77,14 +75,12 @@ const ChatApp = () => {
         `${BASE_URL}/getmessageswith/${targetUserId}`,
         { withCredentials: true }
       );
-
       const formatted = res.data.map((msg) => ({
         from: msg.fromuserId === user._id ? "me" : "them",
         text: msg.text,
         createdAt: msg.createdAt,
         senderId: msg.fromuserId,
       }));
-
       setMessages(formatted);
     } catch (err) {
       console.error("Failed to fetch messages", err);
@@ -100,7 +96,6 @@ const ChatApp = () => {
 
   const handleSend = () => {
     if (!input.trim() || !selectedUser) return;
-
     const fromuserId = user._id;
     const targetuserId = selectedUser._id;
 
@@ -119,7 +114,6 @@ const ChatApp = () => {
         senderId: fromuserId,
       },
     ]);
-
     setInput("");
   };
 
@@ -133,7 +127,6 @@ const ChatApp = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // 👇 Scroll to bottom on new message
   useEffect(() => {
     if (bottomRef.current) {
       bottomRef.current.scrollIntoView({ behavior: "smooth" });
@@ -145,6 +138,23 @@ const ChatApp = () => {
   const filteredList = chatlist.filter((u) =>
     u.fullName?.toLowerCase().includes(search.toLowerCase())
   );
+
+  const groupMessagesByDate = (msgs) => {
+    const groups = {};
+    msgs.forEach((msg) => {
+      const date = moment(msg.createdAt).startOf("day");
+      let label = date.format("MMMM D, YYYY");
+      if (date.isSame(moment(), "day")) label = "Today";
+      else if (date.isSame(moment().subtract(1, "days"), "day")) label = "Yesterday";
+      else if (date.isSame(moment().add(1, "days"), "day")) label = "Tomorrow";
+
+      if (!groups[label]) groups[label] = [];
+      groups[label].push(msg);
+    });
+    return groups;
+  };
+
+  const groupedMessages = groupMessagesByDate(messages);
 
   return (
     <div className="h-screen w-full flex bg-gray-100 relative overflow-hidden">
@@ -158,7 +168,7 @@ const ChatApp = () => {
         <div className="p-4 text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600 tracking-tight">
           Connections
         </div>
-        <div className="px-4 pb-3 sm:pb-2 sm:px-4">
+        <div className="px-4 pb-3">
           <input
             type="text"
             placeholder="Search connections..."
@@ -243,57 +253,60 @@ const ChatApp = () => {
         </div>
 
         {/* Messages */}
-        <div className="flex-1 p-4 overflow-y-auto space-y-4 z-10">
+        <div className="flex-1 p-4 overflow-y-auto space-y-6 z-10">
           {selectedUser ? (
             <>
-              {messages.map((msg, index) => {
-                const isMe = msg.from === "me";
-                const sender = isMe ? user : selectedUser;
+              {Object.entries(groupedMessages).map(([dateLabel, group]) => (
+                <div key={dateLabel}>
+                  <div className="text-center text-xs text-gray-500 my-3">{dateLabel}</div>
+                  {group.map((msg, index) => {
+                    const isMe = msg.from === "me";
+                    const sender = isMe ? user : selectedUser;
 
-                return (
-                  <div
-                    key={index}
-                    className={`flex items-end gap-2 ${
-                      isMe ? "justify-end" : "justify-start"
-                    }`}
-                  >
-                    {!isMe && (
-                      <img
-                        src={sender?.photourl || "/default-avatar.png"}
-                        alt="profile"
-                        className="w-8 h-8 rounded-full object-cover border"
-                      />
-                    )}
-
-                    <div className="flex flex-col max-w-xs">
+                    return (
                       <div
-                        className={`px-4 py-2 rounded-lg shadow text-white text-sm ${
-                          isMe ? "bg-green-600 self-end" : "bg-blue-600"
+                        key={index}
+                        className={`flex items-end gap-2 ${
+                          isMe ? "justify-end" : "justify-start"
                         }`}
                       >
-                        <div>{msg.text}</div>
+                        {!isMe && (
+                          <img
+                            src={sender?.photourl || "/default-avatar.png"}
+                            alt="profile"
+                            className="w-8 h-8 rounded-full object-cover border"
+                          />
+                        )}
+                        <div className="flex flex-col max-w-[80%] sm:max-w-xs">
+                          <div
+                            className={`px-4 py-2 break-words rounded-lg shadow text-white text-sm ${
+                              isMe ? "bg-green-600 self-end" : "bg-blue-600"
+                            }`}
+                          >
+                            {msg.text}
+                          </div>
+                          <div
+                            className={`text-xs text-gray-500 mt-1 ${
+                              isMe ? "text-right" : "text-left"
+                            }`}
+                          >
+                            {isMe ? "You" : sender?.fullName || "Them"} •{" "}
+                            {moment(msg.createdAt).format("h:mm A")}
+                          </div>
+                        </div>
+                        {isMe && (
+                          <img
+                            src={sender?.photourl || "/default-avatar.png"}
+                            alt="profile"
+                            className="w-8 h-8 rounded-full object-cover border"
+                          />
+                        )}
                       </div>
-                      <div
-                        className={`text-xs text-gray-500 mt-1 ${
-                          isMe ? "text-right" : "text-left"
-                        }`}
-                      >
-                        {isMe ? "You" : sender?.fullName || "Them"} •{" "}
-                        {moment(msg.createdAt).format("h:mm A")}
-                      </div>
-                    </div>
-
-                    {isMe && (
-                      <img
-                        src={sender?.photourl || "/default-avatar.png"}
-                        alt="profile"
-                        className="w-8 h-8 rounded-full object-cover border"
-                      />
-                    )}
-                  </div>
-                );
-              })}
-              <div ref={bottomRef} /> {/* 👈 Scroll target */}
+                    );
+                  })}
+                </div>
+              ))}
+              <div ref={bottomRef} />
             </>
           ) : (
             <div className="flex flex-col items-center justify-center h-full text-center text-gray-500">

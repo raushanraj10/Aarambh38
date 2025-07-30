@@ -1,16 +1,16 @@
-import { removestudent } from "./utils/StudentSlice";
-import { removeadmin } from "./utils/AdminSlice";
-import { removealumini } from "./utils/AluminiSlice";
-import { useDispatch } from "react-redux";
-import { useEffect } from "react";
+// import { removestudent } from "./utils/StudentSlice";
+// import { removeadmin } from "./utils/AdminSlice";
+// import { removealumini } from "./utils/AluminiSlice";
+// import { useDispatch } from "react-redux";
+// import { useEffect } from "react";
 
 export default function Shimmer() {
-  const Dispatch=useDispatch()
-    useEffect(()=>{
-      Dispatch(removestudent())
-      Dispatch(removeadmin())
-      Dispatch(removealumini())
-    },[])
+  // const Dispatch=useDispatch()
+  //   useEffect(()=>{
+  //     Dispatch(removestudent())
+  //     Dispatch(removeadmin())
+  //     Dispatch(removealumini())
+  //   },[])
 
 
 

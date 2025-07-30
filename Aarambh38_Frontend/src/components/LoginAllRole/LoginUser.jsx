@@ -10,20 +10,14 @@ import { removeadmin } from "../../utils/AdminSlice";
 import { removealumini } from "../../utils/AluminiSlice";
 
 export default function LoginUser() {
-
-  
-
-
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  
-  useEffect(()=>{
-          dispatch(removeadmin())
-          dispatch(removealumini())
-          dispatch(removestudent())
-    },[])
 
+  useEffect(() => {
+    dispatch(removeadmin());
+    dispatch(removealumini());
+    dispatch(removestudent());
+  }, []);
 
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ emailId: "", newPassword: "" });
@@ -43,16 +37,15 @@ export default function LoginUser() {
 
     try {
       const res = await axios.post(
-  `${BASE_URL}/loginuser`,
-  { emailId, newPassword },
-  { withCredentials: true }
-);
-
+        `${BASE_URL}/loginuser`,
+        { emailId, newPassword },
+        { withCredentials: true }
+      );
 
       dispatch(Verifieduser());
       dispatch(addstudent(res.data));
 
-      setMessage("🎉 Welcome back! Redirecting...");
+      setMessage("Welcome back! Student");
       setMessageType("success");
       setShowMessage(true);
 
@@ -61,7 +54,7 @@ export default function LoginUser() {
       }, 2000);
     } catch (err) {
       const message =
-        err.response?.data?.message || "❌ Invalid email or password.";
+        err.response?.data?.message || "Invalid email or password.";
       setMessage(message);
       setMessageType("error");
       setShowMessage(true);
@@ -76,17 +69,28 @@ export default function LoginUser() {
     }
   }, [showMessage]);
 
+  // Scroll to top when message appears
+  useEffect(() => {
+    if (showMessage) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [showMessage]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-lime-100 flex items-center justify-center px-4 py-12 relative">
-      {/* 🌟 Floating Message */}
+      {/* Floating Message */}
       {showMessage && (
         <div className="absolute top-6 left-1/2 transform -translate-x-1/2 z-50">
           <div
             className={`
               px-6 py-3 rounded-xl shadow-lg text-sm font-medium text-center transition duration-300
-              ${messageType === "success" ? "bg-green-100 text-green-800 border border-green-300"
-                : messageType === "error" ? "bg-red-100 text-red-800 border border-red-300"
-                : "bg-blue-100 text-blue-800 border border-blue-300"}
+              ${
+                messageType === "success"
+                  ? "bg-green-100 text-green-800 border border-green-300"
+                  : messageType === "error"
+                  ? "bg-red-100 text-red-800 border border-red-300"
+                  : "bg-blue-100 text-blue-800 border border-blue-300"
+              }
             `}
           >
             {message}

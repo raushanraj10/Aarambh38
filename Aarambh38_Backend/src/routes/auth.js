@@ -26,7 +26,7 @@ AuthRouter.post("/signupuser",async (req,res)=>{
         return res.status(400).send("First verify Email")
     const data=req.body;
     // console.log(data)
-    const requiredFields=["fullName","gender","emailId","newPassword","confirmPassword","registration","age","collegeName","branch","passkey"]
+    const requiredFields=["fullName","gender","emailId","newPassword","confirmPassword","registration","age","collegeName","branch","passkey","photourl"]
     
      const allFieldsPresent = requiredFields.every(field => field in data);
 
@@ -119,7 +119,7 @@ AuthRouter.post("/signupadmin",async (req,res)=>{
 
     const data=req.body;
     // console.log(data)
-    const requiredFields=["fullName","gender","emailId","newPassword","confirmPassword","age"]
+    const requiredFields=["fullName","gender","emailId","newPassword","confirmPassword","age","photourl"]
     
      const allFieldsPresent = requiredFields.every(field => field in data);
 

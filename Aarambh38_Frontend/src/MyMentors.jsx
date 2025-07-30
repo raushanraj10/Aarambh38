@@ -25,6 +25,7 @@ export default function MyMentors() {
     };
 
     fetchMentors();
+     fetchMentors();
   }, []);
 
  const handlemessage = (touserId) => {

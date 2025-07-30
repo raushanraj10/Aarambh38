@@ -31,6 +31,9 @@ export default function SignupPageAlumini() {
   const [showPassword, setShowPassword] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
   const [formErrors, setFormErrors] = useState({});
+  const [isImageModalOpen, setImageModalOpen] = useState(false);
+
+
 
   const [formData, setFormData] = useState({
     fullName: "abc",
@@ -45,7 +48,8 @@ export default function SignupPageAlumini() {
     newPassword: "1234",
     confirmPassword: "1234",
     about: "I am alumini",
-    photourl: "https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcS0sQet7d_2RAgQyBQM092dn1Uo-N9Gk3xAdQV7YrSczH-LhdzZYeWIWfVE8B6sIvn1x6SZCpjN5TfBUe8",
+    photourl:
+      "https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcS0sQet7d_2RAgQyBQM092dn1Uo-N9Gk3xAdQV7YrSczH-LhdzZYeWIWfVE8B6sIvn1x6SZCpjN5TfBUe8",
     code: "",
   });
 
@@ -105,7 +109,7 @@ export default function SignupPageAlumini() {
         { emailId, code },
         { withCredentials: true }
       );
-      console.log(code)
+     console.log(code)
       const hashedCode = await bcrypt.hash(code.toString(), 10);
       const updatedFormData = { ...formData, code: hashedCode };
 
@@ -147,42 +151,59 @@ export default function SignupPageAlumini() {
           today and make a difference!
         </p>
 
-        <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {[
-            "fullName",
-            "emailId",
-            "registration",
-            "batch",
-            "company",
-            "role",
-            "photourl",
-          ].map((field) => (
-            <div key={field} className="col-span-1">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                {field
-                  .replace(/([A-Z])/g, " $1")
-                  .replace("Id", " ID")
-                  .replace(/\b\w/g, (c) => c.toUpperCase())}
-              </label>
-              <input
-                type={field === "emailId" ? "email" : "text"}
-                name={field}
-                value={formData[field]}
-                onChange={handleChange}
-                className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${
-                  formErrors[field]
-                    ? "border-red-500 ring-2 ring-red-300"
-                    : "border-gray-300 focus:ring-2 focus:ring-blue-500"
-                }`}
-                required
-              />
-              {formErrors[field] && (
-                <p className="text-xs text-red-500 mt-1">
-                  {formErrors[field]}
-                </p>
-              )}
-            </div>
-          ))}
+     <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
+  {[
+    "fullName",
+    "emailId",
+    "registration",
+    "batch",
+    "company",
+    "role",
+    "photourl", // included for preview
+  ].map((field) => (
+    <div
+      key={field}
+      className={`col-span-1 ${field === "photourl" ? "md:col-span-2 order-last" : ""}`}
+    >
+      <label className="block text-sm font-medium text-gray-700 mb-1">
+        {field
+          .replace(/([A-Z])/g, " $1")
+          .replace("Id", " ID")
+          .replace(/\b\w/g, (c) => c.toUpperCase())}
+      </label>
+
+      <input
+        type={field === "emailId" ? "email" : "text"}
+        name={field}
+        value={formData[field]}
+        onChange={handleChange}
+        className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${
+          formErrors[field]
+            ? "border-red-500 ring-2 ring-red-300"
+            : "border-gray-300 focus:ring-2 focus:ring-blue-500"
+        }`}
+        required
+      />
+
+      {formErrors[field] && (
+        <p className="text-xs text-red-500 mt-1">{formErrors[field]}</p>
+      )}
+
+      {/* ✅ Show live image preview for photourl */}
+      {field === "photourl" && formData.photourl && (
+  <div className="mt-4 flex justify-center">
+    <img
+      src={formData.photourl}
+      alt="Preview"
+      className="h-32 w-32 rounded-full object-cover border border-gray-300 shadow cursor-pointer transition-transform hover:scale-105"
+      onClick={() => setImageModalOpen(true)}
+      onError={(e) => (e.target.style.display = "none")}
+    />
+  </div>
+)}
+
+    </div>
+  ))}
 
           <div className="col-span-1">
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -353,6 +374,20 @@ export default function SignupPageAlumini() {
           </a>
         </p>
       </div>
+      {isImageModalOpen && (
+  <div
+    className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70"
+    onClick={() => setImageModalOpen(false)}
+  >
+    <img
+      src={formData.photourl}
+      alt="Enlarged Preview"
+      className="max-w-full max-h-[90vh] rounded-lg shadow-lg"
+      onClick={(e) => e.stopPropagation()}
+    />
+  </div>
+)}
+
     </div>
   );
 }

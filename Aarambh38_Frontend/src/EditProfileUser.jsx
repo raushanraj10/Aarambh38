@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { addstudent } from "./utils/StudentSlice";
 import { BASE_URL } from "./constants/AllUrl";
-
+import Shimmer from "./Shimmer"; 
 const EditProfileUser = () => {
   const studentData = useSelector((store) => store.studentdata);
   const navigate = useNavigate();
@@ -22,9 +22,10 @@ const EditProfileUser = () => {
 
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("success");
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [loading, setLoading] = useState(false); // 👈 shimmer toggle
 
   useEffect(() => {
-    //  if (Object.keys(studentData).length === 0) return;
     if (!studentData || !studentData.emailId) {
       navigate("/loginselectorpage");
     } else {
@@ -54,7 +55,7 @@ const EditProfileUser = () => {
       reader.onloadend = () => {
         setFormData((prev) => ({
           ...prev,
-          photourl: reader.result, // base64 string
+          photourl: reader.result,
         }));
       };
       reader.readAsDataURL(file);
@@ -63,30 +64,32 @@ const EditProfileUser = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { fullName, age, gender, photourl,branch } = formData;
+    setLoading(true); // 👈 shimmer start
+    const { fullName, age, gender, photourl, branch } = formData;
 
     try {
       const res = await axios.patch(
-  `${BASE_URL}/edituser`,
-  { fullName, age, gender, photourl, branch },
-  { withCredentials: true }
-);
+        `${BASE_URL}/edituser`,
+        { fullName, age, gender, photourl, branch },
+        { withCredentials: true }
+      );
 
-      setMessage("✅ Profile updated successfully.");
+      setMessage("You have successfully updated the profile.");
       setMessageType("success");
       dispatch(addstudent(res.data));
     } catch (err) {
-      setMessage("❌ Failed to update profile.");
+      setMessage("Failed to update profile.");
       setMessageType("error");
       console.error(err);
     } finally {
+      setLoading(false); // 👈 shimmer stop
       setTimeout(() => setMessage(""), 3000);
     }
   };
 
   return (
     <div className="max-w-7xl mx-auto mt-10 p-6 bg-white rounded shadow-md flex flex-col md:flex-row gap-10 relative">
-      {/* Edit Form */}
+      {/* Left Side: Edit Form */}
       <div className="w-full md:w-1/2">
         <h2 className="text-2xl font-bold mb-4 text-blue-700 text-center">Edit Profile</h2>
 
@@ -116,7 +119,6 @@ const EditProfileUser = () => {
           <input
             name="branch"
             value={formData.branch}
-            // onChange={handleChange}
             disabled
             className="w-full border rounded px-3 py-2"
             placeholder="Branch"
@@ -147,31 +149,54 @@ const EditProfileUser = () => {
           />
           <button
             type="submit"
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full"
+            disabled={loading}
+            className={`bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
           >
-            Update Profile
+            {loading ? "Updating..." : "Update Profile"}
           </button>
         </form>
       </div>
 
-      {/* Live Preview */}
+      {/* Right Side: Live Preview or Shimmer */}
       <div className="w-full md:w-1/2 bg-gray-50 p-5 rounded-lg shadow">
-        <h3 className="text-xl font-semibold text-center mb-4 text-gray-700">Live Preview</h3>
-        <div className="flex flex-col items-center text-center">
-          <img
-            src={formData.photourl || "https://via.placeholder.com/100"}
-            alt="Preview"
-            className="w-24 h-24 rounded-full object-cover border mb-4"
-          />
-          <p className="text-lg font-bold">{formData.fullName || "Full Name"}</p>
-          <p className="text-sm text-gray-500">{formData.age || "Your Age"}</p>
-          <p className="text-sm text-gray-600 mt-1">{formData.collegeName || "College Name"}</p>
-          <p className="text-sm text-gray-500 mt-3 px-4">{formData.gender || "Short Bio..."}</p>
-          <p className="text-xs text-gray-400 mt-2">{formData.emailId || "Email Address"}</p>
-        </div>
+        {loading ? (
+          <Shimmer />
+        ) : (
+          <>
+            <h3 className="text-xl font-semibold text-center mb-4 text-gray-700">Live Preview</h3>
+            <div className="flex flex-col items-center text-center">
+              <div className="w-48 h-48 mb-4 cursor-pointer" onClick={() => setShowImageModal(true)}>
+                <img
+                  src={formData.photourl || "https://via.placeholder.com/150"}
+                  alt="Preview"
+                  className="w-full h-full rounded-full object-cover border border-gray-300 shadow transition-transform duration-300 hover:scale-105"
+                />
+              </div>
+              <p className="text-lg font-bold">{formData.fullName || "Full Name"}</p>
+              <p className="text-sm text-gray-500">{formData.age || "Your Age"}</p>
+              <p className="text-sm text-gray-600 mt-1">{formData.collegeName || "College Name"}</p>
+              <p className="text-sm text-gray-500 mt-3 px-4">{formData.gender || "Short Bio..."}</p>
+              <p className="text-xs text-gray-400 mt-2">{formData.emailId || "Email Address"}</p>
+            </div>
+          </>
+        )}
       </div>
 
-      {/* Toast Message */}
+      {/* Modal Image */}
+      {showImageModal && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center"
+          onClick={() => setShowImageModal(false)}
+        >
+          <img
+            src={formData.photourl}
+            alt="Full Size"
+            className="max-w-[90%] max-h-[90%] rounded-lg shadow-lg border-4 border-white"
+          />
+        </div>
+      )}
+
+      {/* Toast */}
       {message && (
         <div
           className={`fixed bottom-5 right-5 px-5 py-3 rounded shadow-md text-white z-50 transition-all duration-300 ${

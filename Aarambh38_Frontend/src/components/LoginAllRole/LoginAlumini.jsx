@@ -13,22 +13,22 @@ export default function LoginAlumini() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  useEffect(()=>{
-          dispatch(removeadmin())
-          dispatch(removealumini())
-          dispatch(removestudent())
-    },[])
+  useEffect(() => {
+    dispatch(removeadmin());
+    dispatch(removealumini());
+    dispatch(removestudent());
+  }, []);
 
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ email: "", password: "" });
 
-  const [message, setMessage] = useState(""); // Message content
-  const [messageType, setMessageType] = useState("info"); // "success", "error", "info"
-  const [showMessage, setShowMessage] = useState(false); // Control visibility
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("info");
+  const [showMessage, setShowMessage] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setShowMessage(false); // Hide message on new input
+    setShowMessage(false);
   };
 
   const handleSubmit = async (e) => {
@@ -37,16 +37,15 @@ export default function LoginAlumini() {
       const { email, password } = formData;
 
       const res = await axios.post(
-  `${BASE_URL}/loginalumini`,
-  { emailId: email, newPassword: password },
-  { withCredentials: true }
-);
-
+        `${BASE_URL}/loginalumini`,
+        { emailId: email, newPassword: password },
+        { withCredentials: true }
+      );
 
       dispatch(addalumini(res.data));
       dispatch(Verifieduser());
 
-      setMessage("🎉 Welcome back! Redirecting...");
+      setMessage("Welcome back! Redirecting...");
       setMessageType("success");
       setShowMessage(true);
 
@@ -57,7 +56,7 @@ export default function LoginAlumini() {
       const msg =
         err.response?.data ||
         err.message ||
-        "❌ Something went wrong. Please try again.";
+        "Something went wrong. Please try again.";
       setMessage(msg);
       setMessageType("error");
       setShowMessage(true);
@@ -73,14 +72,16 @@ export default function LoginAlumini() {
 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-blue-50 to-cyan-100 flex items-center justify-center px-4 py-12">
-      {/* 🌟 Floating Pop-up Message */}
+      {/* Fixed Message */}
       {showMessage && (
-        <div className="absolute top-6 left-1/2 transform -translate-x-1/2 z-50">
+        <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50">
           <div
             className={`
-              px-6 py-3 rounded-xl shadow-lg text-sm font-medium text-center transition duration-300
-              ${messageType === "success" ? "bg-green-100 text-green-800 border border-green-300"
-                : messageType === "error" ? "bg-red-100 text-red-800 border border-red-300"
+              px-6 py-3 rounded-xl shadow-xl text-sm font-medium text-center max-w-sm w-fit animate-fade-in-down
+              ${messageType === "success"
+                ? "bg-green-100 text-green-800 border border-green-300"
+                : messageType === "error"
+                ? "bg-red-100 text-red-800 border border-red-300"
                 : "bg-blue-100 text-blue-800 border border-blue-300"}
             `}
           >

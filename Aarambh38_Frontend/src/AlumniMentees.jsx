@@ -6,34 +6,37 @@ import { useNavigate } from "react-router-dom";
 import { BASE_URL } from "./constants/AllUrl";
 
 export default function AlumniMentees() {
-  const navigate = useNavigate(); // ✅ fixed: lowercase
+  const navigate = useNavigate();
   const alumniData = useSelector((store) => store.aluminidata);
   const [mentees, setMentees] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
     const fetchMentees = async () => {
       try {
         const res = await axios.get(`${BASE_URL}/getalumnimentees`, {
-  withCredentials: true,
-});
-
+          withCredentials: true,
+        });
         setMentees(res.data);
       } catch (err) {
         console.error("Failed to fetch mentees", err);
       } finally {
         setLoading(false);
+        setAuthChecked(true);
       }
     };
 
     fetchMentees();
+    
   }, []);
 
   const handleMessageClick = (studentId) => {
-    navigate(`/chat/${studentId}`); // ✅ dynamic routing with ID
+    navigate(`/chat/${studentId}`);
   };
 
-  if (!alumniData) return <LoginSelectorPage />;
+  // ✅ Delay redirect until we know auth status
+  if (!alumniData && authChecked) return <LoginSelectorPage />;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-blue-50 to-green-100 px-6 py-12">
@@ -59,11 +62,11 @@ export default function AlumniMentees() {
 
               {/* Student Info */}
               <div className="flex-1 text-gray-800 text-base space-y-2">
-                <p><strong>👤 Name:</strong> {student.fullName}</p>
-                <p><strong>🎓 College:</strong> {student.collegeName}</p>
-                <p><strong>📚 Branch:</strong> {student.branch}</p>
-                <p><strong>🎓 Batch:</strong> {student.batch}</p>
-                <p><strong>📄 About:</strong> {student.about || "N/A"}</p>
+                <p><strong>Name:</strong> {student.fullName}</p>
+                <p><strong>College:</strong> {student.collegeName}</p>
+                <p><strong>Branch:</strong> {student.branch}</p>
+                <p><strong>Batch:</strong> {student.batch}</p>
+                <p><strong>About:</strong> {student.about || "N/A"}</p>
 
                 <div className="pt-4">
                   <button
