@@ -49,7 +49,7 @@ export default function SignupPageAlumini() {
     confirmPassword: "",
     about: "I am alumini",
     photourl:
-      "https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcS0sQet7d_2RAgQyBQM092dn1Uo-N9Gk3xAdQV7YrSczH-LhdzZYeWIWfVE8B6sIvn1x6SZCpjN5TfBUe8",
+      "",
     code: "",
   });
 
