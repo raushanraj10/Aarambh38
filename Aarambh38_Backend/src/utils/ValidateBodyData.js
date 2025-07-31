@@ -17,7 +17,7 @@ const validateBodyData=(req,res)=>{
         return res.status(400).send("Branch not found")
     
     if(newPassword.length<=5)
-        return res.status(400).send("Password must be at least 3 characters long")
+        return res.status(400).send("Password must be at least 6 characters long")
  
 }
 module.exports=validateBodyData
