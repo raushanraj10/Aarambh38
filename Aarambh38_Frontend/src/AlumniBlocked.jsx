@@ -72,11 +72,34 @@ export default function AlumniBlocked() {
                 className="bg-white p-8 rounded-2xl shadow-md border border-gray-200 flex flex-col md:flex-row gap-8 items-start md:items-center hover:shadow-lg transition"
               >
                 {/* Profile Picture */}
-                <img
-                  src={user.photourl || "https://via.placeholder.com/80"}
-                  alt="profile"
-                  className="w-24 h-24 rounded-full object-cover border-4 border-red-500"
-                />
+                <a href={`#img-${req._id}`}>
+                  <img
+                    src={user.photourl || "https://via.placeholder.com/80"}
+                    alt="profile"
+                    className="w-24 h-24 rounded-full object-cover border-4 border-red-500 cursor-pointer hover:scale-105 transition-transform"
+                  />
+                </a>
+
+                {/* Modal using :target */}
+                <a
+                  href="#"
+                  id={`img-${req._id}`}
+                  className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center z-50 invisible opacity-0 pointer-events-none transition-all duration-300 target:visible target:opacity-100 target:pointer-events-auto"
+                >
+                  <div className="relative">
+                    <img
+                      src={user.photourl || "https://via.placeholder.com/80"}
+                      alt="Enlarged"
+                      className="max-w-full max-h-screen rounded-xl border-4 border-white"
+                    />
+                    <a
+                      href="#"
+                      className="absolute top-2 right-2 text-white text-3xl font-bold hover:text-red-400 transition"
+                    >
+                      &times;
+                    </a>
+                  </div>
+                </a>
 
                 {/* Info */}
                 <div className="flex-1 space-y-2 text-gray-800 text-sm">
@@ -84,10 +107,7 @@ export default function AlumniBlocked() {
                   <p><strong>🎓 Batch:</strong> {user.batch}</p>
                   <p><strong>🏫 College:</strong> {user.collegeName}</p>
                   <p><strong>🏬 Branch:</strong> {user.branch || "N/A"}</p>
-                  <p><strong>🏢 Company:</strong> {user.company || "N/A"}</p>
-                  <p><strong>💼 Role:</strong> {user.role || "N/A"}</p>
                   <p><strong>⚧ Gender:</strong> {user.gender || "N/A"}</p>
-                  <p><strong>💬 About:</strong> {user.about || "No bio provided"}</p>
                   <p><strong>📝 Original Message:</strong> {req.text}</p>
 
                   {/* Unblock Button */}

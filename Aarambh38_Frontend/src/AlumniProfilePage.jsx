@@ -167,7 +167,7 @@ export default function AlumniProfilePage() {
             onChange={(e) =>
               setMessages((prev) => ({ ...prev, [alumni._id]: e.target.value }))
             }
-            placeholder="Write a message for the alumni..."
+            placeholder="Share your reason for connecting (e.g. guidance, career advice)"
             className="w-full mt-6 p-3 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none"
           />
         )}

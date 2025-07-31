@@ -182,7 +182,7 @@ useEffect(() => {
                   {!isRequestSent && !isAccepted && (
                     <textarea
                       rows={3}
-                      placeholder="Write your message..."
+                      placeholder="Share your reason for connecting (e.g. guidance, career advice)..."
                       value={messages[id] || ""}
                       onChange={(e) =>
                         setMessages((prev) => ({

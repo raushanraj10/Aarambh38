@@ -28,18 +28,16 @@ export default function AlumniMentees() {
     };
 
     fetchMentees();
-    
   }, []);
 
   const handleMessageClick = (studentId) => {
     navigate(`/chat/${studentId}`);
   };
 
-  // ✅ Delay redirect until we know auth status
   if (!alumniData && authChecked) return <LoginSelectorPage />;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-blue-50 to-green-100 px-6 py-12">
+    <div className="min-h-screen bg-gradient-to-br from-white via-blue-50 to-green-100 px-6 py-12 relative">
       <h1 className="text-4xl font-bold text-center mb-12 text-blue-700">Your Mentees</h1>
 
       {loading ? (
@@ -53,12 +51,14 @@ export default function AlumniMentees() {
               key={student._id}
               className="w-full max-w-6xl bg-white rounded-2xl shadow-lg border border-gray-200 p-8 flex flex-col md:flex-row items-center md:items-start gap-8 transition-shadow hover:shadow-xl"
             >
-              {/* Profile Image */}
-              <img
-                src={student.photourl || "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"}
-                alt="student"
-                className="w-28 h-28 rounded-full object-cover border-4 border-blue-500"
-              />
+              {/* Clickable Image Link */}
+              <a href={`#img-${student._id}`} className="block">
+                <img
+                  src={student.photourl || "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"}
+                  alt="student"
+                  className="w-28 h-28 rounded-full object-cover border-4 border-blue-500 cursor-pointer transition-transform hover:scale-105"
+                />
+              </a>
 
               {/* Student Info */}
               <div className="flex-1 text-gray-800 text-base space-y-2">
@@ -77,6 +77,19 @@ export default function AlumniMentees() {
                   </button>
                 </div>
               </div>
+
+              {/* Fullscreen Image Modal (CSS-only via :target) */}
+              <a
+                href="#"
+                id={`img-${student._id}`}
+                className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300 scale-95 target:opacity-100 target:pointer-events-auto target:scale-100"
+              >
+                <img
+                  src={student.photourl || "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"}
+                  alt="Zoomed profile"
+                  className="max-h-[90%] max-w-[90%] rounded-xl shadow-2xl border-4 border-white cursor-pointer"
+                />
+              </a>
             </div>
           ))}
         </div>

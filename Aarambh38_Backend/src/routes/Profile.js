@@ -48,7 +48,7 @@ ProfileRouter.post("/edituser", UserAuth, async (req, res) => {
 
     await data.save();
 
-    const updatedUser = await ModelUser.findOne({ _id: decode });
+    const updatedUser = await ModelUser.findOne({ _id: decode }).select("fullName emailId branch role collegeName batch photourl age company gender about")
     res.send(updatedUser);
   } catch (err) {
     console.error(err);
@@ -83,7 +83,7 @@ ProfileRouter.post("/editalumni", UserAuth, async (req, res) => {
 
     await data.save();
 
-    const updatedData = await ModelAlumini.findOne({ _id: decode });
+    const updatedData = await ModelAlumini.findOne({ _id: decode }).select("fullName emailId role collegeName batch photourl age company gender about branch")
     res.send(updatedData);
   } catch (err) {
     console.error(err);
@@ -114,7 +114,7 @@ ProfileRouter.post("/editadmin", UserAuth, async (req, res) => {
 
     await data.save();
 
-    const updatedData = await ModelAdmin.findOne({ _id: decode });
+    const updatedData = await ModelAdmin.findOne({ _id: decode }).select("fullName age emailId gender photourl");
     res.send(updatedData);
   } catch (err) {
     console.error(err);

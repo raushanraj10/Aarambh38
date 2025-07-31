@@ -7,7 +7,8 @@ import { BASE_URL } from "./constants/AllUrl";
 
 export default function AlumniReceivedRequest() {
   const [requests, setRequests] = useState([]);
-  const [loadingId, setLoadingId] = useState(null); // Track loading request
+  const [loadingId, setLoadingId] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
   const Aluminidata = useSelector((store) => store.aluminidata);
   const navigate = useNavigate();
 
@@ -29,7 +30,6 @@ export default function AlumniReceivedRequest() {
     };
 
     fetchRequests();
-   
   }, [Aluminidata, navigate]);
 
   const handleAction = async (studentId, action) => {
@@ -71,25 +71,38 @@ export default function AlumniReceivedRequest() {
                 key={req._id}
                 className="relative bg-white shadow-lg rounded-2xl border p-6 md:p-8 flex flex-col gap-4 hover:shadow-xl transition"
               >
-                {/* Shimmer Overlay */}
+                {/* Loading overlay */}
                 {isLoading && (
                   <div className="absolute inset-0 bg-white bg-opacity-70 flex items-center justify-center rounded-2xl z-10">
                     <div className="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full"></div>
                   </div>
                 )}
 
-                <div className="text-gray-800 space-y-1 text-sm md:text-base">
-                  <p><strong>👤 Name:</strong> {req.fromuserId.fullName}</p>
-                  <p><strong>🎓 Batch:</strong> {req.fromuserId.batch}</p>
-                  <p><strong>🏫 College:</strong> {req.fromuserId.collegeName}</p>
-                  <p><strong>🏬 Branch:</strong> {req.fromuserId.branch}</p>
+                {/* Profile & Details */}
+                <div className="flex items-start gap-4 text-gray-800 text-sm md:text-base">
+                  {/* ✅ Fix typo here */}
+                  <img
+                    src={req.fromuserId.photourl}
+                    alt="Profile"
+                    onClick={() => setPreviewImage(req.fromuserId.photourl)}
+                    className="w-16 h-16 rounded-full border object-cover cursor-pointer hover:scale-105 transition-transform"
+                  />
 
-                  <div className="mt-4 bg-blue-50 border border-blue-200 rounded-md p-4 text-gray-700">
-                    <p className="font-semibold">💬 Message:</p>
-                    <p className="mt-1 whitespace-pre-line">{req.text}</p>
+                  <div className="space-y-1">
+                    <p><strong>👤 Name:</strong> {req.fromuserId.fullName}</p>
+                    <p><strong>🎓 Batch:</strong> {req.fromuserId.batch}</p>
+                    <p><strong>🏫 College:</strong> {req.fromuserId.collegeName}</p>
+                    <p><strong>🏬 Branch:</strong> {req.fromuserId.branch}</p>
                   </div>
                 </div>
 
+                {/* Message Box */}
+                <div className="mt-4 bg-blue-50 border border-blue-200 rounded-md p-4 text-gray-700">
+                  <p className="font-semibold">💬 Message:</p>
+                  <p className="mt-1 whitespace-pre-line">{req.text}</p>
+                </div>
+
+                {/* Action Buttons */}
                 <div className="flex flex-wrap gap-4 pt-4 z-0">
                   <button
                     onClick={() => handleAction(req.fromuserId._id, "accepted")}
@@ -129,6 +142,20 @@ export default function AlumniReceivedRequest() {
           })
         )}
       </div>
+
+      {/* ✅ Enlarged Image Modal */}
+      {previewImage && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
+          onClick={() => setPreviewImage(null)}
+        >
+          <img
+            src={previewImage}
+            alt="Enlarged"
+            className="max-w-[90vw] max-h-[90vh] object-contain rounded-xl border-4 border-white shadow-2xl transition"
+          />
+        </div>
+      )}
 
       {/* Footer */}
       <div className="text-center mt-24">
