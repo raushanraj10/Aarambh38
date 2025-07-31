@@ -5,5 +5,5 @@ export const SocketConnection=()=>{
     if(location.hostname==="localhost")
         return io(BASE_URL)
     else
-        return io("https://13.62.58.83",{path:"/api/socket.io"})
+        return io("http://13.62.58.83",{path:"/api/socket.io"})
 }
