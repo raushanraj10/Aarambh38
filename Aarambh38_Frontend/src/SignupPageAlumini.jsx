@@ -92,6 +92,20 @@ export default function SignupPageAlumini() {
     return errors;
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData((prev) => ({
+          ...prev,
+          photourl: reader.result,
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleVerification = async () => {
     const errors = validateFields();
     if (Object.keys(errors).length > 0) {
@@ -172,34 +186,40 @@ export default function SignupPageAlumini() {
           .replace(/\b\w/g, (c) => c.toUpperCase())}
       </label>
 
-      <input
-        type={field === "emailId" ? "email" : "text"}
-        name={field}
-        value={formData[field]}
-        onChange={handleChange}
-        className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${
-          formErrors[field]
-            ? "border-red-500 ring-2 ring-red-300"
-            : "border-gray-300 focus:ring-2 focus:ring-blue-500"
-        }`}
-        required
-      />
-
-      {formErrors[field] && (
-        <p className="text-xs text-red-500 mt-1">{formErrors[field]}</p>
-      )}
-
-      {/* ✅ Show live image preview for photourl */}
-      {field === "photourl" && formData.photourl && (
-  <div className="mt-4 flex justify-center">
-    <img
-      src={formData.photourl}
-      alt="Preview"
-      className="h-32 w-32 rounded-full object-cover border border-gray-300 shadow cursor-pointer transition-transform hover:scale-105"
-      onClick={() => setImageModalOpen(true)}
-      onError={(e) => (e.target.style.display = "none")}
+      {field !== "photourl" ? (
+  <input
+    type={field === "emailId" ? "email" : "text"}
+    name={field}
+    value={formData[field]}
+    onChange={handleChange}
+    className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${
+      formErrors[field]
+        ? "border-red-500 ring-2 ring-red-300"
+        : "border-gray-300 focus:ring-2 focus:ring-blue-500"
+    }`}
+    required
+  />
+) : (
+  <>
+    <input
+      type="file"
+      accept="image/*"
+      onChange={handleFileChange}
+      className="mt-2 w-full border border-gray-300 rounded-lg px-4 py-2 bg-white"
     />
-  </div>
+
+    {formData.photourl && (
+      <div className="mt-4 flex justify-center">
+        <img
+          src={formData.photourl}
+          alt="Preview"
+          className="h-32 w-32 rounded-full object-cover border border-gray-300 shadow cursor-pointer transition-transform hover:scale-105"
+          onClick={() => setImageModalOpen(true)}
+          onError={(e) => (e.target.style.display = "none")}
+        />
+      </div>
+    )}
+  </>
 )}
 
     </div>

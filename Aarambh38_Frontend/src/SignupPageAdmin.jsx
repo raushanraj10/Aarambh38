@@ -66,6 +66,20 @@ export default function SignupPageAdmin() {
     return true;
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData((prev) => ({
+          ...prev,
+          photourl: reader.result,
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleVerification = async () => {
     if (!validateFields()) return;
 
@@ -207,15 +221,13 @@ export default function SignupPageAdmin() {
           
 <div>
   <label className="text-sm font-medium text-gray-700">Photo URL</label>
+
   <input
-    type="text"
-    name="photourl"
-    value={formData.photourl}
-    onChange={handleChange}
-    placeholder="https://example.com/photo.jpg"
-    className="w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-    required
-  />
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-white"
+          />
 
   {/* Live Image Preview */}
   {formData.photourl && (
@@ -229,6 +241,7 @@ export default function SignupPageAdmin() {
     />
   </div>
 )}
+
 
 </div>
 

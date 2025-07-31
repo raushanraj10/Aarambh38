@@ -82,6 +82,20 @@ export default function SignupPageUser() {
     return errors;
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData((prev) => ({
+          ...prev,
+          photourl: reader.result,
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleVerification = async () => {
     const errors = validateFields();
     if (Object.keys(errors).length > 0) {
@@ -307,19 +321,14 @@ export default function SignupPageUser() {
 {/* Photo URL */}
 <div>
   <label className="text-sm font-medium text-gray-700">Photo URL</label>
+  
+
   <input
-    type="text"
-    name="photourl"
-    placeholder="Enter photo URL (e.g., https://...)"
-    value={formData.photourl}
-    onChange={handleChange}
-    className={`w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none ${
-      formErrors.photourl
-        ? "border-red-500 ring-2 ring-red-300"
-        : "border-gray-300 focus:ring-2 focus:ring-blue-500"
-    }`}
-    required
-  />
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-white"
+          />
   {formErrors.photourl && (
     <p className="text-xs text-red-500 mt-1">{formErrors.photourl}</p>
   )}
