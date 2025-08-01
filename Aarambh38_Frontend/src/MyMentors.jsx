@@ -35,7 +35,7 @@ export default function MyMentors() {
   };
 
   const handleProfileClick = (alumniId) => {
-    navigate(`/alumniprofile/${alumniId}`);
+    navigate(`/alumni/${alumniId}`);
   };
 
   if (!Studentdata) return <LoginSelectorPage />;
