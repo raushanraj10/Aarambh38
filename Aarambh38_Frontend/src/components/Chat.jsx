@@ -6,16 +6,18 @@ import { SocketConnection } from "../constants/Socketconnection";
 import moment from "moment";
 import LoginSelectorPage from "../LoginSelectorPage";
 import { BASE_URL } from "../constants/AllUrl";
-
+import Shimmer from "../Shimmer";
 const ChatApp = () => {
   const Studentdata = useSelector((store) => store.studentdata);
   const Aluminidata = useSelector((store) => store.aluminidata);
   const user = Studentdata || Aluminidata;
+const [messageLoading, setMessageLoading] = useState(false);
 
   const [chatlist, setChatlist] = useState([]);
   //  const [previewImg, setPreviewImg] = useState(null)
   const [selectedUser, setSelectedUser] = useState(null);
   const [previewImg, setPreviewImg] = useState(null);
+const [loading, setLoading] = useState(true);
 
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -37,6 +39,9 @@ const ChatApp = () => {
       } catch (error) {
         console.error("Failed to load chat users", error);
       }
+       finally {
+    setLoading(false); // Hide shimmer after fetch
+  }
     };
     if (user) fetchUsers();
   }, [Studentdata, Aluminidata]);
@@ -72,22 +77,26 @@ const ChatApp = () => {
   }, [selectedUser, user]);
 
   const fetchMessages = async (targetUserId) => {
-    try {
-      const res = await axios.get(
-        `${BASE_URL}/getmessageswith/${targetUserId}`,
-        { withCredentials: true }
-      );
-      const formatted = res.data.map((msg) => ({
-        from: msg.fromuserId === user._id ? "me" : "them",
-        text: msg.text,
-        createdAt: msg.createdAt,
-        senderId: msg.fromuserId,
-      }));
-      setMessages(formatted);
-    } catch (err) {
-      console.error("Failed to fetch messages", err);
-    }
-  };
+  setMessageLoading(true);
+  try {
+    const res = await axios.get(
+      `${BASE_URL}/getmessageswith/${targetUserId}`,
+      { withCredentials: true }
+    );
+    const formatted = res.data.map((msg) => ({
+      from: msg.fromuserId === user._id ? "me" : "them",
+      text: msg.text,
+      createdAt: msg.createdAt,
+      senderId: msg.fromuserId,
+    }));
+    setMessages(formatted);
+  } catch (err) {
+    console.error("Failed to fetch messages", err);
+  } finally {
+    setMessageLoading(false);
+  }
+};
+
 
   const handleSelectUser = (user) => {
     setSelectedUser(user);
@@ -157,7 +166,8 @@ const ChatApp = () => {
   };
 
   const groupedMessages = groupMessagesByDate(messages);
-
+ if (loading) return <Shimmer />;
+ if(!fetchMessages) return <Shimmer />
   return (
     <div className="h-screen w-full flex bg-gray-100 relative overflow-hidden">
       {/* Sidebar */}
@@ -273,69 +283,93 @@ const ChatApp = () => {
 
         {/* Messages */}
         <div className="flex-1 p-4 overflow-y-auto space-y-6 z-10">
-          {selectedUser ? (
-            <>
-              {Object.entries(groupedMessages).map(([dateLabel, group]) => (
-                <div key={dateLabel}>
-                  <div className="text-center text-xs text-gray-500 my-3">{dateLabel}</div>
-                  {group.map((msg, index) => {
-                    const isMe = msg.from === "me";
-                    const sender = isMe ? user : selectedUser;
-
-                    return (
-                      <div
-                        key={index}
-                        className={`flex items-end gap-2 ${
-                          isMe ? "justify-end" : "justify-start"
-                        }`}
-                      >
-                        {!isMe && (
-                          <img
-                            src={sender?.photourl || "/default-avatar.png"}
-                            alt="profile"
-                            className="w-8 h-8 rounded-full object-cover border"
-                          />
-                        )}
-                        <div className="flex flex-col max-w-[80%] sm:max-w-xs">
-                          <div
-                            className={`px-4 py-2 break-words rounded-lg shadow text-white text-sm ${
-                              isMe ? "bg-green-600 self-end" : "bg-blue-600"
-                            }`}
-                          >
-                            {msg.text}
-                          </div>
-                          <div
-                            className={`text-xs text-gray-500 mt-1 ${
-                              isMe ? "text-right" : "text-left"
-                            }`}
-                          >
-                            {isMe ? "You" : sender?.fullName || "Them"} •{" "}
-                            {moment(msg.createdAt).format("h:mm A")}
-                          </div>
-                        </div>
-                        {isMe && (
-                          <img
-                            src={sender?.photourl || "/default-avatar.png"}
-                            alt="profile"
-                            className="w-8 h-8 rounded-full object-cover border"
-                          />
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              ))}
-              <div ref={bottomRef} />
-            </>
-          ) : (
-            <div className="flex flex-col items-center justify-center h-full text-center text-gray-500">
-              <div className="text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600 mb-4">
-                Aarambh38
-              </div>
-              <p className="text-lg">Select a user from the left panel to start chatting.</p>
-            </div>
-          )}
+  {selectedUser ? (
+    messageLoading ? (
+      <div className="w-full h-full flex flex-col">
+        {/* Header shimmer */}
+        <div className="h-16 bg-white border-b flex items-center px-4">
+          <div className="w-10 h-10 bg-gray-300 rounded-full mr-4 animate-pulse" />
+          <div className="flex-1 h-6 bg-gray-300 rounded animate-pulse" />
         </div>
+        {/* Chat area shimmer */}
+        <div className="flex-1 bg-gray-50 p-4 space-y-4 overflow-y-auto animate-pulse">
+          <div className="h-5 w-1/3 bg-gray-300 rounded" />
+          <div className="h-4 w-1/2 bg-gray-300 rounded" />
+          <div className="h-4 w-2/3 bg-gray-300 rounded" />
+          <div className="h-4 w-1/4 bg-gray-300 rounded" />
+          <div className="h-4 w-3/4 bg-gray-300 rounded self-end" />
+          <div className="h-4 w-1/2 bg-gray-300 rounded self-end" />
+        </div>
+        {/* Input shimmer */}
+        <div className="h-16 bg-white border-t flex items-center px-4 gap-4">
+          <div className="flex-1 h-10 bg-gray-300 rounded-full animate-pulse" />
+          <div className="h-10 w-20 bg-gray-300 rounded-full animate-pulse" />
+        </div>
+      </div>
+    ) : (
+      <>
+        {Object.entries(groupedMessages).map(([dateLabel, group]) => (
+          <div key={dateLabel}>
+            <div className="text-center text-xs text-gray-500 my-3">{dateLabel}</div>
+            {group.map((msg, index) => {
+              const isMe = msg.from === "me";
+              const sender = isMe ? user : selectedUser;
+              return (
+                <div
+                  key={index}
+                  className={`flex items-end gap-2 ${
+                    isMe ? "justify-end" : "justify-start"
+                  }`}
+                >
+                  {!isMe && (
+                    <img
+                      src={sender?.photourl || "/default-avatar.png"}
+                      alt="profile"
+                      className="w-8 h-8 rounded-full object-cover border"
+                    />
+                  )}
+                  <div className="flex flex-col max-w-[80%] sm:max-w-xs">
+                    <div
+                      className={`px-4 py-2 break-words rounded-lg shadow text-white text-sm ${
+                        isMe ? "bg-green-600 self-end" : "bg-blue-600"
+                      }`}
+                    >
+                      {msg.text}
+                    </div>
+                    <div
+                      className={`text-xs text-gray-500 mt-1 ${
+                        isMe ? "text-right" : "text-left"
+                      }`}
+                    >
+                      {isMe ? "You" : sender?.fullName || "Them"} •{" "}
+                      {moment(msg.createdAt).format("h:mm A")}
+                    </div>
+                  </div>
+                  {isMe && (
+                    <img
+                      src={sender?.photourl || "/default-avatar.png"}
+                      alt="profile"
+                      className="w-8 h-8 rounded-full object-cover border"
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        ))}
+        <div ref={bottomRef} />
+      </>
+    )
+  ) : (
+    <div className="flex flex-col items-center justify-center h-full text-center text-gray-500">
+      <div className="text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600 mb-4">
+        Aarambh38
+      </div>
+      <p className="text-lg">Select a user from the left panel to start chatting.</p>
+    </div>
+  )}
+</div>
+
 
         {/* Input */}
         <div className="p-4 border-t bg-white flex gap-2 z-10">

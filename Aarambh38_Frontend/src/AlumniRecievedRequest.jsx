@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { CheckCircle, XCircle, Ban } from "lucide-react";
 import { BASE_URL } from "./constants/AllUrl";
+import Shimmer from "./Shimmer";
 
 export default function AlumniReceivedRequest() {
   const [requests, setRequests] = useState([]);
@@ -11,6 +12,7 @@ export default function AlumniReceivedRequest() {
   const [previewImage, setPreviewImage] = useState(null);
   const Aluminidata = useSelector((store) => store.aluminidata);
   const navigate = useNavigate();
+   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!Aluminidata) {
@@ -27,6 +29,8 @@ export default function AlumniReceivedRequest() {
       } catch (err) {
         console.error("Error fetching requests:", err);
       }
+      finally {
+        setLoading(false);}
     };
 
     fetchRequests();
@@ -52,7 +56,7 @@ export default function AlumniReceivedRequest() {
       setLoadingId(null);
     }
   };
-
+ if (loading) return <Shimmer />;
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-blue-50 to-green-100 px-4 py-10">
       <h2 className="text-4xl font-bold text-center text-blue-700 mb-10">
@@ -93,6 +97,8 @@ export default function AlumniReceivedRequest() {
                     <p><strong>🎓 Batch:</strong> {req.fromuserId.batch}</p>
                     <p><strong>🏫 College:</strong> {req.fromuserId.collegeName}</p>
                     <p><strong>🏬 Branch:</strong> {req.fromuserId.branch}</p>
+                    <p><strong>🏫 Age:</strong> {req.fromuserId.age}</p>
+                    <p><strong>🏬 Gender:</strong> {req.fromuserId.gender}</p>
                   </div>
                 </div>
 

@@ -4,6 +4,7 @@ import LoginSelectorPage from "./LoginSelectorPage";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import { BASE_URL } from "./constants/AllUrl";
+import Shimmer from "./Shimmer";
 
 export default function StudentLandingPage() {
   const capitalizeEachWord = (str) =>
@@ -13,6 +14,7 @@ export default function StudentLandingPage() {
   const Studentdata = useSelector((store) => store.studentdata);
   const Aluminidata = useSelector((store) => store.aluminidata);
   const Admindata = useSelector((store) => store.admindata);
+  const [loading, setLoading] = useState(true);
 
   const [alumniList, setAlumniList] = useState([]);
   const [requestStatus, setRequestStatus] = useState({});
@@ -24,6 +26,8 @@ export default function StudentLandingPage() {
 useEffect(() => {
   const fetchData = async () => {
     try {
+      setLoading(true); // Start loading
+
       const [alumniRes, sentRes, acceptedRes] = await Promise.allSettled([
         axios.get(`${BASE_URL}/getlistalumni`, { withCredentials: true }),
         axios.get(`${BASE_URL}/finalsendrequestlist`, { withCredentials: true }),
@@ -32,8 +36,6 @@ useEffect(() => {
 
       if (alumniRes.status === "fulfilled") {
         setAlumniList(alumniRes.value.data);
-      } else {
-        console.error("Error fetching alumni list:", alumniRes.reason);
       }
 
       if (sentRes.status === "fulfilled") {
@@ -43,8 +45,6 @@ useEffect(() => {
           sentMap[stringId] = true;
         });
         setRequestStatus(sentMap);
-      } else {
-        console.error("Error fetching sent requests:", sentRes.reason);
       }
 
       if (acceptedRes.status === "fulfilled") {
@@ -54,16 +54,17 @@ useEffect(() => {
           acceptedMap[stringId] = true;
         });
         setAcceptedStatus(acceptedMap);
-      } else {
-        console.error("Error fetching accepted requests:", acceptedRes.reason);
       }
     } catch (error) {
       console.error("Unexpected error:", error);
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
 
   fetchData();
 }, []);
+
 
 
   const handleSendRequest = async (alumniId) => {
@@ -112,7 +113,7 @@ useEffect(() => {
   );
 
   if (!Studentdata && !Aluminidata && !Admindata) return <LoginSelectorPage />;
-
+ if(loading) return <Shimmer/>
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-blue-50 to-green-100 px-4 py-10">
       <div className="max-w-2xl mx-auto mb-10">

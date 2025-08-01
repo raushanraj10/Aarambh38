@@ -4,11 +4,14 @@ import { ChevronDown, ChevronUp, Trash2, Mail, X } from "lucide-react";
 import { BASE_URL } from "../../constants/AllUrl";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import Shimmer from "../../Shimmer";
 
 const StudentList = () => {
   const [alumni, setAlumni] = useState([]);
   const [expandedId, setExpandedId] = useState(null);
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
+
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedEmail, setSelectedEmail] = useState("");
@@ -31,15 +34,19 @@ const StudentList = () => {
   }, []);
 
   const fetchAlumni = async () => {
-    try {
-      const res = await axios.get(`${BASE_URL}/getallstudent`, {
-        withCredentials: true,
-      });
-      setAlumni(res.data);
-    } catch (err) {
-      console.error("Failed to fetch student:", err);
-    }
-  };
+  setLoading(true);
+  try {
+    const res = await axios.get(`${BASE_URL}/getallstudent`, {
+      withCredentials: true,
+    });
+    setAlumni(res.data);
+  } catch (err) {
+    console.error("Failed to fetch student:", err);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const toggleExpand = (id) => {
     setExpandedId((prev) => (prev === id ? null : id));
@@ -87,6 +94,7 @@ const StudentList = () => {
   const filteredAlumni = alumni.filter((a) =>
     a.fullName.toLowerCase().includes(search.toLowerCase())
   );
+ if (loading) return <Shimmer />;
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">

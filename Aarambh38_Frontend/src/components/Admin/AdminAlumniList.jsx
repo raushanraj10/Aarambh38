@@ -4,6 +4,7 @@ import { ChevronDown, ChevronUp, Trash2, Mail, X } from "lucide-react";
 import { BASE_URL } from "../../constants/AllUrl";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import Shimmer from "../../Shimmer";
 
 const AdminAlumniList = () => {
   const [alumni, setAlumni] = useState([]);
@@ -12,6 +13,7 @@ const AdminAlumniList = () => {
   const [showModal, setShowModal] = useState(false);
   const [emailData, setEmailData] = useState({ to: "", subject: "", message: "" });
   const [imageModalUrl, setImageModalUrl] = useState(null);
+  const [loading, setLoading] = useState(true); // ✅ added
 
   const admin = useSelector((state) => state.admindata);
   const navigate = useNavigate();
@@ -25,11 +27,14 @@ const AdminAlumniList = () => {
   }, []);
 
   const fetchAlumni = async () => {
+    setLoading(true); // ✅ start loading
     try {
       const res = await axios.get(`${BASE_URL}/getallalumni`, { withCredentials: true });
       setAlumni(res.data);
     } catch (err) {
       console.error("Failed to fetch alumni:", err);
+    } finally {
+      setLoading(false); // ✅ stop loading
     }
   };
 
@@ -67,6 +72,9 @@ const AdminAlumniList = () => {
   const filteredAlumni = alumni.filter((a) =>
     a.fullName.toLowerCase().includes(search.toLowerCase())
   );
+
+  // ✅ Correct shimmer loading logic
+  if (loading) return <Shimmer />;
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">

@@ -3,6 +3,7 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { BASE_URL } from "./constants/AllUrl";
+import Shimmer from "./Shimmer";
 
 export default function AlumniBlocked() {
   const [blockedStudents, setBlockedStudents] = useState([]);
@@ -50,7 +51,7 @@ export default function AlumniBlocked() {
       console.error("Error unblocking student:", err.response?.data || err.message);
     }
   };
-
+ if (loading) return <Shimmer />;
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-red-50 to-red-100 px-6 py-12">
       <h2 className="text-4xl font-bold text-center mb-12 text-red-700">

@@ -144,7 +144,7 @@ ProfileRouter.get("/getmessageswith/:targetuserId", UserAuth, async (req, res) =
 ProfileRouter.get("/getstudentprofile",UserAuth,async(req,res)=>{
   try{
   const fromuserId = req.decode;
-  const finaldata=await ModelUser.findOne({_id:fromuserId._id}).select("fullName emailId branch role collegeName batch photourl age company gender about")
+  const finaldata=await ModelUser.findOne({_id:fromuserId._id}).select("fullName emailId branch collegeName batch photourl age gender")
   if(!finaldata)
     res.status(400).send("First Login")
   res.send(finaldata)

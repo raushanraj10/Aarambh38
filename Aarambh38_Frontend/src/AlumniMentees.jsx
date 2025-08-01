@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import LoginSelectorPage from "./LoginSelectorPage";
 import { useNavigate } from "react-router-dom";
 import { BASE_URL } from "./constants/AllUrl";
+import Shimmer from "./Shimmer";
 
 export default function AlumniMentees() {
   const navigate = useNavigate();
@@ -35,7 +36,7 @@ export default function AlumniMentees() {
   };
 
   if (!alumniData && authChecked) return <LoginSelectorPage />;
-
+ if (loading) return <Shimmer />;
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-blue-50 to-green-100 px-6 py-12 relative">
       <h1 className="text-4xl font-bold text-center mb-12 text-blue-700">Your Mentees</h1>
@@ -65,8 +66,10 @@ export default function AlumniMentees() {
                 <p><strong>Name:</strong> {student.fullName}</p>
                 <p><strong>College:</strong> {student.collegeName}</p>
                 <p><strong>Branch:</strong> {student.branch}</p>
+                <p><strong>Batch:</strong> {student.age}</p>
+                <p><strong>Gender:</strong> {student.gender}</p>
                 <p><strong>Batch:</strong> {student.batch}</p>
-                <p><strong>About:</strong> {student.about || "N/A"}</p>
+                {/* <p><strong>About:</strong> {student.about || "N/A"}</p> */}
 
                 <div className="pt-4">
                   <button

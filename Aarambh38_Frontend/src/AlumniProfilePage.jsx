@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import LoginSelectorPage from "./LoginSelectorPage";
 import { BASE_URL } from "./constants/AllUrl";
+import Shimmer from "./Shimmer";
 
 export default function AlumniProfilePage() {
   const capitalizeEachWord = (str) =>
@@ -15,12 +16,19 @@ export default function AlumniProfilePage() {
   const Studentdata = useSelector((store) => store.studentdata);
   const Aluminidata = useSelector((store) => store.aluminidata);
   const Admindata = useSelector((store) => store.admindata);
-
+  const [loading, setLoading] = useState(true);
   const [alumniList, setAlumniList] = useState([]);
   const [requestStatus, setRequestStatus] = useState({});
   const [acceptedStatus, setAcceptedStatus] = useState({});
   const [messages, setMessages] = useState({});
   const [showImageModal, setShowImageModal] = useState(false);
+  const navigate =useNavigate()
+  useEffect(() => {
+      if (!Studentdata) 
+        navigate("/loginselectorpage");
+        return;},[Studentdata])
+      
+
 
   useEffect(() => {
     const fetchAll = async () => {
@@ -46,6 +54,8 @@ export default function AlumniProfilePage() {
       } catch (err) {
         console.error("Error fetching data:", err);
       }
+      finally {
+        setLoading(false);}
     };
 
     fetchAll();
@@ -90,7 +100,7 @@ export default function AlumniProfilePage() {
   const handleSendMessage = (alumniId) => {
     Navigate(`/chat/${alumniId}`);
   };
-
+if(loading) return <Shimmer/>
   if (!Studentdata && !Aluminidata && !Admindata) return <LoginSelectorPage />;
 
   const alumni = alumniList.find((a) => a._id === id);
@@ -98,7 +108,7 @@ export default function AlumniProfilePage() {
 
   const isRequestSent = requestStatus[alumni._id];
   const isAccepted = acceptedStatus[alumni._id];
-
+  
   return (
     <div className="min-h-screen bg-gradient-to-tr from-white via-blue-50 to-green-100 py-16 px-6">
       {/* Modal for large image */}

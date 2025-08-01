@@ -4,35 +4,42 @@ import { useSelector } from "react-redux";
 import LoginSelectorPage from "./LoginSelectorPage";
 import { useNavigate } from "react-router-dom";
 import { BASE_URL } from "./constants/AllUrl";
+import Shimmer from "./Shimmer";
 
 export default function MyMentors() {
   const Studentdata = useSelector((store) => store.studentdata);
   const [mentors, setMentors] = useState([]);
-  const Navigate=useNavigate()
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchMentors = async () => {
       try {
+        setLoading(true); // Show shimmer
         const res = await axios.get(`${BASE_URL}/mymentors`, {
-  withCredentials: true,
-});
-
-        // console.log(res)
+          withCredentials: true,
+        });
         setMentors(res.data);
       } catch (error) {
         console.error("Failed to load mentors", error);
+      } finally {
+        setLoading(false); // Hide shimmer
       }
     };
 
     fetchMentors();
-     fetchMentors();
   }, []);
 
- const handlemessage = (touserId) => {
-  Navigate(`/chat/${touserId}`);
-};
+  const handleMessage = (toUserId) => {
+    navigate(`/chat/${toUserId}`);
+  };
+
+  const handleProfileClick = (alumniId) => {
+    navigate(`/alumniprofile/${alumniId}`);
+  };
 
   if (!Studentdata) return <LoginSelectorPage />;
+  if (loading) return <Shimmer />;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-blue-50 to-green-100 px-4 py-10">
@@ -45,33 +52,56 @@ export default function MyMentors() {
           {mentors.map((mentor) => (
             <div
               key={mentor._id}
-              className="w-full max-w-4xl bg-white rounded-2xl shadow-md border p-6 flex flex-col sm:flex-row gap-6"
+              onClick={() => handleProfileClick(mentor._id)}
+              className="w-full max-w-4xl bg-white rounded-2xl shadow-md border p-6 flex flex-col sm:flex-row gap-6 cursor-pointer transition-transform duration-200 hover:shadow-xl hover:-translate-y-1"
             >
               {/* Profile Image */}
               <img
-                src={mentor.photourl || "https://cdn-icons-png.flaticon.com/512/194/194938.png"}
+                src={
+                  mentor.photourl ||
+                  "https://cdn-icons-png.flaticon.com/512/194/194938.png"
+                }
                 alt="mentor"
                 className="w-24 h-24 rounded-full object-cover border-2 border-green-500"
               />
 
               {/* Mentor Info */}
               <div className="flex-1 space-y-1 text-sm text-gray-800">
-                <p><strong>👤 Name:</strong> {mentor.fullName}</p>
-                <p><strong>🏢 Company:</strong> {mentor.company}</p>
-                <p><strong>💼 Role:</strong> {mentor.role}</p>
-                <p><strong>🎓 Batch:</strong> {mentor.batch}</p>
-                <p><strong>🏫 College:</strong> {mentor.collegeName}</p>
-                <p><strong>🏫 Branch:</strong> {mentor.branch}</p>
-                <p><strong>⚧ Gender:</strong> {mentor.gender}</p>
-                <p><strong>📄 About:</strong> {mentor.about || "N/A"}</p>
+                <p>
+                  <strong>👤 Name:</strong> {mentor.fullName}
+                </p>
+                <p>
+                  <strong>🏢 Company:</strong> {mentor.company}
+                </p>
+                <p>
+                  <strong>💼 Role:</strong> {mentor.role}
+                </p>
+                <p>
+                  <strong>🎓 Batch:</strong> {mentor.batch}
+                </p>
+                <p>
+                  <strong>🏫 College:</strong> {mentor.collegeName}
+                </p>
+                <p>
+                  <strong>🏫 Branch:</strong> {mentor.branch}
+                </p>
+                <p>
+                  <strong>⚧ Gender:</strong> {mentor.gender}
+                </p>
+                <p>
+                  <strong>📄 About:</strong> {mentor.about || "N/A"}
+                </p>
               </div>
 
               {/* Message Button */}
-              <div className="flex items-start sm:items-center">
-                <button
-                  onClick={() => handlemessage(mentor._id)}
-                  className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 text-sm"
-                >
+              <div
+                className="flex items-start sm:items-center"
+                onClick={(e) => {
+                  e.stopPropagation(); // prevent card click
+                  handleMessage(mentor._id);
+                }}
+              >
+                <button className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 text-sm">
                   Go To Chat
                 </button>
               </div>

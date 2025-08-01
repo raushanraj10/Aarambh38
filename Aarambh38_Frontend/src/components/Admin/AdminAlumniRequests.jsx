@@ -4,26 +4,29 @@ import { BASE_URL } from "../../constants/AllUrl";
 import { CheckCircle, XCircle, Search } from "lucide-react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import Shimmer from "../../Shimmer";
 
 const AdminAlumniRequests = () => {
   const [requests, setRequests] = useState([]);
   const [search, setSearch] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
+  const [loading, setLoading] = useState(true); // ✅ added
+
+  const admin = useSelector((state) => state.admindata);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!admin) {
+      navigate("/loginselectorpage");
+    }
+  }, [admin]);
 
   useEffect(() => {
     fetchRequests();
   }, []);
 
-  const admin = useSelector((state) => state.admindata);
-    const navigate = useNavigate();
-  
-    useEffect(() => {
-      if (!admin) {
-        navigate("/loginselectorpage");
-      }
-    }, [admin]);
-
   const fetchRequests = async () => {
+    setLoading(true); // ✅ start loading
     try {
       const res = await axios.get(`${BASE_URL}/getallrequestedalumni`, {
         withCredentials: true,
@@ -31,6 +34,8 @@ const AdminAlumniRequests = () => {
       setRequests(res.data);
     } catch (err) {
       console.error("Failed to fetch requests:", err);
+    } finally {
+      setLoading(false); // ✅ stop loading
     }
   };
 
@@ -50,12 +55,14 @@ const AdminAlumniRequests = () => {
     }
   };
 
-  // Filter requests based on search input
   const filteredRequests = requests.filter((alum) =>
     Object.values(alum).some((value) =>
       String(value).toLowerCase().includes(search.toLowerCase())
     )
   );
+
+  // ✅ Shimmer while loading
+  if (loading) return <Shimmer />;
 
   return (
     <div className="min-h-screen bg-gray-100 py-10 px-4">

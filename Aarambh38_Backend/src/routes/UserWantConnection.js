@@ -92,7 +92,7 @@ UserRouter.get("/getalumnimentees",UserAuth,async (req,res)=>{
     const decode=req.decode._id
   //direct fromuserId me nhi ho rha
   const fromuserId=decode
-  const connections=await ModelUserSendConnection.find({touserId:fromuserId,status:"accepted"}).populate("fromuserId","_id photourl  fullName role company batch collegeName gender about").select("fromuserId")
+  const connections=await ModelUserSendConnection.find({touserId:fromuserId,status:"accepted"}).populate("fromuserId","_id photourl age fullName batch collegeName gender branch").select("fromuserId")
   const listoftouserIddetails = connections.map(conn => conn.fromuserId);
   // console.log(listoftouserId)
   if(!listoftouserIddetails)
@@ -107,7 +107,7 @@ UserRouter.get("/alumnirecivedrequest",UserAuth,async (req,res)=>{
     const decode=req.decode._id
   //direct fromuserId me nhi ho rha
   const fromuserId=decode
-  const connections=await ModelUserSendConnection.find({touserId:fromuserId,status:"sended"}).populate("fromuserId","_id photourl  fullName role company batch collegeName gender about").select("fromuserId text")
+  const connections=await ModelUserSendConnection.find({touserId:fromuserId,status:"sended"}).populate("fromuserId","_id photourl  fullName role age company batch collegeName gender branch about").select("fromuserId text")
   // const listoftouserIddetails = connections.map(conn => conn.fromuserId);
   // console.log(connections)
   if(!connections)return;
@@ -121,7 +121,7 @@ UserRouter.get("/alumniblocked",UserAuth,async (req,res)=>{
     const decode=req.decode._id
   //direct fromuserId me nhi ho rha
   const fromuserId=decode
-  const connections=await ModelUserSendConnection.find({touserId:fromuserId,status:"blocked"}).populate("fromuserId","_id photourl  fullName role company batch collegeName gender about").select("fromuserId text")
+  const connections=await ModelUserSendConnection.find({touserId:fromuserId,status:"blocked"}).populate("fromuserId","_id photourl  fullName batch collegeName gender age branch").select("fromuserId text")
   // const listoftouserIddetails = connections.map(conn => conn.fromuserId);
   // console.log(connections)
   if(!connections)return;
