@@ -12,7 +12,7 @@ const ChatApp = () => {
   const Aluminidata = useSelector((store) => store.aluminidata);
   const user = Studentdata || Aluminidata;
 const [messageLoading, setMessageLoading] = useState(false);
-
+const [replyTo, setReplyTo] = useState(null);
   const [chatlist, setChatlist] = useState([]);
   //  const [previewImg, setPreviewImg] = useState(null)
   const [selectedUser, setSelectedUser] = useState(null);
@@ -50,18 +50,29 @@ const [loading, setLoading] = useState(true);
     if (!user) return;
     socketRef.current = SocketConnection();
 
-    socketRef.current.on("messageRecieved", ({ fromuserId, text }) => {
-      if (fromuserId === user._id) return;
-      setMessages((prev) => [
-        ...prev,
-        {
-          from: "them",
-          text,
-          createdAt: new Date().toISOString(),
-          senderId: fromuserId,
-        },
-      ]);
-    });
+    socketRef.current.on("messageRecieved", ({ 
+  fromuserId, 
+  text,
+  repliedtext,
+  repliedToId,     // <- who wrote the message being replied to
+  repliedById,     // <- who is replying
+}) => {
+  if (fromuserId === user._id) return;
+
+  setMessages((prev) => [
+    ...prev,
+    {
+      from: "them",
+      text,
+      repliedtext,
+      createdAt: new Date().toISOString(),
+      repliedToId,
+      repliedById,
+      senderId: fromuserId,
+    },
+  ]);
+});
+
 
     return () => {
       socketRef.current?.disconnect();
@@ -79,16 +90,20 @@ const [loading, setLoading] = useState(true);
   const fetchMessages = async (targetUserId) => {
   setMessageLoading(true);
   try {
-    const res = await axios.get(
-      `${BASE_URL}/getmessageswith/${targetUserId}`,
-      { withCredentials: true }
-    );
+    const res = await axios.get(`${BASE_URL}/getmessageswith/${targetUserId}`, {
+      withCredentials: true,
+    });
+
     const formatted = res.data.map((msg) => ({
       from: msg.fromuserId === user._id ? "me" : "them",
       text: msg.text,
       createdAt: msg.createdAt,
       senderId: msg.fromuserId,
+      repliedtext: msg.repliedtext,
+      repliedToId: msg.repliedToId,     // <- who wrote the original message
+      repliedById: msg.repliedById,     // <- who is replying
     }));
+
     setMessages(formatted);
   } catch (err) {
     console.error("Failed to fetch messages", err);
@@ -96,6 +111,7 @@ const [loading, setLoading] = useState(true);
     setMessageLoading(false);
   }
 };
+
 
 
   const handleSelectUser = (user) => {
@@ -111,21 +127,30 @@ const [loading, setLoading] = useState(true);
     const targetuserId = selectedUser._id;
 
     socketRef.current.emit("sendmessage", {
-      fromuserId,
-      targetuserId,
-      text: input,
-    });
+  fromuserId,
+  targetuserId,
+  text: input,
+  repliedtext: replyTo?.text || "",
+  repliedToId: replyTo?.senderId || null, // correct field name
+  repliedById: fromuserId,                // always the sender
+});
 
-    setMessages((prev) => [
-      ...prev,
-      {
-        from: "me",
-        text: input,
-        createdAt: new Date().toISOString(),
-        senderId: fromuserId,
-      },
-    ]);
-    setInput("");
+setMessages((prev) => [
+  ...prev,
+  {
+    from: "me",
+    text: input,
+    createdAt: new Date().toISOString(),
+    senderId: fromuserId,
+    repliedtext: replyTo?.text || "",
+    repliedToId: replyTo?.senderId || null, // match backend format
+    repliedById: fromuserId,
+  },
+]);
+
+setInput("");
+setReplyTo(null);
+
   };
 
   useEffect(() => {
@@ -312,49 +337,83 @@ const [loading, setLoading] = useState(true);
           <div key={dateLabel}>
             <div className="text-center text-xs text-gray-500 my-3">{dateLabel}</div>
             {group.map((msg, index) => {
-              const isMe = msg.from === "me";
-              const sender = isMe ? user : selectedUser;
-              return (
-                <div
-                  key={index}
-                  className={`flex items-end gap-2 ${
-                    isMe ? "justify-end" : "justify-start"
-                  }`}
-                >
-                  {!isMe && (
-                    <img
-                      src={sender?.photourl || "/default-avatar.png"}
-                      alt="profile"
-                      className="w-8 h-8 rounded-full object-cover border"
-                    />
-                  )}
-                  <div className="flex flex-col max-w-[80%] sm:max-w-xs">
-                    <div
-                      className={`px-4 py-2 break-words rounded-lg shadow text-white text-sm ${
-                        isMe ? "bg-green-600 self-end" : "bg-blue-600"
-                      }`}
-                    >
-                      {msg.text}
-                    </div>
-                    <div
-                      className={`text-xs text-gray-500 mt-1 ${
-                        isMe ? "text-right" : "text-left"
-                      }`}
-                    >
-                      {isMe ? "You" : sender?.fullName || "Them"} •{" "}
-                      {moment(msg.createdAt).format("h:mm A")}
-                    </div>
-                  </div>
-                  {isMe && (
-                    <img
-                      src={sender?.photourl || "/default-avatar.png"}
-                      alt="profile"
-                      className="w-8 h-8 rounded-full object-cover border"
-                    />
-                  )}
-                </div>
-              );
-            })}
+  const isMe = msg.from === "me";
+  const sender = isMe ? user : selectedUser;
+
+  return (
+    <div
+      key={index}
+      className={`flex items-end gap-2 ${
+        isMe ? "justify-end" : "justify-start"
+      }`}
+    >
+      {!isMe && (
+        <img
+          src={sender?.photourl || "/default-avatar.png"}
+          alt="profile"
+          className="w-8 h-8 rounded-full object-cover border"
+        />
+      )}
+
+      <div className="flex flex-col max-w-[80%] sm:max-w-xs relative group">
+        {/* Message bubble with reply and tooltip */}
+        <div
+          className={`px-4 py-2 break-words rounded-lg shadow text-white text-sm relative ${
+            isMe ? "bg-green-600 self-end" : "bg-blue-600"
+          }`}
+        >
+          {/* Replied message */}
+{msg.repliedtext && (
+  <div className="bg-white bg-opacity-20 text-xs text-gray-100 px-3 py-2 rounded mb-1 border-l-2 border-gray-300">
+    <div className="mb-1 font-semibold">
+      {msg.repliedToId === user._id ? "You" : selectedUser?.fullName || "Someone"}
+    </div>
+    <div className="italic text-gray-200 truncate">{msg.repliedtext}</div>
+  </div>
+)}
+
+
+
+
+
+
+<div>{msg.text}</div>
+        </div>
+
+        {/* ↩ Reply button (visible on hover or always on mobile) */}
+        {/* Reply Icon Button */}
+<button
+  onClick={() => setReplyTo(msg)}
+  className="absolute -top-3 -right-3 sm:group-hover:flex sm:hidden flex items-center justify-center w-7 h-7 rounded-full bg-white text-gray-700 shadow-md hover:bg-gray-100 transition-all duration-200"
+  title="Reply"
+>
+  ↩
+</button>
+
+
+        {/* Sender and time */}
+        <div
+          className={`text-xs text-gray-500 mt-1 ${
+            isMe ? "text-right" : "text-left"
+          }`}
+        >
+          {isMe ? "You" : sender?.fullName || "Them"} •{" "}
+          {moment(msg.createdAt).format("h:mm A")}
+        </div>
+      </div>
+
+      {isMe && (
+        <img
+          src={sender?.photourl || "/default-avatar.png"}
+          alt="profile"
+          className="w-8 h-8 rounded-full object-cover border"
+        />
+      )}
+    </div>
+  );
+})}
+
+
           </div>
         ))}
         <div ref={bottomRef} />
@@ -370,6 +429,18 @@ const [loading, setLoading] = useState(true);
   )}
 </div>
 
+        {replyTo && (
+  <div className="bg-gray-100 border-l-4 border-blue-500 px-3 py-2 text-sm mb-2 mx-4 rounded relative">
+    <div className="text-gray-600 font-semibold">Replying to:</div>
+    <div className="text-gray-800 truncate">{replyTo.text}</div>
+    <button
+      className="absolute top-1 right-2 text-gray-500 hover:text-gray-700 text-sm"
+      onClick={() => setReplyTo(null)}
+    >
+      ✕
+    </button>
+  </div>
+)}
 
         {/* Input */}
         <div className="p-4 border-t bg-white flex gap-2 z-10">

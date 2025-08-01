@@ -15,16 +15,20 @@ const IntializeSocket=(server)=>{
             socket.join(RoomId)
         })
 
-    socket.on("sendmessage", async ({ fromuserId, targetuserId, text }) => {
+    socket.on("sendmessage", async ({ fromuserId, targetuserId, text ,repliedtext,repliedId,repliedToId,repliedById}) => {
   const RoomId = [fromuserId, targetuserId].sort().join("_");
-
+ 
   try {
     // Save to MongoDB
     const message = new ModelMessage({
       fromuserId,
       targetuserId,
       text,
-      messageType: "text", // support for future media types
+      messageType: "text",
+      repliedId, 
+      repliedtext,
+      repliedById,
+      repliedToId
     });
 
     await message.save();
@@ -34,6 +38,10 @@ const IntializeSocket=(server)=>{
       fromuserId,
       targetuserId,
       text,
+      repliedId, 
+      repliedtext,
+      repliedById,
+      repliedToId,
       _id: message._id,
       createdAt: message.createdAt,
     });

@@ -33,7 +33,12 @@ const messageSchema = new mongoose.Schema(
     },
     repliedById:{
       type: mongoose.Schema.Types.ObjectId,
+      default:null
     },
+    repliedId:{
+      type: mongoose.Schema.Types.ObjectId,
+      default:null
+    }
   },
   { timestamps: true }
 );
