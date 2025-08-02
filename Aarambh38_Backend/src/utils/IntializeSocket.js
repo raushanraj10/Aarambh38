@@ -15,9 +15,9 @@ const IntializeSocket=(server)=>{
             socket.join(RoomId)
         })
 
-    socket.on("sendmessage", async ({ fromuserId, targetuserId, text ,repliedtext,repliedId,repliedToId,repliedById}) => {
+    socket.on("sendmessage", async ({ fromuserId, targetuserId, text ,repliedtext,repliedToId,repliedById}) => {
   const RoomId = [fromuserId, targetuserId].sort().join("_");
- 
+  // console.log(" fromuserId  "+fromuserId+" targetuserId  "+targetuserId+" repliedToId  "+repliedToId+" repliedById  "+repliedById)
   try {
     // Save to MongoDB
     const message = new ModelMessage({
@@ -25,7 +25,7 @@ const IntializeSocket=(server)=>{
       targetuserId,
       text,
       messageType: "text",
-      repliedId, 
+    
       repliedtext,
       repliedById,
       repliedToId
@@ -38,12 +38,13 @@ const IntializeSocket=(server)=>{
       fromuserId,
       targetuserId,
       text,
-      repliedId, 
+      
       repliedtext,
       repliedById,
       repliedToId,
       _id: message._id,
       createdAt: message.createdAt,
+      
     });
 
   } catch (error) {

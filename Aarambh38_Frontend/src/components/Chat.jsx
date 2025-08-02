@@ -49,10 +49,11 @@ const [loading, setLoading] = useState(true);
   useEffect(() => {
     if (!user) return;
     socketRef.current = SocketConnection();
-
+ 
     socketRef.current.on("messageRecieved", ({ 
   fromuserId, 
   text,
+  targetUserId,
   repliedtext,
   repliedToId,     // <- who wrote the message being replied to
   repliedById,     // <- who is replying
@@ -68,7 +69,7 @@ const [loading, setLoading] = useState(true);
       createdAt: new Date().toISOString(),
       repliedToId,
       repliedById,
-      senderId: fromuserId,
+      targetUserId: fromuserId,
     },
   ]);
 });
@@ -122,36 +123,42 @@ const [loading, setLoading] = useState(true);
   };
 
   const handleSend = () => {
-    if (!input.trim() || !selectedUser) return;
-    const fromuserId = user._id;
-    const targetuserId = selectedUser._id;
+  if (!input.trim() || !selectedUser) return;
 
-    socketRef.current.emit("sendmessage", {
-  fromuserId,
-  targetuserId,
-  text: input,
-  repliedtext: replyTo?.text || "",
-  repliedToId: replyTo?.senderId || null, // correct field name
-  repliedById: fromuserId,                // always the sender
-});
+  const fromuserId = user._id;
+  const targetuserId = selectedUser._id;
 
-setMessages((prev) => [
-  ...prev,
-  {
-    from: "me",
+  const isReplying = !!replyTo;
+  const isReplyingToOtherUser = isReplying && replyTo.from === "them";
+
+  const messagePayload = {
+    fromuserId,
+    targetuserId,
     text: input,
-    createdAt: new Date().toISOString(),
-    senderId: fromuserId,
-    repliedtext: replyTo?.text || "",
-    repliedToId: replyTo?.senderId || null, // match backend format
-    repliedById: fromuserId,
-  },
-]);
-
-setInput("");
-setReplyTo(null);
-
+    repliedtext: isReplying ? replyTo.text : null,
+    repliedToId: isReplying ? (isReplyingToOtherUser ? targetuserId : fromuserId) : null,
+    repliedById: isReplying ? fromuserId : null,
   };
+
+  socketRef.current.emit("sendmessage", messagePayload);
+
+  setMessages((prev) => [
+    ...prev,
+    {
+      from: "me",
+      text: input,
+      createdAt: new Date().toISOString(),
+      senderId: fromuserId,
+      repliedtext: messagePayload.repliedtext,
+      repliedToId: messagePayload.repliedToId,
+      repliedById: messagePayload.repliedById,
+    },
+  ]);
+
+  setInput("");
+  setReplyTo(null);
+};
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {

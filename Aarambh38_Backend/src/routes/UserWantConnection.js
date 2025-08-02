@@ -2,6 +2,7 @@ const express =require("express")
 const UserAuth = require("./middleware/UserAuth");
 const ModelUserSendConnection = require("../models/ModelUserSendConnection");
 const ModelAlumini = require("../models/ModelAlumini");
+const SendEmailByUser = require("../utils/SendEmailByUser");
 
 const UserRouter=express.Router()
 
@@ -166,6 +167,22 @@ UserRouter.post("/alumni/:status/:fromuserId",UserAuth,async (req,res)=>{
 
   }catch(err){res.send(err.message)}
 })
+
+
+UserRouter.post("/sendemailbyuser", async (req, res) => {
+  const { useremail, subject, usermessage } = req.body;
+  try {
+    await SendEmailByUser({
+      useremail,
+      subject,
+      usermessage,
+    });
+    res.status(200).send("Email sent successfully");
+  } catch (err) {
+    console.error("Email error:", err);
+    res.status(500).send("Email failed");
+  }
+});
 
 
 

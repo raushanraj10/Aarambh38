@@ -1,14 +1,47 @@
+import axios from "axios";
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { BASE_URL } from "./constants/AllUrl";
 
 export default function Footer() {
   const [showPrivacy, setShowPrivacy] = useState(false);
+  const [showContact, setShowContact] = useState(false);
+  const [usermessage, setusermessage] = useState("");
+  const [useremail, setuseremail] = useState("");
+  const [usersubject, setusersubject] = useState("");
+  const [isSending, setIsSending] = useState(false); // prevent double click
+
+  const handlesend = async () => {
+    if (isSending) return;
+
+    setIsSending(true);
+    try {
+      await axios.post(
+        `${BASE_URL}/sendemailbyuser`,
+        { useremail, usermessage, subject: usersubject },
+        { withCredentials: true }
+      );
+
+      alert("Message sent successfully!");
+      setShowContact(false);
+      setuseremail("");
+      setusermessage("");
+      setusersubject("");
+    } catch (error) {
+      console.error("Failed to send message", error);
+      alert("Failed to send message. Please try again later.");
+    } finally {
+      setIsSending(false);
+    }
+  };
+
   const popupRef = useRef();
 
   useEffect(() => {
     function handleClickOutside(event) {
       if (popupRef.current && !popupRef.current.contains(event.target)) {
         setShowPrivacy(false);
+        setShowContact(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -40,10 +73,18 @@ export default function Footer() {
             Privacy
           </button>
 
+          <button
+            onClick={() => setShowContact(!showContact)}
+            className="hover:text-blue-600 text-sm font-medium transition"
+          >
+            Contact Us
+          </button>
+
+          {/* Privacy Popup */}
           {showPrivacy && (
             <div
               ref={popupRef}
-              className="absolute bottom-10 left-1/2 -translate-x-1/2 sm:left-auto sm:right-0 sm:translate-x-0 w-80 bg-white border border-gray-200 shadow-lg p-4 rounded-lg z-50"
+              className="absolute bottom-12 left-1/2 -translate-x-1/2 sm:left-auto sm:right-0 sm:translate-x-0 w-80 bg-white border border-gray-200 shadow-lg p-4 rounded-lg z-50"
             >
               <h3 className="text-base font-semibold mb-2">Privacy Policy</h3>
               <p className="text-sm text-gray-600 mb-2">
@@ -54,8 +95,72 @@ export default function Footer() {
                 <span className="font-semibold text-blue-600">
                   Bihar Engineering University
                 </span>{" "}
-                are allowed to register and access this platform. Other users will not be accepted.
+                are allowed to register and access this platform.
               </p>
+            </div>
+          )}
+
+          {/* Contact Us Popup */}
+          {showContact && (
+            <div
+              ref={popupRef}
+              className="absolute bottom-12 left-1/2 -translate-x-1/2 sm:left-auto sm:right-0 sm:translate-x-0 w-96 bg-white border border-gray-200 shadow-lg p-4 rounded-lg z-50"
+            >
+              <h3 className="text-base font-semibold mb-2">Contact Us</h3>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handlesend();
+                }}
+              >
+                <div className="mb-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Your Email
+                  </label>
+                  <input
+                    type="email"
+                    value={useremail}
+                    onChange={(e) => setuseremail(e.target.value)}
+                    required
+                    className="w-full px-3 py-2 border rounded-md mt-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+                <div className="mb-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Subject
+                  </label>
+                  <input
+                    type="text"
+                    value={usersubject}
+                    onChange={(e) => setusersubject(e.target.value)}
+                    required
+                    className="w-full px-3 py-2 border rounded-md mt-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Message
+                  </label>
+                  <textarea
+                    rows="3"
+                    value={usermessage}
+                    onChange={(e) => setusermessage(e.target.value)}
+                    required
+                    className="w-full px-3 py-2 border rounded-md mt-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  ></textarea>
+                </div>
+                <button
+                  type="submit"
+                  disabled={isSending}
+                  className={`w-full py-2 text-sm font-medium text-white rounded-md ${
+                    isSending
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-gradient-to-r from-blue-600 to-green-600 hover:opacity-90"
+                  }`}
+                >
+                  {isSending ? "Sending..." : "Send Message"}
+                </button>
+              </form>
             </div>
           )}
         </div>

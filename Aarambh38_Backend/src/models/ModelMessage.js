@@ -35,7 +35,7 @@ const messageSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       default:null
     },
-    repliedId:{
+    repliedToId:{
       type: mongoose.Schema.Types.ObjectId,
       default:null
     }
