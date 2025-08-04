@@ -28,14 +28,14 @@ export default function SignupPageUser() {
   const [formErrors, setFormErrors] = useState({});
 
   const [formData, setFormData] = useState({
-    fullName: "a",
-    emailId: "ra@gmail.com",
-    collegeName: "s",
-    registration: "3556",
-    age: "556",
-    gender: "Male",
-    newPassword: "123456",
-    confirmPassword: "123456",
+    fullName: "",
+    emailId: "",
+    collegeName: "",
+    registration: "",
+    age: "",
+    gender: "",
+    newPassword: "",
+    confirmPassword: "",
     branch: "",
     photourl: "",
     

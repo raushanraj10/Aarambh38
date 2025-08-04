@@ -47,7 +47,8 @@ export default function SignupPageAlumini() {
     branch: "",
     newPassword: "",
     confirmPassword: "",
-    about: "I am alumini",
+  
+    about: "",
     photourl:
       "",
   });

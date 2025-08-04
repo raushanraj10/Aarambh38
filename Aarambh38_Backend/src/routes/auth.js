@@ -114,7 +114,7 @@ AuthRouter.post("/signupalumini",async (req,res)=>{
     return res.status(400).send("Wrong OTP");
 
     await ModelOtp.deleteOne({emailId:emailId})
-    const requiredFields=["fullName","gender","emailId","newPassword","confirmPassword","registration","batch","collegeName","company","role","photourl","about","branch","age"]
+    const requiredFields=["fullName","gender","emailId","newPassword","confirmPassword","registration","batch","collegeName","company","role","photourl","about","branch"]
     
      const allFieldsPresent = requiredFields.every(field => field in data);
 
@@ -240,6 +240,7 @@ return res.send(checkemail)
 })
 
 AuthRouter.post("/loginalumini",async (req,res)=>{
+    
     const {emailId,newPassword}=req.body
 const checkemail=await ModelAlumini.findOne({emailId:emailId})
 if(!checkemail)
