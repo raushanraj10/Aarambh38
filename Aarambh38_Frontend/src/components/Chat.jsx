@@ -53,7 +53,7 @@ const [loading, setLoading] = useState(true);
     socketRef.current.on("messageRecieved", ({ 
   fromuserId, 
   text,
-  targetUserId,
+  // targetUserId,
   repliedtext,
   repliedToId,     // <- who wrote the message being replied to
   repliedById,     // <- who is replying

@@ -27,7 +27,7 @@ const EditProfileAlumni = () => {
   const [showImageModal, setShowImageModal] = useState(false);
 
   useEffect(() => {
-    if (!alumniData || !alumniData.emailId) {
+    if (!alumniData) {
       navigate("/loginselectorpage");
     } else {
       setFormData({

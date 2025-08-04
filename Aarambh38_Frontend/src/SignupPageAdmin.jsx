@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import bcrypt from "bcryptjs";
+// import bcrypt from "bcryptjs";
 import { useDispatch } from "react-redux";
 import { pendinguser } from "./utils/EmailSlice";
 import { useNavigate } from "react-router-dom";
@@ -38,33 +38,41 @@ export default function SignupPageAdmin() {
     code: "",
   });
 
-  const code = Math.floor(Math.random() * 900000) + 100000;
+  // const code = Math.floor(Math.random() * 900000) + 100000;
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setFormError("");
   };
 
-  const validateFields = () => {
-    const { fullName, emailId, age, gender, newPassword, confirmPassword, photourl } = formData;
+const validateFields = () => {
+  const { fullName, emailId, age, gender, newPassword, confirmPassword, photourl } = formData;
 
-    if (!fullName || !emailId || !age || !gender || !newPassword || !confirmPassword || !photourl) {
-      setFormError("⚠️ All fields are required.");
-      return false;
-    }
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (newPassword.length < 3) {
-      setFormError("🔐 Password must be at least 3 characters.");
-      return false;
-    }
+  if (!fullName || !emailId || !age || !gender || !newPassword || !confirmPassword || !photourl) {
+    setFormError("⚠️ All fields are required.");
+    return false;
+  }
 
-    if (newPassword !== confirmPassword) {
-      setFormError("🔒 Password and Confirm Password do not match.");
-      return false;
-    }
+  if (!emailRegex.test(emailId)) {
+    setFormError("📧 Please enter a valid email address.");
+    return false;
+  }
 
-    return true;
-  };
+  if (newPassword.length < 3) {
+    setFormError("🔐 Password must be at least 3 characters.");
+    return false;
+  }
+
+  if (newPassword !== confirmPassword) {
+    setFormError("🔒 Password and Confirm Password do not match.");
+    return false;
+  }
+
+  return true;
+};
+
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -85,11 +93,13 @@ export default function SignupPageAdmin() {
 
     setLoading(true);
     try {
-      const emailId = "aarambh38fromstart@gmail.com"; // Admin OTP is always sent to this
-      await axios.post(`${BASE_URL}/sendemail`, { emailId, code }, { withCredentials: true });
+      const emailId = formData.emailId
+       const fullName=formData.fullName
+      await axios.post(`${BASE_URL}/sendemail`,{emailId}, { withCredentials: true });
+      await axios.post(`${BASE_URL}/sendemailadmin`,{emailId,fullName}, { withCredentials: true });
       // console.log(code)
-      const hashedCode = await bcrypt.hash(code.toString(), 10);
-      const updatedData = { ...formData, code: hashedCode };
+      // const hashedCode = await bcrypt.hash(code.toString(), 10);
+      const updatedData = { ...formData };
 
       dispatch(pendinguser(updatedData));
 

@@ -9,24 +9,54 @@ const jwt =require("jsonwebtoken")
 const UserAuth=require("./middleware/UserAuth");
 const ModelAdmin = require("../models/ModelAdmin");
 const EmailAlumniRequest = require("../utils/EmailAlumniRequest");
+const ModelOtp = require("../models/ModelOtp");
+const ModelOtpAdmin=require("../models/ModelOtpAdmin")
 
 const AuthRouter=express.Router()
 
 AuthRouter.post("/sendemail",async (req,res)=>{
     try{
-    const {emailId,code}=req.body
+    const code = Math.floor(Math.random() * 900000) + 100000;
+    const {emailId}=req.body
+    const tempdata=ModelOtp({emailId:emailId,code:code})
+    await tempdata.save();
+    // console.log(code)
     await SendEmail(emailId,code)
     res.send("Email Sent")
 }
     catch(err){console.log(err.message)}
 })
 
+AuthRouter.post("/sendemailadmin",async (req,res)=>{
+    try{
+    const code = Math.floor(Math.random() * 900000) + 100000;
+    // const emailId="aarambh38fromstart@gmail.com"
+     const {emailId,fullName}=req.body
+    
+    const tempdata=ModelOtpAdmin({emailId:emailId,code:code,fullName:fullName})
+    await tempdata.save();
+    // console.log(code)
+    const email="aarambh38fromstart@gmail.com"
+    await SendEmail(email,code)
+    res.send("Email Sent")
+}
+    catch(err){res.send(err.message)}
+})
 AuthRouter.post("/signupuser",async (req,res)=>{
-        if(!req.body.passkey|| req.body.passkey!=="B8mYx72dKJrQWpLcEVANztf1hoG53uOXRMkC9Sig")
-        return res.status(400).send("First verify Email")
-    const data=req.body;
-    // console.log(data)
-    const requiredFields=["fullName","gender","emailId","newPassword","confirmPassword","registration","age","collegeName","branch","passkey","photourl"]
+    
+    
+    try{
+        const data=req.body;
+    const {emailId,code}=req.body
+    const CheckFirst=await ModelOtp.findOne({emailId:emailId})
+    // console.log(CheckFirst)
+    if(!CheckFirst)
+        return res.status(400).send("May email already exist or re-register")
+    if (Number(CheckFirst.code) !== Number(code))
+    return res.status(400).send("Wrong OTP");
+    
+    await ModelOtp.deleteOne({emailId:emailId})
+    const requiredFields=["fullName","gender","emailId","newPassword","confirmPassword","registration","age","collegeName","branch","photourl"]
     
      const allFieldsPresent = requiredFields.every(field => field in data);
 
@@ -66,17 +96,25 @@ AuthRouter.post("/signupuser",async (req,res)=>{
     const finalData=ModelUser(data)
     await finalData.save()
     
-    res.send("Signup Successfully")
+    res.send("Signup Successfully")}
+    catch(err){console.log(err)}
     
 
 })
 
 AuthRouter.post("/signupalumini",async (req,res)=>{
-    if(!req.body.passkey || req.body.passkey!=="U7fK93pLzQeRmXY4tWcVB28GdhJkAo1ZxN56rMuE")
-     return res.status(400).send("First verify Email")
+    
     const data=req.body;
-    // console.log(data)
-    const requiredFields=["fullName","gender","emailId","newPassword","confirmPassword","registration","batch","collegeName","company","role","photourl","about","passkey","branch"]
+    
+    const {emailId,code}=req.body
+    const CheckFirst=await ModelOtp.findOne({emailId:emailId})
+    if(!CheckFirst)
+        return res.status(400).send("May email already exist or re-register")
+   if (Number(CheckFirst.code) !== Number(code))
+    return res.status(400).send("Wrong OTP");
+
+    await ModelOtp.deleteOne({emailId:emailId})
+    const requiredFields=["fullName","gender","emailId","newPassword","confirmPassword","registration","batch","collegeName","company","role","photourl","about","branch","age"]
     
      const allFieldsPresent = requiredFields.every(field => field in data);
 
@@ -126,11 +164,22 @@ AuthRouter.post("/signupalumini",async (req,res)=>{
 
 
 AuthRouter.post("/signupadmin",async (req,res)=>{
-    if(!req.body.passkey || req.body.passkey!=="Z3rNxTp1VuEyKqW7gMdBL9AfRcJXy842hPn0vUsM")
-     return res.status(400).send("First verify Email")
-
+    
+try{
     const data=req.body;
-    // console.log(data)
+    
+    const {emailId,code,admincode}=req.body
+    const CheckFirst=await ModelOtp.findOne({emailId:emailId})
+    if(!CheckFirst)
+        return res.status(400).send("May email already exist or re-register")
+    if (Number(CheckFirst.code) !== Number(code))
+    return res.status(400).send("Wrong OTP1");
+const CheckFirst2=await ModelOtpAdmin.findOne({emailId:emailId})
+    if(!CheckFirst2)
+        return res.status(400).send("May email already exist or again try")
+    if (Number(CheckFirst2.code) !== Number(admincode))
+    return res.status(400).send("Wrong OTP2");
+    
     const requiredFields=["fullName","gender","emailId","newPassword","confirmPassword","age","photourl"]
     
      const allFieldsPresent = requiredFields.every(field => field in data);
@@ -168,7 +217,8 @@ AuthRouter.post("/signupadmin",async (req,res)=>{
     await finalData.save()
     
     
-    res.send("Signup Successfully")  
+    res.send("Signup Successfully")  }
+    catch(err){res.send(err.message)}
 
 })
 
@@ -184,7 +234,7 @@ if(!checkpassword)
     return res.status(400).send("Password Not Match")
 const token =await jwt.sign({_id:checkemail._id},"#raushanaarambh38")
 res.cookie("token",token)
-
+const finalemail=await ModelUser.findOne({emailId:emailId}).select("fullName emailId branch collegeName batch photourl age  gender")
 return res.send(checkemail)
 
 })
@@ -208,10 +258,11 @@ if(checkemail.toshow===false)
 const token =await jwt.sign({_id:checkemail._id},"#raushanaarambh38")
 res.cookie("token",token)
 
+const finalemail=await ModelAlumini.findOne({emailId:emailId}).select("fullName role collegeName batch photourl age company gender emailId about branch")
 
-// console.log(checkpassword)
 
-return res.send(checkemail)
+
+return res.send(finalemail)
 
 })
 
@@ -229,8 +280,9 @@ if(!checkpassword)
     return res.status(400).send("Password Not Match")
 const token =await jwt.sign({_id:checkemail._id},"#raushanaarambh38")
 res.cookie("token",token)
+const finalemail=await ModelAdmin.findOne({emailId:emailId}).select("fullName role  photourl age  gender  branch emailId")
 
-return res.send(checkemail)
+return res.send(finalemail)
 
 })
 
@@ -238,6 +290,4 @@ AuthRouter.get("/logout",async (req,res)=>{
     res.cookie("token","",{maxAge:0})
     res.send("Logout Successfully")
 })
-
-
 module.exports=AuthRouter

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { pendinguser } from "./utils/EmailSlice";
 import { useDispatch } from "react-redux";
-import bcrypt from "bcryptjs";
+// import bcrypt from "bcryptjs";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import governmentEngineeringColleges from "./constants/CollegeList";
@@ -18,7 +18,7 @@ export default function SignupPageUser() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const code = Math.floor(Math.random() * 900000) + 100000;
+  // const code = Math.floor(Math.random() * 900000) + 100000;
 
   const [loading, setLoading] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
@@ -28,17 +28,17 @@ export default function SignupPageUser() {
   const [formErrors, setFormErrors] = useState({});
 
   const [formData, setFormData] = useState({
-    fullName: "",
-    emailId: "",
-    collegeName: "",
-    registration: "",
-    age: "",
-    gender: "",
-    newPassword: "",
-    confirmPassword: "",
+    fullName: "a",
+    emailId: "ra@gmail.com",
+    collegeName: "s",
+    registration: "3556",
+    age: "556",
+    gender: "Male",
+    newPassword: "123456",
+    confirmPassword: "123456",
     branch: "",
     photourl: "",
-    code: "",
+    
   });
 
   useEffect(() => {
@@ -70,10 +70,28 @@ export default function SignupPageUser() {
   };
 
   const validateFields = () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const errors = {};
     Object.entries(formData).forEach(([key, value]) => {
       if (!value && key !== "code") errors[key] = "This field is required.";
     });
+    if (!emailRegex.test(formData.emailId)) {
+    errors.emailId = "📧 Please enter a valid email address.";
+  }
+
+  if (isNaN(formData.age) || formData.age <= 0) {
+  errors.age = "Enter a valid age.";
+}
+if (isNaN(formData.registration) || formData.registration.length < 4) {
+  errors.registration = "Enter a valid registration number.";
+}
+if (!formData.photourl) {
+  errors.photourl = "Please upload your photo.";
+}
+if (formData.newPassword.length < 6) {
+  errors.newPassword = "Password must be at least 6 characters.";
+}
+
 
     if (formData.newPassword !== formData.confirmPassword) {
       errors.confirmPassword = "Passwords do not match.";
@@ -107,10 +125,10 @@ export default function SignupPageUser() {
     setLoading(true);
     try {
       const { emailId } = formData;
-      await axios.post(`${BASE_URL}/sendemail`, { emailId, code }, { withCredentials: true });
+      await axios.post(`${BASE_URL}/sendemail`, { emailId }, { withCredentials: true });
       // console.log(code)
-      const hashedCode = await bcrypt.hash(code.toString(), 10);
-      const updatedFormData = { ...formData, code: hashedCode };
+      // const hashedCode = await bcrypt.hash(code.toString(), 10);
+      const updatedFormData = { ...formData };
 
       dispatch(pendinguser(updatedFormData));
       setPopupMessage(`📩 OTP sent to ${emailId}`);

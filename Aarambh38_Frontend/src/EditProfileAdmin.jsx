@@ -25,7 +25,7 @@ const EditProfileAdmin = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (!AdminData || !AdminData.emailId) {
+    if (!AdminData) {
       navigate("/loginselectorpage");
     } else {
       setFormData({

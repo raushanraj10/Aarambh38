@@ -1,5 +1,4 @@
 import axios from "axios";
-import bcrypt from "bcryptjs";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -11,7 +10,6 @@ export default function EmailVerificationAlumini() {
   const [messageType, setMessageType] = useState("info");
   const [showMessage, setShowMessage] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [hashedCode, setHashedCode] = useState("");
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -22,9 +20,6 @@ export default function EmailVerificationAlumini() {
       setMessage(location.state.message);
       setMessageType("info");
       setShowMessage(true);
-    }
-    if (verifydata.code) {
-      setHashedCode(verifydata.code);
     }
   }, [location.state, verifydata]);
 
@@ -41,62 +36,54 @@ export default function EmailVerificationAlumini() {
     setLoading(true);
 
     try {
-      const isValid = await bcrypt.compare(code, hashedCode);
-      if (isValid) {
-        setMessage(
-          "✅ We’ve received your alumni verification. Thank you for joining Aarambh38!"
-        );
-        setMessageType("success");
-        setShowMessage(true);
+    setMessage("✅ Verification successful! Your email has been verified. Please wait while an admin reviews and approves your account.");
 
-        const {
-          fullName,
+
+      setMessageType("success");
+      setShowMessage(true);
+
+
+      const {
+        fullName,
+        branch,
+        gender,
+        emailId,
+        registration,
+        newPassword,
+        confirmPassword,
+        collegeName,
+        role,
+        company,
+        batch,
+        photourl,
+        about,
+      } = verifydata;
+
+      await axios.post(
+        `${BASE_URL}/signupalumini`,
+        {
+          photourl,
+          about,
           branch,
+          fullName,
           gender,
           emailId,
           registration,
           newPassword,
           confirmPassword,
-          collegeName,
-          role,
-          company,
           batch,
-          photourl,
-          about,
-        } = verifydata;
+          collegeName,
+          company,
+          role,
+          code,
+        },
+        { withCredentials: true }
+      );
 
-        const passkey = "U7fK93pLzQeRmXY4tWcVB28GdhJkAo1ZxN56rMuE";
-
-        await axios.post(
-          `${BASE_URL}/signupalumini`,
-          {
-            photourl,
-            about,
-            branch,
-            fullName,
-            gender,
-            emailId,
-            registration,
-            newPassword,
-            confirmPassword,
-            batch,
-            collegeName,
-            company,
-            role,
-            passkey,
-          },
-          { withCredentials: true }
-        );
-
-        setTimeout(() => navigate("/loginselectorpage"), 3000);
-      } else {
-        setMessage("❌ Invalid verification code.");
-        setMessageType("error");
-        setShowMessage(true);
-      }
+      setTimeout(() => navigate("/loginselectorpage"), 3000);
     } catch (err) {
       console.error("Verification error:", err);
-      setMessage("⚠️ Something went wrong. Please try again.");
+      setMessage("🔴 Verification failed. Please check the code and try again.");
       setMessageType("error");
       setShowMessage(true);
     }
@@ -107,21 +94,33 @@ export default function EmailVerificationAlumini() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-yellow-50 flex items-center justify-center px-4 py-8 relative">
       {/* Toast */}
-      {showMessage && (
-        <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50">
-          <div
-            className={`px-6 py-3 rounded-xl shadow-lg text-sm font-medium transition-all duration-500
-              ${messageType === "success"
-                ? "bg-green-100 border border-green-300 text-green-800"
-                : messageType === "error"
-                ? "bg-red-100 border border-red-300 text-red-800"
-                : "bg-blue-100 border border-blue-300 text-blue-800"
-              }`}
-          >
-            {message}
-          </div>
-        </div>
-      )}
+  {showMessage && (
+  <div
+    className="fixed top-[80px] left-1/2 z-[9999] px-4"
+    style={{
+      transform: "translateX(-50%)",
+      animation: "slideFadeIn 0.5s ease-out",
+      width: "max-content",
+      maxWidth: "90vw",
+    }}
+  >
+    <div
+      className={`px-6 py-3 rounded-xl shadow-lg text-sm font-medium
+        ${
+          messageType === "success"
+            ? "bg-green-100 border border-green-300 text-green-800"
+            : messageType === "error"
+            ? "bg-red-100 border border-red-300 text-red-800"
+            : "bg-blue-100 border border-blue-300 text-blue-800"
+        }`}
+    >
+      {message}
+    </div>
+  </div>
+)}
+
+
+
 
       <div className="bg-white shadow-xl rounded-3xl p-10 w-full max-w-md animate-fade-in">
         <h2 className="text-3xl font-bold text-center text-purple-700 mb-2">
@@ -164,6 +163,24 @@ export default function EmailVerificationAlumini() {
           </span>
         </div>
       </div>
+
+      {/* CSS for toast animation */}
+      <style>
+  {`
+    @keyframes slideFadeIn {
+      from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+    }
+  `}
+</style>
     </div>
   );
 }
+
+

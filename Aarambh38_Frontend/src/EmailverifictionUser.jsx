@@ -1,5 +1,5 @@
 import axios from "axios";
-import bcrypt from "bcryptjs";
+// import bcrypt from "bcryptjs";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -27,22 +27,22 @@ export default function EmailVerificationUser() {
 
   // Auto-hide message
   useEffect(() => {
-    if (showMessage) {
-      const timer = setTimeout(() => setShowMessage(false), 4000);
-      return () => clearTimeout(timer);
-    }
-  }, [showMessage]);
+  if (showMessage) {
+    window.scrollTo({ top: 0, behavior: "smooth" }); // 🔄 Scroll to top
+    const timer = setTimeout(() => setShowMessage(false), 4000);
+    return () => clearTimeout(timer);
+  }
+}, [showMessage]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (loading) return; // ✅ Prevent double submit
+
+  setLoading(true);
+  
+
 
     try {
-      const isValid = await bcrypt.compare(code, verifydata.code);
-      if (isValid) {
-        setMessage("✅ You’ve successfully joined Aarambh38! Redirecting to login...");
-        setMessageType("success");
-        setShowMessage(true);
 
         const {
           fullName,
@@ -56,7 +56,7 @@ export default function EmailVerificationUser() {
           branch,
           photourl
         } = verifydata;
-        const passkey="B8mYx72dKJrQWpLcEVANztf1hoG53uOXRMkC9Sig"
+        // const passkey="B8mYx72dKJrQWpLcEVANztf1hoG53uOXRMkC9Sig"
         await axios.post(
   `${BASE_URL}/signupuser`,
   {
@@ -70,21 +70,21 @@ export default function EmailVerificationUser() {
     age,
     branch,
     photourl,
-    passkey
+    code
+    
   },
   { withCredentials: true }
 );
 
+  setMessage("✅ Verification successful! Welcome to Aarambh38. Redirecting to login...");
+  setMessageType("success");
+  setShowMessage(true);
 
         setTimeout(() => navigate("/loginselectorpage"), 2000);
-      } else {
-        setMessage("❌ Invalid verification code.");
-        setMessageType("error");
-        setShowMessage(true);
-      }
+     
     } catch (err) {
       console.error("Verification error:", err);
-      setMessage("⚠️ Something went wrong during verification.");
+      setMessage("⚠️ Verification failed. Please check the OTP and try again.");
       setMessageType("error");
       setShowMessage(true);
     }
@@ -92,31 +92,7 @@ export default function EmailVerificationUser() {
     setLoading(false);
   };
 
-  // const handleResend = async () => {
-  //   const newOtp = Math.floor(Math.random() * 900000) + 100000;
-  //   const { emailId } = verifydata;
-
-  //   try {
-  //     await axios.post(
-  //       "http://localhost:5000/sendemail",
-  //       { emailId, code: newOtp },
-  //       { withCredentials: true }
-  //     );
-
-  //     const hashed = await bcrypt.hash(newOtp.toString(), 10);
-  //     verifydata.code = hashed;
-
-  //     setMessage(`📩 New OTP sent to ${emailId}`);
-  //     setMessageType("info");
-  //     setShowMessage(true);
-  //   } catch (err) {
-  //     console.error("Resend error:", err);
-  //     setMessage("❌ Failed to resend OTP. Try again later.");
-  //     setMessageType("error");
-  //     setShowMessage(true);
-  //   }
-  // };
-
+  
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-sky-100 flex items-center justify-center px-4 relative">
       {/* Floating Toast */}
@@ -164,14 +140,6 @@ export default function EmailVerificationUser() {
           </button>
         </form>
 
-        {/* <div className="text-center mt-4">
-          <button
-            onClick={handleResend}
-            className="text-blue-600 text-sm hover:underline"
-          >
-            Didn’t receive a code? Resend
-          </button>
-        </div> */}
 
         {/* Aarambh38 Promo */}
         <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800 text-center shadow-sm">

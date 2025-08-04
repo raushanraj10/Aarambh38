@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { pendinguser } from "./utils/EmailSlice";
 import { useDispatch } from "react-redux";
-import bcrypt from "bcryptjs";
+
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Select from "react-select";
@@ -22,7 +22,7 @@ export default function SignupPageAlumini() {
     Dispatch(removealumini());
   }, []);
 
-  const code = Math.floor(Math.random() * 900000) + 100000;
+  
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -50,7 +50,6 @@ export default function SignupPageAlumini() {
     about: "I am alumini",
     photourl:
       "",
-    code: "",
   });
 
   useEffect(() => {
@@ -79,18 +78,25 @@ export default function SignupPageAlumini() {
     setFormErrors((prev) => ({ ...prev, collegeName: "" }));
   };
 
-  const validateFields = () => {
-    const errors = {};
-    Object.entries(formData).forEach(([key, value]) => {
-      if (!value && key !== "code") errors[key] = "This field is required.";
-    });
+ const validateFields = () => {
+  const errors = {};
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (formData.newPassword !== formData.confirmPassword) {
-      errors.confirmPassword = "Passwords do not match.";
-    }
+  Object.entries(formData).forEach(([key, value]) => {
+    if (!value && key !== "code") errors[key] = "This field is required.";
+  });
 
-    return errors;
-  };
+  if (!emailRegex.test(formData.emailId)) {
+    errors.emailId = "📧 Please enter a valid email address.";
+  }
+
+  if (formData.newPassword !== formData.confirmPassword) {
+    errors.confirmPassword = "Passwords do not match.";
+  }
+
+  return errors;
+};
+
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -120,12 +126,12 @@ export default function SignupPageAlumini() {
 
       await axios.post(
         `${BASE_URL}/sendemail`,
-        { emailId, code },
+        { emailId },
         { withCredentials: true }
       );
     //  console.log(code)
-      const hashedCode = await bcrypt.hash(code.toString(), 10);
-      const updatedFormData = { ...formData, code: hashedCode };
+      // const hashedCode = await bcrypt.hash(code.toString(), 10);
+      const updatedFormData = { ...formData };
 
       dispatch(pendinguser(updatedFormData));
       setPopupMessage(`📩 OTP sent to ${emailId}`);
@@ -303,27 +309,33 @@ export default function SignupPageAlumini() {
             )}
           </div>
 
-          <div className="col-span-1 md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              About
-            </label>
-            <textarea
-              name="about"
-              rows={3}
-              value={formData.about}
-              onChange={handleChange}
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none resize-none ${
-                formErrors.about
-                  ? "border-red-500 ring-2 ring-red-300"
-                  : "border-gray-300 focus:ring-2 focus:ring-blue-500"
-              }`}
-              placeholder="Write something about yourself..."
-              required
-            />
-            {formErrors.about && (
-              <p className="text-xs text-red-500 mt-1">{formErrors.about}</p>
-            )}
-          </div>
+    <div className="col-span-1 md:col-span-2">
+  <label className="block text-sm font-medium text-gray-700 mb-1">
+    About
+  </label>
+  <p className="text-xs text-gray-500 mb-1">
+    Please share your journey line by line (Internship, Experience, Achievements, Guidance).
+  </p>
+  <textarea
+    name="about"
+    rows={6}
+    value={formData.about}
+    onChange={handleChange}
+    className={`w-full px-4 py-2 border rounded-lg focus:outline-none resize-none whitespace-pre-line ${
+      formErrors.about
+        ? "border-red-500 ring-2 ring-red-300"
+        : "border-gray-300 focus:ring-2 focus:ring-blue-500"
+    }`}
+    placeholder={`1. Internship: Infosys, Summer 2022 (Frontend Developer)\n2. Full-time Experience: TCS (2022–2024), Google (2024–present)\n3. Achievements: GATE qualified, 5⭐ HackerRank in Problem Solving\n4. Guidance: Happy to help with resume building, DSA, project selection`}
+    required
+  />
+  {formErrors.about && (
+    <p className="text-xs text-red-500 mt-1">{formErrors.about}</p>
+  )}
+</div>
+
+
+
 
           <div className="col-span-1 relative">
             <label className="block text-sm font-medium text-gray-700 mb-1">
