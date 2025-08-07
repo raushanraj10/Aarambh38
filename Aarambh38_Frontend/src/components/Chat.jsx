@@ -55,14 +55,14 @@ const [loading, setLoading] = useState(true);
     if (!user) return;
     socketRef.current = SocketConnection();
  
-    socketRef.current.on("messageRecieved", ({ 
-  fromuserId, 
+socketRef.current.on("messageRecieved", ({
+  fromuserId,
   text,
   image,
-  // targetUserId,
   repliedtext,
-  repliedToId,     // <- who wrote the message being replied to
-  repliedById,     // <- who is replying
+  repliedImage, // <-- NEW
+  repliedToId,
+  repliedById,
   messageType,
 }) => {
   if (fromuserId === user._id) return;
@@ -72,16 +72,18 @@ const [loading, setLoading] = useState(true);
     {
       from: "them",
       text,
-      image, 
-      repliedtext,
+      image,
       messageType,
       createdAt: new Date().toISOString(),
+      repliedtext,
+      repliedImage,  // <-- NEW
       repliedToId,
       repliedById,
       targetUserId: fromuserId,
     },
   ]);
 });
+
 
 
     return () => {
@@ -104,17 +106,19 @@ const [loading, setLoading] = useState(true);
       withCredentials: true,
     });
 
-    const formatted = res.data.map((msg) => ({
-      from: msg.fromuserId === user._id ? "me" : "them",
-      text: msg.text,
-      image: msg.image,                     
-      messageType: msg.messageType,
-      createdAt: msg.createdAt,
-      senderId: msg.fromuserId,
-      repliedtext: msg.repliedtext,
-      repliedToId: msg.repliedToId,     // <- who wrote the original message
-      repliedById: msg.repliedById,     // <- who is replying
-    }));
+  const formatted = res.data.map((msg) => ({
+  from: msg.fromuserId === user._id ? "me" : "them",
+  text: msg.text,
+  image: msg.image,
+  messageType: msg.messageType,
+  createdAt: msg.createdAt,
+  senderId: msg.fromuserId,
+  repliedtext: msg.repliedtext,
+  repliedImage: msg.repliedImage,  // <-- NEW
+  repliedToId: msg.repliedToId,
+  repliedById: msg.repliedById,
+}));
+
 
     setMessages(formatted);
   } catch (err) {
@@ -156,32 +160,37 @@ const [loading, setLoading] = useState(true);
   const isReplyingToOtherUser = isReplying && replyTo.from === "them";
 
   const messagePayload = {
-    fromuserId,
-    targetuserId,
-    text: input,
-    image: imagePreview || "",
-    messageType: imagePreview ? "image" : "text",
-    repliedtext: isReplying ? replyTo.text : null,
-    repliedToId: isReplying ? (isReplyingToOtherUser ? targetuserId : fromuserId) : null,
-    repliedById: isReplying ? fromuserId : null,
-  };
+  fromuserId,
+  targetuserId,
+  text: input,
+  image: imagePreview || "",
+  messageType: imagePreview ? "image" : "text",
+  repliedtext: isReplying ? replyTo.text : null,
+  repliedImage: isReplying ? replyTo.image : null,  // <-- NEW
+  repliedToId: isReplying ? (isReplyingToOtherUser ? targetuserId : fromuserId) : null,
+  repliedById: isReplying ? fromuserId : null,
+};
+
 
   socketRef.current.emit("sendmessage", messagePayload);
 
-  setMessages((prev) => [
-    ...prev,
-    {
-      from: "me",
-      text: input,
-      image: imagePreview,                      
-      messageType: imagePreview ? "image" : "text",
-      createdAt: new Date().toISOString(),
-      senderId: fromuserId,
-      repliedtext: messagePayload.repliedtext,
-      repliedToId: messagePayload.repliedToId,
-      repliedById: messagePayload.repliedById,
-    },
-  ]);
+setMessages((prev) => [
+  ...prev,
+  {
+    from: "me",
+    text: input,
+    image: imagePreview,
+    messageType: imagePreview ? "image" : "text",
+    createdAt: new Date().toISOString(),
+    senderId: fromuserId,
+    repliedtext: messagePayload.repliedtext,
+    repliedImage: messagePayload.repliedImage, // ✅ ADD THIS LINE
+    repliedToId: messagePayload.repliedToId,
+    repliedById: messagePayload.repliedById,
+  },
+]);
+
+
 
   setInput("");
   setReplyTo(null);
@@ -378,85 +387,96 @@ const [loading, setLoading] = useState(true);
   const sender = isMe ? user : selectedUser;
 
   return (
+  <div
+  key={index}
+  className={`flex items-end gap-2 ${isMe ? "justify-end" : "justify-start"}`}
+>
+  {!isMe && (
+    <img
+      src={sender?.photourl || "/default-avatar.png"}
+      alt="profile"
+      className="w-8 h-8 rounded-full object-cover border"
+    />
+  )}
+
+  <div className="flex flex-col max-w-[80%] sm:max-w-xs relative group">
     <div
-      key={index}
-      className={`flex items-end gap-2 ${
-        isMe ? "justify-end" : "justify-start"
+      className={`px-4 py-2 break-words rounded-lg shadow text-white text-sm relative ${
+        isMe ? "bg-green-600 self-end" : "bg-blue-600"
       }`}
     >
-      {!isMe && (
-        <img
-          src={sender?.photourl || "/default-avatar.png"}
-          alt="profile"
-          className="w-8 h-8 rounded-full object-cover border"
-        />
+      {/* Replied Message */}
+      {(msg.repliedtext || msg.repliedImage) && (
+        <div className="bg-white bg-opacity-20 text-xs text-gray-100 px-3 py-2 rounded mb-1 border-l-2 border-gray-300">
+          <div className="mb-1 font-semibold">
+            {msg.repliedToId === user._id ? "You" : selectedUser?.fullName || "Someone"}
+          </div>
+
+          {msg.repliedImage && (
+            <div className="max-w-[240px] sm:max-w-[300px] overflow-hidden rounded mb-1">
+              <img
+                src={msg.repliedImage}
+                alt="replied"
+                className="w-full h-auto rounded border"
+              />
+            </div>
+          )}
+
+          {msg.repliedtext && (
+            <div className="italic text-gray-200 truncate">{msg.repliedtext}</div>
+          )}
+        </div>
       )}
 
-      <div className="flex flex-col max-w-[80%] sm:max-w-xs relative group">
-        {/* Message bubble with reply and tooltip */}
-        <div
-          className={`px-4 py-2 break-words rounded-lg shadow text-white text-sm relative ${
-            isMe ? "bg-green-600 self-end" : "bg-blue-600"
-          }`}
-        >
-          {/* Replied message */}
-{msg.repliedtext && (
-  <div className="bg-white bg-opacity-20 text-xs text-gray-100 px-3 py-2 rounded mb-1 border-l-2 border-gray-300">
-    <div className="mb-1 font-semibold">
-      {msg.repliedToId === user._id ? "You" : selectedUser?.fullName || "Someone"}
-    </div>
-    <div className="italic text-gray-200 truncate">{msg.repliedtext}</div>
+      {/* Main Message Content */}
+      <div>
+      {msg.image && (
+  <div
+    className="max-w-[240px] sm:max-w-[300px] overflow-hidden rounded mb-1 cursor-pointer"
+    onClick={() => setPreviewImg(msg.image)}
+    title="Click to enlarge"
+  >
+    <img
+      src={msg.image}
+      alt="sent"
+      className="w-full h-auto rounded hover:brightness-90 transition"
+      style={{ marginBottom: msg.text ? "0.4rem" : 0 }}
+    />
   </div>
 )}
 
 
+        {msg.text && <div>{msg.text}</div>}
+      </div>
+    </div>
 
-<div>
-  {/* Show image if available */}
-  {msg.image && (
+    {/* Reply button */}
+    <button
+      onClick={() => setReplyTo(msg)}
+      className="absolute -top-3 -right-3 sm:group-hover:flex sm:hidden flex items-center justify-center w-7 h-7 rounded-full bg-white text-gray-700 shadow-md hover:bg-gray-100 transition-all duration-200"
+      title="Reply"
+    >
+      ↩
+    </button>
+
+    {/* Sender and Time */}
+    <div
+      className={`text-xs text-gray-500 mt-1 ${isMe ? "text-right" : "text-left"}`}
+    >
+      {isMe ? "You" : sender?.fullName || "Them"} •{" "}
+      {moment(msg.createdAt).format("h:mm A")}
+    </div>
+  </div>
+
+  {isMe && (
     <img
-      src={msg.image}
-      alt="sent"
-      className="max-w-xs max-h-60 rounded mb-1"
-      style={{ marginBottom: msg.text ? "0.4rem" : 0 }}
+      src={sender?.photourl || "/default-avatar.png"}
+      alt="profile"
+      className="w-8 h-8 rounded-full object-cover border"
     />
   )}
-  {/* Show text if present */}
-  {msg.text && <div>{msg.text}</div>}
 </div>
 
-        </div>
-
-        {/* ↩ Reply button (visible on hover or always on mobile) */}
-        {/* Reply Icon Button */}
-<button
-  onClick={() => setReplyTo(msg)}
-  className="absolute -top-3 -right-3 sm:group-hover:flex sm:hidden flex items-center justify-center w-7 h-7 rounded-full bg-white text-gray-700 shadow-md hover:bg-gray-100 transition-all duration-200"
-  title="Reply"
->
-  ↩
-</button>
-
-
-        {/* Sender and time */}
-        <div
-          className={`text-xs text-gray-500 mt-1 ${
-            isMe ? "text-right" : "text-left"
-          }`}
-        >
-          {isMe ? "You" : sender?.fullName || "Them"} •{" "}
-          {moment(msg.createdAt).format("h:mm A")}
-        </div>
-      </div>
-
-      {isMe && (
-        <img
-          src={sender?.photourl || "/default-avatar.png"}
-          alt="profile"
-          className="w-8 h-8 rounded-full object-cover border"
-        />
-      )}
-    </div>
   );
 })}
 
@@ -476,10 +496,22 @@ const [loading, setLoading] = useState(true);
   )}
 </div>
 
-        {replyTo && (
+ {replyTo && (
   <div className="bg-gray-100 border-l-4 border-blue-500 px-3 py-2 text-sm mb-2 mx-4 rounded relative">
     <div className="text-gray-600 font-semibold">Replying to:</div>
-    <div className="text-gray-800 truncate">{replyTo.text}</div>
+    
+    {replyTo.image && (
+      <img
+        src={replyTo.image}
+        alt="replying to"
+        className="max-w-[80px] max-h-[80px] rounded mt-1 mb-1 border"
+      />
+    )}
+
+    {replyTo.text && (
+      <div className="text-gray-800 truncate">{replyTo.text}</div>
+    )}
+
     <button
       className="absolute top-1 right-2 text-gray-500 hover:text-gray-700 text-sm"
       onClick={() => setReplyTo(null)}
@@ -488,6 +520,7 @@ const [loading, setLoading] = useState(true);
     </button>
   </div>
 )}
+
 
 
         {/* Input */}

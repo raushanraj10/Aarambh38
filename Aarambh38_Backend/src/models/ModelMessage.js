@@ -40,6 +40,10 @@ const messageSchema = new mongoose.Schema(
     repliedToId:{
       type: mongoose.Schema.Types.ObjectId,
       default:null
+    },
+    repliedImage:{
+      type: String,
+      default: "",
     }
   },
   { timestamps: true }

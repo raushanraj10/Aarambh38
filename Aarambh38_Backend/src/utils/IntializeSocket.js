@@ -20,26 +20,26 @@ socket.join(RoomId)
  })
 
 
-socket.on("sendmessage", async ({ fromuserId, targetuserId,text="",image = "",messageType = "text",repliedtext,repliedToId,repliedById}) => {
+socket.on("sendmessage", async ({ fromuserId, targetuserId,text="",image = "",messageType = "text",repliedtext,repliedToId,repliedById,repliedImage}) => {
 const RoomId = [fromuserId, targetuserId].sort().join("_");
-  // console.log(" fromuserId  "+fromuserId+" targetuserId  "+targetuserId+" repliedToId  "+repliedToId+" repliedById  "+repliedById)
+// console.log(" fromuserId  "+fromuserId+" targetuserId  "+targetuserId+" repliedToId  "+repliedToId+" repliedById  "+repliedById)
  try {
 
 
  let imageUrl = "";
  if (messageType === "image" && image) {
-            // Upload base64 image to Cloudinary
+// Upload base64 image to Cloudinary
 const result = await cloudinary.uploader.upload(image);
  imageUrl = result.secure_url;
  }
-    // Save to MongoDB
+ // Save to MongoDB
  const message = new ModelMessage({
  fromuserId,
 targetuserId,
  text,
  image: imageUrl,
  messageType,
-
+repliedImage,
  repliedtext,
  repliedById,
 repliedToId
@@ -48,20 +48,19 @@ repliedToId
 
 await message.save();
 
-
-    // Emit to both users
 io.to(RoomId).emit("messageRecieved", {
- fromuserId,
- targetuserId,
- text,
- image: imageUrl,
- repliedtext,
- repliedById,
- repliedToId,
+  fromuserId,
+  targetuserId,
+  text,
+  image: imageUrl,
+  repliedtext,
+  repliedById,
+  repliedImage,
+  repliedToId,
   _id: message._id,
- createdAt: message.createdAt,
-  
-  });
+  createdAt: message.createdAt,
+});
+
 
 
  } catch (error) {
