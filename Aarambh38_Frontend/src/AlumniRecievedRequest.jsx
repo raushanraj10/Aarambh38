@@ -10,9 +10,11 @@ export default function AlumniReceivedRequest() {
   const [requests, setRequests] = useState([]);
   const [loadingId, setLoadingId] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
+  const [confirmModal, setConfirmModal] = useState({ show: false, studentId: null, action: null });
+  const [loading, setLoading] = useState(true);
+
   const Aluminidata = useSelector((store) => store.aluminidata);
   const navigate = useNavigate();
-   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!Aluminidata) {
@@ -28,19 +30,18 @@ export default function AlumniReceivedRequest() {
         setRequests(res.data);
       } catch (err) {
         console.error("Error fetching requests:", err);
+      } finally {
+        setLoading(false);
       }
-      finally {
-        setLoading(false);}
     };
 
     fetchRequests();
   }, [Aluminidata, navigate]);
 
-  const handleAction = async (studentId, action) => {
-    const confirmed = window.confirm(`Are you sure you want to ${action} this request?`);
-    if (!confirmed) return;
-
+  const handleAction = async () => {
+    const { studentId, action } = confirmModal;
     setLoadingId(studentId);
+    setConfirmModal({ show: false, studentId: null, action: null });
 
     try {
       await axios.post(
@@ -56,7 +57,9 @@ export default function AlumniReceivedRequest() {
       setLoadingId(null);
     }
   };
- if (loading) return <Shimmer />;
+
+  if (loading) return <Shimmer />;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-blue-50 to-green-100 px-4 py-10">
       <h2 className="text-4xl font-bold text-center text-blue-700 mb-10">
@@ -75,16 +78,13 @@ export default function AlumniReceivedRequest() {
                 key={req._id}
                 className="relative bg-white shadow-lg rounded-2xl border p-6 md:p-8 flex flex-col gap-4 hover:shadow-xl transition"
               >
-                {/* Loading overlay */}
                 {isLoading && (
                   <div className="absolute inset-0 bg-white bg-opacity-70 flex items-center justify-center rounded-2xl z-10">
                     <div className="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full"></div>
                   </div>
                 )}
 
-                {/* Profile & Details */}
                 <div className="flex items-start gap-4 text-gray-800 text-sm md:text-base">
-                  {/* ✅ Fix typo here */}
                   <img
                     src={req.fromuserId.photourl}
                     alt="Profile"
@@ -102,16 +102,14 @@ export default function AlumniReceivedRequest() {
                   </div>
                 </div>
 
-                {/* Message Box */}
                 <div className="mt-4 bg-blue-50 border border-blue-200 rounded-md p-4 text-gray-700">
                   <p className="font-semibold">💬 Message:</p>
                   <p className="mt-1 whitespace-pre-line">{req.text}</p>
                 </div>
 
-                {/* Action Buttons */}
                 <div className="flex flex-wrap gap-4 pt-4 z-0">
                   <button
-                    onClick={() => handleAction(req.fromuserId._id, "accepted")}
+                    onClick={() => setConfirmModal({ show: true, studentId: req.fromuserId._id, action: "accepted" })}
                     disabled={isLoading}
                     className={`flex items-center gap-2 px-4 py-2 rounded-md text-white font-medium transition ${
                       isLoading ? "bg-green-300 cursor-wait" : "bg-green-600 hover:bg-green-700"
@@ -122,7 +120,7 @@ export default function AlumniReceivedRequest() {
                   </button>
 
                   <button
-                    onClick={() => handleAction(req.fromuserId._id, "rejected")}
+                    onClick={() => setConfirmModal({ show: true, studentId: req.fromuserId._id, action: "rejected" })}
                     disabled={isLoading}
                     className={`flex items-center gap-2 px-4 py-2 rounded-md text-white font-medium transition ${
                       isLoading ? "bg-yellow-300 cursor-wait" : "bg-yellow-500 hover:bg-yellow-600"
@@ -133,7 +131,7 @@ export default function AlumniReceivedRequest() {
                   </button>
 
                   <button
-                    onClick={() => handleAction(req.fromuserId._id, "blocked")}
+                    onClick={() => setConfirmModal({ show: true, studentId: req.fromuserId._id, action: "blocked" })}
                     disabled={isLoading}
                     className={`flex items-center gap-2 px-4 py-2 rounded-md text-white font-medium transition ${
                       isLoading ? "bg-red-300 cursor-wait" : "bg-red-600 hover:bg-red-700"
@@ -149,7 +147,6 @@ export default function AlumniReceivedRequest() {
         )}
       </div>
 
-      {/* ✅ Enlarged Image Modal */}
       {previewImage && (
         <div
           className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
@@ -163,7 +160,34 @@ export default function AlumniReceivedRequest() {
         </div>
       )}
 
-      {/* Footer */}
+      {/* ✅ Custom Confirmation Modal */}
+      {confirmModal.show && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-xl p-6 w-[90%] max-w-md shadow-2xl">
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">
+              Confirm Action
+            </h3>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to <span className="font-semibold text-blue-600">{confirmModal.action}</span> this request?
+            </p>
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={() => setConfirmModal({ show: false, studentId: null, action: null })}
+                className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleAction}
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="text-center mt-24">
         <p className="text-xl font-semibold bg-clip-text bg-gradient-to-r from-blue-500 to-green-500 text-transparent">
           Empowered by{" "}

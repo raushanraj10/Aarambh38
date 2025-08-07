@@ -29,6 +29,8 @@ export default function AlumniProfilePage() {
         return;},[Studentdata])
       
 
+const [showConfirmModal, setShowConfirmModal] = useState(false);
+const [currentAlumniId, setCurrentAlumniId] = useState(null);
 
   useEffect(() => {
     const fetchAll = async () => {
@@ -61,41 +63,51 @@ export default function AlumniProfilePage() {
     fetchAll();
   }, []);
 
-  const handleSendRequest = async (alumniId) => {
-    if (requestStatus[alumniId]) return;
+  const confirmSendRequest = (alumniId) => {
+  const message = messages[alumniId]?.trim();
+  if (!message) {
+    alert("Please write a message before sending.");
+    return;
+  }
 
-    const message = messages[alumniId]?.trim();
-    if (!message) {
-      alert("Please write a message before sending.");
-      return;
-    }
+  setCurrentAlumniId(alumniId);
+  setShowConfirmModal(true);
+};
 
-    try {
-      const fromuserId = Studentdata._id;
+const handleSendRequest = async () => {
+  if (!currentAlumniId) return;
 
-      await axios.post(
-        `${BASE_URL}/sendrequest/${alumniId}`,
-        { text: message },
-        { withCredentials: true }
-      );
+  const message = messages[currentAlumniId];
 
-      await axios.post(
-        `${BASE_URL}/sendrequestbymail`,
-        {
-          alumniId,
-          fromuserId,
-          message,
-        },
-        { withCredentials: true }
-      );
+  try {
+    const fromuserId = Studentdata._id;
 
-      setRequestStatus((prev) => ({ ...prev, [alumniId]: true }));
-      alert("Request sent and email notification delivered!");
-    } catch (err) {
-      console.error("Error sending request:", err);
-      alert("Failed to send request.");
-    }
-  };
+    await axios.post(
+      `${BASE_URL}/sendrequest/${currentAlumniId}`,
+      { text: message },
+      { withCredentials: true }
+    );
+
+    await axios.post(
+      `${BASE_URL}/sendrequestbymail`,
+      {
+        alumniId: currentAlumniId,
+        fromuserId,
+        message,
+      },
+      { withCredentials: true }
+    );
+
+    setRequestStatus((prev) => ({ ...prev, [currentAlumniId]: true }));
+  } catch (err) {
+    console.error("Error sending request:", err);
+    alert("Failed to send request.");
+  } finally {
+    setShowConfirmModal(false);
+    setCurrentAlumniId(null);
+  }
+};
+
 
   const handleSendMessage = (alumniId) => {
     Navigate(`/chat/${alumniId}`);
@@ -185,7 +197,7 @@ if(loading) return <Shimmer/>
         <div className="flex justify-center gap-6 mt-6">
           {!isAccepted && (
             <button
-              onClick={() => handleSendRequest(alumni._id)}
+              onClick={() => confirmSendRequest(alumni._id)}
               disabled={isRequestSent}
               className={`px-5 py-2 rounded-lg text-white font-medium transition ${
                 isRequestSent
@@ -210,6 +222,38 @@ if(loading) return <Shimmer/>
           </button>
         </div>
       </div>
+      {showConfirmModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center">
+    <div className="bg-white rounded-xl shadow-xl p-6 max-w-md w-full mx-4">
+      <h3 className="text-lg font-semibold text-gray-800 mb-2">Confirm Request</h3>
+      <p className="text-sm text-gray-600 mb-4">
+        Are you sure you want to send this message to the alumni?
+      </p>
+      <div className="bg-gray-100 p-3 rounded-md text-gray-700 text-sm mb-4 whitespace-pre-wrap break-words max-h-60 overflow-y-auto">
+  {messages[currentAlumniId]}
+</div>
+
+      <div className="flex justify-end gap-3">
+        <button
+          onClick={() => {
+            setShowConfirmModal(false);
+            setCurrentAlumniId(null);
+          }}
+          className="px-4 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={handleSendRequest}
+          className="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700"
+        >
+          Send
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 }

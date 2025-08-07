@@ -17,6 +17,9 @@ export default function StudentLandingPage() {
   const [loading, setLoading] = useState(true);
 
   const [alumniList, setAlumniList] = useState([]);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+const [currentAlumniId, setCurrentAlumniId] = useState(null);
+
   const [requestStatus, setRequestStatus] = useState({});
   const [acceptedStatus, setAcceptedStatus] = useState({});
   const [messages, setMessages] = useState({});
@@ -67,40 +70,50 @@ useEffect(() => {
 
 
 
-  const handleSendRequest = async (alumniId) => {
-    if (requestStatus[alumniId] || loadingAlumniId === alumniId) return;
+const confirmSendRequest = (alumniId) => {
+  const message = messages[alumniId]?.trim();
+  if (!message) {
+    alert("Please write a message before sending.");
+    return;
+  }
+  setCurrentAlumniId(alumniId);
+  setShowConfirmModal(true);
+};
 
-    const message = messages[alumniId]?.trim();
-    if (!message) {
-      alert("Please write a message before sending.");
-      return;
-    }
+const handleSendRequest = async () => {
+  if (!currentAlumniId) return;
+  setLoadingAlumniId(currentAlumniId);
 
-    setLoadingAlumniId(alumniId);
+  const message = messages[currentAlumniId];
 
-    try {
-      await axios.post(
-        `${BASE_URL}/sendrequest/${alumniId}`,
-        { text: message },
-        { withCredentials: true }
-      );
+  try {
+    await axios.post(
+      `${BASE_URL}/sendrequest/${currentAlumniId}`,
+      { text: message },
+      { withCredentials: true }
+    );
 
-      const fromuserId = Studentdata._id;
-      await axios.post(
-        `${BASE_URL}/sendrequestbymail`,
-        { alumniId, fromuserId, message },
-        { withCredentials: true }
-      );
+    const fromuserId = Studentdata._id;
+    await axios.post(
+      `${BASE_URL}/sendrequestbymail`,
+      { alumniId: currentAlumniId, fromuserId, message },
+      { withCredentials: true }
+    );
 
-      setRequestStatus((prev) => ({ ...prev, [alumniId]: true }));
-      alert("Request sent!");
-    } catch (err) {
-      console.error("Error sending request:", err);
-      alert("Failed to send request.");
-    } finally {
-      setLoadingAlumniId(null);
-    }
-  };
+    setRequestStatus((prev) => ({
+      ...prev,
+      [currentAlumniId]: true,
+    }));
+  } catch (err) {
+    console.error("Error sending request:", err);
+    alert("Failed to send request.");
+  } finally {
+    setLoadingAlumniId(null);
+    setShowConfirmModal(false);
+    setCurrentAlumniId(null);
+  }
+};
+
 
   const handleSendMessage = (alumniId) => {
     navigate(`/chat/${alumniId}`);
@@ -198,7 +211,7 @@ useEffect(() => {
                   <div className="flex flex-wrap gap-4 pt-3">
                     {!isAccepted && (
                       <button
-                        onClick={() => handleSendRequest(id)}
+                        onClick={() =>  confirmSendRequest(id)}
                         disabled={isRequestSent || isLoading}
                         className={`px-4 py-2 rounded-md text-sm font-medium transition ${
                           isRequestSent
@@ -233,6 +246,38 @@ useEffect(() => {
             );
           })
         )}
+        {showConfirmModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center">
+    <div className="bg-white rounded-xl shadow-xl p-6 max-w-md w-full mx-4">
+      <h3 className="text-lg font-semibold text-gray-800 mb-2">Confirm Request</h3>
+      <p className="text-sm text-gray-600 mb-4">
+        Are you sure you want to send this message to the alumni?
+      </p>
+      <div className="bg-gray-100 p-3 rounded-md text-gray-700 text-sm mb-4 whitespace-pre-wrap break-words max-h-60 overflow-y-auto">
+  {messages[currentAlumniId]}
+</div>
+
+      <div className="flex justify-end gap-3">
+        <button
+          onClick={() => {
+            setShowConfirmModal(false);
+            setCurrentAlumniId(null);
+          }}
+          className="px-4 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={handleSendRequest}
+          className="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700"
+        >
+          Send
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
       </div>
 
       <div className="text-center mt-20">

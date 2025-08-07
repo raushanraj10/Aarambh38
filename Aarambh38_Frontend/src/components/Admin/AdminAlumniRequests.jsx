@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { BASE_URL } from "../../constants/AllUrl";
-import { CheckCircle, XCircle, Search } from "lucide-react";
+import { CheckCircle, XCircle, Search, X } from "lucide-react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Shimmer from "../../Shimmer";
@@ -10,7 +10,11 @@ const AdminAlumniRequests = () => {
   const [requests, setRequests] = useState([]);
   const [search, setSearch] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
-  const [loading, setLoading] = useState(true); // ✅ added
+  const [loading, setLoading] = useState(true);
+  const [isActionModalOpen, setIsActionModalOpen] = useState(false);
+  const [actionType, setActionType] = useState(null);
+  const [selectedAlumni, setSelectedAlumni] = useState(null);
+  const [handlingAction, setHandlingAction] = useState(false);
 
   const admin = useSelector((state) => state.admindata);
   const navigate = useNavigate();
@@ -26,7 +30,7 @@ const AdminAlumniRequests = () => {
   }, []);
 
   const fetchRequests = async () => {
-    setLoading(true); // ✅ start loading
+    setLoading(true);
     try {
       const res = await axios.get(`${BASE_URL}/getallrequestedalumni`, {
         withCredentials: true,
@@ -35,23 +39,34 @@ const AdminAlumniRequests = () => {
     } catch (err) {
       console.error("Failed to fetch requests:", err);
     } finally {
-      setLoading(false); // ✅ stop loading
+      setLoading(false);
     }
   };
 
-  const handleAction = async (id, action) => {
-    const confirmMsg = `Are you sure you want to ${action} this alumni?`;
-    if (!window.confirm(confirmMsg)) return;
+  const openActionModal = (alumni, type) => {
+    setSelectedAlumni(alumni);
+    setActionType(type);
+    setIsActionModalOpen(true);
+  };
 
+  const handleConfirmAction = async () => {
+    if (!selectedAlumni || !actionType) return;
+
+    setHandlingAction(true);
     try {
       await axios.post(
-        `${BASE_URL}/alumnirequest/${id}/${action}`,
+        `${BASE_URL}/alumnirequest/${selectedAlumni._id}/${actionType}`,
         {},
         { withCredentials: true }
       );
+      setIsActionModalOpen(false);
+      setSelectedAlumni(null);
+      setActionType(null);
       fetchRequests();
     } catch (err) {
       console.error("Action failed:", err);
+    } finally {
+      setHandlingAction(false);
     }
   };
 
@@ -61,7 +76,6 @@ const AdminAlumniRequests = () => {
     )
   );
 
-  // ✅ Shimmer while loading
   if (loading) return <Shimmer />;
 
   return (
@@ -128,13 +142,13 @@ const AdminAlumniRequests = () => {
 
                 <div className="mt-4 flex gap-4">
                   <button
-                    onClick={() => handleAction(alum._id, "Approved")}
+                    onClick={() => openActionModal(alum, "Approved")}
                     className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md text-sm font-medium"
                   >
                     <CheckCircle size={18} /> Approve
                   </button>
                   <button
-                    onClick={() => handleAction(alum._id, "Reject")}
+                    onClick={() => openActionModal(alum, "Reject")}
                     className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md text-sm font-medium"
                   >
                     <XCircle size={18} /> Reject
@@ -157,6 +171,38 @@ const AdminAlumniRequests = () => {
               className="max-w-full max-h-[90vh] rounded-xl border-4 border-white shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             />
+          </div>
+        )}
+
+        {/* Confirm Action Modal */}
+        {isActionModalOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm space-y-4">
+              <h2 className="text-lg font-bold text-gray-800">
+                Confirm {actionType}
+              </h2>
+              <p>
+                Are you sure you want to <strong>{actionType}</strong> alumni{" "}
+                <strong>{selectedAlumni?.fullName}</strong>?
+              </p>
+
+              <div className="flex justify-end gap-3">
+                <button
+                  onClick={() => setIsActionModalOpen(false)}
+                  className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300"
+                  disabled={handlingAction}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleConfirmAction}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  disabled={handlingAction}
+                >
+                  {handlingAction ? "Processing..." : "Yes, Confirm"}
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>

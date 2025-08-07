@@ -62,7 +62,7 @@
 
 @keyframes fadeOut {
   0% {
-    opacity: 0.8;
+    opacity: 0.1;
   }
   100% {
     opacity: 0;

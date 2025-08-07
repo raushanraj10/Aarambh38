@@ -8,6 +8,7 @@ import Shimmer from "./Shimmer";
 export default function AlumniBlocked() {
   const [blockedStudents, setBlockedStudents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [confirmModal, setConfirmModal] = useState({ show: false, studentId: null });
   const Aluminidata = useSelector((store) => store.aluminidata);
   const navigate = useNavigate();
 
@@ -33,9 +34,9 @@ export default function AlumniBlocked() {
     fetchBlocked();
   }, [Aluminidata, navigate]);
 
-  const handleUnblock = async (studentId) => {
-    const confirmed = window.confirm("Are you sure you want to unblock this student?");
-    if (!confirmed) return;
+  const handleConfirmUnblock = async () => {
+    const studentId = confirmModal.studentId;
+    setConfirmModal({ show: false, studentId: null });
 
     try {
       await axios.post(
@@ -51,16 +52,16 @@ export default function AlumniBlocked() {
       console.error("Error unblocking student:", err.response?.data || err.message);
     }
   };
- if (loading) return <Shimmer />;
+
+  if (loading) return <Shimmer />;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-red-50 to-red-100 px-6 py-12">
       <h2 className="text-4xl font-bold text-center mb-12 text-red-700">
         Blacklisted Students
       </h2>
 
-      {loading ? (
-        <p className="text-center text-gray-500">Loading...</p>
-      ) : blockedStudents.length === 0 ? (
+      {blockedStudents.length === 0 ? (
         <p className="text-center text-gray-500">No blacklisted students found.</p>
       ) : (
         <div className="max-w-6xl mx-auto flex flex-col gap-10">
@@ -114,7 +115,7 @@ export default function AlumniBlocked() {
                   {/* Unblock Button */}
                   <div className="pt-4">
                     <button
-                      onClick={() => handleUnblock(user._id)}
+                      onClick={() => setConfirmModal({ show: true, studentId: user._id })}
                       className="bg-gradient-to-r from-blue-600 to-green-500 text-white px-5 py-2 rounded-lg font-medium shadow hover:shadow-md transition"
                     >
                       Unblock
@@ -124,6 +125,34 @@ export default function AlumniBlocked() {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Custom Confirmation Modal */}
+      {confirmModal.show && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-xl p-6 w-[90%] max-w-md shadow-2xl">
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">
+              Confirm Unblock
+            </h3>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to unblock this student?
+            </p>
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={() => setConfirmModal({ show: false, studentId: null })}
+                className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmUnblock}
+                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

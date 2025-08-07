@@ -8,6 +8,9 @@ import Shimmer from "../../Shimmer";
 
 const AdminAlumniList = () => {
   const [alumni, setAlumni] = useState([]);
+  const [confirmSendModal, setConfirmSendModal] = useState(false);
+const [deleteModal, setDeleteModal] = useState({ show: false, id: null });
+
   const [expandedId, setExpandedId] = useState(null);
   const [search, setSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
@@ -43,15 +46,17 @@ const AdminAlumniList = () => {
   };
 
   const deleteAlumni = async (id) => {
-    if (window.confirm("Are you sure you want to delete this alumni?")) {
-      try {
-        await axios.delete(`${BASE_URL}/deletealumni/${id}`, { withCredentials: true });
-        fetchAlumni();
-      } catch (err) {
-        console.error("Delete failed:", err);
-      }
-    }
-  };
+  try {
+    await axios.delete(`${BASE_URL}/deletealumni/${id}`, {
+      withCredentials: true,
+    });
+    fetchAlumni();
+    setDeleteModal({ show: false, id: null });
+  } catch (err) {
+    console.error("Delete failed:", err);
+  }
+};
+
 
   const openEmailModal = (email) => {
     setEmailData({ to: email, subject: "", message: "" });
@@ -149,11 +154,12 @@ const AdminAlumniList = () => {
 
                     <div className="flex gap-4 pt-4">
                       <button
-                        onClick={() => deleteAlumni(alum._id)}
-                        className="flex items-center gap-2 px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded-md"
-                      >
-                        <Trash2 size={16} /> Delete Alumni
-                      </button>
+  onClick={() => setDeleteModal({ show: true, id: alum._id })}
+  className="flex items-center gap-2 px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded-md"
+>
+  <Trash2 size={16} /> Delete Alumni
+</button>
+
                       <button
                         onClick={() => openEmailModal(alum.emailId)}
                         className="flex items-center gap-2 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-md"
@@ -203,12 +209,13 @@ const AdminAlumniList = () => {
               }
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
-            <button
-              onClick={sendEmail}
-              className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-md"
-            >
-              Send Email
-            </button>
+<button
+  onClick={() => setConfirmSendModal(true)}
+  className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-md"
+>
+  Send Email
+</button>
+
           </div>
         </div>
       )}
@@ -237,6 +244,64 @@ const AdminAlumniList = () => {
           </div>
         </div>
       )}
+      {/* Confirm Send Modal */}
+{confirmSendModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+    <div className="bg-white rounded-xl shadow-lg w-full max-w-sm p-6 relative">
+      <h2 className="text-lg font-semibold text-gray-800 text-center mb-4">
+        Confirm Send
+      </h2>
+      <p className="text-sm text-gray-600 text-center">
+        Are you sure you want to send this email to <strong>{emailData.to}</strong>?
+      </p>
+      <div className="flex justify-end gap-4 mt-6">
+        <button
+          onClick={() => setConfirmSendModal(false)}
+          className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-md text-gray-700"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={() => {
+            sendEmail();
+            setConfirmSendModal(false);
+          }}
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md"
+        >
+          Send
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+{/* Delete Confirmation Modal */}
+{deleteModal.show && (
+  <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+    <div className="bg-white rounded-xl shadow-lg w-full max-w-sm p-6 relative">
+      <h2 className="text-lg font-semibold text-gray-800 text-center mb-4">
+        Confirm Delete
+      </h2>
+      <p className="text-sm text-gray-600 text-center">
+        Are you sure you want to delete this alumni? This action cannot be undone.
+      </p>
+      <div className="flex justify-end gap-4 mt-6">
+        <button
+          onClick={() => setDeleteModal({ show: false, id: null })}
+          className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-md text-gray-700"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={() => deleteAlumni(deleteModal.id)}
+          className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md"
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 };

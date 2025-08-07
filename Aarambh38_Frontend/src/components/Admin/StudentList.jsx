@@ -12,8 +12,10 @@ const StudentList = () => {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
 
-
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [confirmSendModal, setConfirmSendModal] = useState(false);
+  const [deleteModal, setDeleteModal] = useState({ show: false, id: null });
+
   const [selectedEmail, setSelectedEmail] = useState("");
   const [emailSubject, setEmailSubject] = useState("");
   const [emailMessage, setEmailMessage] = useState("");
@@ -24,9 +26,7 @@ const StudentList = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!admin) {
-      navigate("/loginselectorpage");
-    }
+    if (!admin) navigate("/loginselectorpage");
   }, [admin]);
 
   useEffect(() => {
@@ -34,34 +34,32 @@ const StudentList = () => {
   }, []);
 
   const fetchAlumni = async () => {
-  setLoading(true);
-  try {
-    const res = await axios.get(`${BASE_URL}/getallstudent`, {
-      withCredentials: true,
-    });
-    setAlumni(res.data);
-  } catch (err) {
-    console.error("Failed to fetch student:", err);
-  } finally {
-    setLoading(false);
-  }
-};
-
+    setLoading(true);
+    try {
+      const res = await axios.get(`${BASE_URL}/getallstudent`, {
+        withCredentials: true,
+      });
+      setAlumni(res.data);
+    } catch (err) {
+      console.error("Failed to fetch student:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const toggleExpand = (id) => {
     setExpandedId((prev) => (prev === id ? null : id));
   };
 
-  const deleteAlumni = async (id) => {
-    if (window.confirm("Are you sure you want to delete this student?")) {
-      try {
-        await axios.delete(`${BASE_URL}/deletestudent/${id}`, {
-          withCredentials: true,
-        });
-        fetchAlumni();
-      } catch (err) {
-        console.error("Delete failed:", err);
-      }
+  const deleteStudent = async (id) => {
+    try {
+      await axios.delete(`${BASE_URL}/deletestudent/${id}`, {
+        withCredentials: true,
+      });
+      fetchAlumni();
+      setDeleteModal({ show: false, id: null });
+    } catch (err) {
+      console.error("Delete failed:", err);
     }
   };
 
@@ -83,8 +81,8 @@ const StudentList = () => {
         },
         { withCredentials: true }
       );
-      alert("Email sent successfully!");
       setIsModalOpen(false);
+      setConfirmSendModal(false);
     } catch (err) {
       console.error("Failed to send email:", err);
       alert("Failed to send email.");
@@ -94,7 +92,8 @@ const StudentList = () => {
   const filteredAlumni = alumni.filter((a) =>
     a.fullName.toLowerCase().includes(search.toLowerCase())
   );
- if (loading) return <Shimmer />;
+
+  if (loading) return <Shimmer />;
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
@@ -162,31 +161,19 @@ const StudentList = () => {
 
                 {expandedId === alum._id && (
                   <div className="bg-gray-50 px-6 mt-4 text-sm text-gray-700 space-y-1">
-                    <p>
-                      <strong>Gender:</strong> {alum.gender}
-                    </p>
-                    <p>
-                      <strong>College:</strong> {alum.collegeName}
-                    </p>
-                    <p>
-                      <strong>Branch:</strong> {alum.branch}
-                    </p>
-                    <p>
-                      <strong>Batch:</strong> {alum.batch}
-                    </p>
-                    <p>
-                      <strong>Age:</strong> {alum.age}
-                    </p>
-                    <p>
-                      <strong>Mobile:</strong> {alum.mobileNumber}
-                    </p>
-                    <p>
-                      <strong>Registration Number:</strong> {alum.registration}
-                    </p>
+                    <p><strong>Gender:</strong> {alum.gender}</p>
+                    <p><strong>College:</strong> {alum.collegeName}</p>
+                    <p><strong>Branch:</strong> {alum.branch}</p>
+                    <p><strong>Batch:</strong> {alum.batch}</p>
+                    <p><strong>Age:</strong> {alum.age}</p>
+                    <p><strong>Mobile:</strong> {alum.mobileNumber}</p>
+                    <p><strong>Registration Number:</strong> {alum.registration}</p>
 
                     <div className="flex gap-4 pt-4">
                       <button
-                        onClick={() => deleteAlumni(alum._id)}
+                        onClick={() =>
+                          setDeleteModal({ show: true, id: alum._id })
+                        }
                         className="flex items-center gap-2 px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded-md"
                       >
                         <Trash2 size={16} /> Delete Student
@@ -245,10 +232,63 @@ const StudentList = () => {
                 Cancel
               </button>
               <button
+                onClick={() => setConfirmSendModal(true)}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              >
+                Send
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ✅ Confirm Email Send Modal */}
+      {confirmSendModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm text-center">
+            <h2 className="text-lg font-semibold mb-4">Confirm Send</h2>
+            <p className="text-sm text-gray-600 mb-6">
+              Are you sure you want to send this email to{" "}
+              <strong>{selectedEmail}</strong>?
+            </p>
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={() => setConfirmSendModal(false)}
+                className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-md"
+              >
+                Cancel
+              </button>
+              <button
                 onClick={handleSendEmail}
                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
               >
                 Send
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 🗑️ Confirm Delete Modal */}
+      {deleteModal.show && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm text-center">
+            <h2 className="text-lg font-semibold mb-4">Confirm Delete</h2>
+            <p className="text-sm text-gray-600 mb-6">
+              Are you sure you want to delete this student? This action cannot be undone.
+            </p>
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={() => setDeleteModal({ show: false, id: null })}
+                className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-md"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => deleteStudent(deleteModal.id)}
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+              >
+                Delete
               </button>
             </div>
           </div>
