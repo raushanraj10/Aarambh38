@@ -17,15 +17,17 @@ const messageSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    image: {
+      type: String,
+      default: "",
+    },
     messageType: {
       type: String,
-      enum: ["text", "image", "file", "video", "audio"],
-      default: "text",
+      enum: ["text", "image", "file", "video", "audio"]
     },
     repliedmessageType: {
       type: String,
-      enum: ["text", "image", "file", "video", "audio"],
-      default: "text",
+      enum: ["text", "image", "file", "video", "audio"]
     },
     repliedtext:{
       type: String,

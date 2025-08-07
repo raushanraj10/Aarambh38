@@ -8,6 +8,11 @@ import LoginSelectorPage from "../LoginSelectorPage";
 import { BASE_URL } from "../constants/AllUrl";
 import Shimmer from "../Shimmer";
 const ChatApp = () => {
+
+  const [imageFile, setImageFile] = useState(null);    
+  const [imagePreview, setImagePreview] = useState(null);
+
+
   const Studentdata = useSelector((store) => store.studentdata);
   const Aluminidata = useSelector((store) => store.aluminidata);
   const user = Studentdata || Aluminidata;
@@ -53,10 +58,12 @@ const [loading, setLoading] = useState(true);
     socketRef.current.on("messageRecieved", ({ 
   fromuserId, 
   text,
+  image,
   // targetUserId,
   repliedtext,
   repliedToId,     // <- who wrote the message being replied to
   repliedById,     // <- who is replying
+  messageType,
 }) => {
   if (fromuserId === user._id) return;
 
@@ -65,7 +72,9 @@ const [loading, setLoading] = useState(true);
     {
       from: "them",
       text,
+      image, 
       repliedtext,
+      messageType,
       createdAt: new Date().toISOString(),
       repliedToId,
       repliedById,
@@ -98,6 +107,8 @@ const [loading, setLoading] = useState(true);
     const formatted = res.data.map((msg) => ({
       from: msg.fromuserId === user._id ? "me" : "them",
       text: msg.text,
+      image: msg.image,                     
+      messageType: msg.messageType,
       createdAt: msg.createdAt,
       senderId: msg.fromuserId,
       repliedtext: msg.repliedtext,
@@ -113,6 +124,18 @@ const [loading, setLoading] = useState(true);
   }
 };
 
+  const handleImageChange = (e) => {      
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result); 
+      };
+      reader.readAsDataURL(file);
+      setImageFile(file);
+    }
+  };
+
 
 
   const handleSelectUser = (user) => {
@@ -123,7 +146,8 @@ const [loading, setLoading] = useState(true);
   };
 
   const handleSend = () => {
-  if (!input.trim() || !selectedUser) return;
+  if (!input.trim() && !imagePreview) return;
+    if (!selectedUser) return;
 
   const fromuserId = user._id;
   const targetuserId = selectedUser._id;
@@ -135,6 +159,8 @@ const [loading, setLoading] = useState(true);
     fromuserId,
     targetuserId,
     text: input,
+    image: imagePreview || "",
+    messageType: imagePreview ? "image" : "text",
     repliedtext: isReplying ? replyTo.text : null,
     repliedToId: isReplying ? (isReplyingToOtherUser ? targetuserId : fromuserId) : null,
     repliedById: isReplying ? fromuserId : null,
@@ -147,6 +173,8 @@ const [loading, setLoading] = useState(true);
     {
       from: "me",
       text: input,
+      image: imagePreview,                      
+      messageType: imagePreview ? "image" : "text",
       createdAt: new Date().toISOString(),
       senderId: fromuserId,
       repliedtext: messagePayload.repliedtext,
@@ -157,6 +185,8 @@ const [loading, setLoading] = useState(true);
 
   setInput("");
   setReplyTo(null);
+  setImageFile(null);       
+  setImagePreview(null);       
 };
 
 
@@ -381,10 +411,20 @@ const [loading, setLoading] = useState(true);
 
 
 
+<div>
+  {/* Show image if available */}
+  {msg.image && (
+    <img
+      src={msg.image}
+      alt="sent"
+      className="max-w-xs max-h-60 rounded mb-1"
+      style={{ marginBottom: msg.text ? "0.4rem" : 0 }}
+    />
+  )}
+  {/* Show text if present */}
+  {msg.text && <div>{msg.text}</div>}
+</div>
 
-
-
-<div>{msg.text}</div>
         </div>
 
         {/* ↩ Reply button (visible on hover or always on mobile) */}
@@ -449,34 +489,79 @@ const [loading, setLoading] = useState(true);
   </div>
 )}
 
+
         {/* Input */}
-        <div className="p-4 border-t bg-white flex gap-2 z-10">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                handleSend();
-              }
-            }}
-            placeholder="Type your message..."
-            className="flex-1 px-4 py-2 border rounded-full focus:outline-none"
-            disabled={!selectedUser}
-          />
-          <button
-            onClick={handleSend}
-            disabled={!selectedUser}
-            className={`px-4 py-2 rounded-full text-white ${
-              selectedUser
-                ? "bg-gradient-to-r from-blue-600 to-green-600"
-                : "bg-gray-400 cursor-not-allowed"
-            }`}
-          >
-            Send
-          </button>
-        </div>
+        <div className="p-4 border-t bg-white flex flex-col gap-2 z-10">
+  {/* Image preview before sending */}
+  {imagePreview && (
+    <div className="relative w-40 h-40 mb-2">
+      <img
+        src={imagePreview}
+        alt="preview"
+        className="object-cover w-full h-full rounded"
+      />
+      <button
+        className="absolute top-1 right-1 bg-gray-800 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-gray-700"
+        onClick={() => {
+          setImagePreview(null);
+          setImageFile(null);
+        }}
+        title="Remove image"
+      >
+        ×
+      </button>
+    </div>
+  )}
+
+  <div className="flex gap-2">
+    <input
+      type="text"
+      value={input}
+      onChange={(e) => setInput(e.target.value)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          handleSend();
+        }
+      }}
+      placeholder="Type your message..."
+      className="flex-1 px-4 py-2 border rounded-full focus:outline-none"
+      disabled={!selectedUser}
+    />
+
+    {/* New file input for image with styling */}
+    <label
+      htmlFor="imageUpload"
+      className={`px-3 py-2 bg-gray-200 rounded-full cursor-pointer flex items-center justify-center ${
+        !selectedUser ? "opacity-50 cursor-not-allowed" : ""
+      }`}
+      title="Attach image"
+    >
+      📷
+    </label>
+    <input
+      id="imageUpload"
+      type="file"
+      accept="image/*"
+      className="hidden"
+      onChange={handleImageChange}
+      disabled={!selectedUser}
+    />
+
+    <button
+      onClick={handleSend}
+      disabled={!selectedUser}
+      className={`px-4 py-2 rounded-full text-white ${
+        selectedUser
+          ? "bg-gradient-to-r from-blue-600 to-green-600"
+          : "bg-gray-400 cursor-not-allowed"
+      }`}
+    >
+      Send
+    </button>
+  </div>
+</div>
+
       </div>
       {previewImg && (
   <div
