@@ -44,7 +44,12 @@ const messageSchema = new mongoose.Schema(
     repliedImage:{
       type: String,
       default: "",
-    }
+    },
+    repliedToCreatedAt: {
+  type: Date,
+  default: null,
+   },
+
   },
   { timestamps: true }
 );

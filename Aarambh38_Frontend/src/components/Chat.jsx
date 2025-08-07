@@ -7,12 +7,20 @@ import moment from "moment";
 import LoginSelectorPage from "../LoginSelectorPage";
 import { BASE_URL } from "../constants/AllUrl";
 import Shimmer from "../Shimmer";
+import { Paperclip } from "lucide-react";
+import { Camera, FileText } from "lucide-react";
+
+
+
+
 const ChatApp = () => {
 
   const [imageFile, setImageFile] = useState(null);    
   const [imagePreview, setImagePreview] = useState(null);
 
-
+  const [showAttachmentOptions, setShowAttachmentOptions] = useState(false);
+const fileInputRef = useRef();
+const docInputRef = useRef();
   const Studentdata = useSelector((store) => store.studentdata);
   const Aluminidata = useSelector((store) => store.aluminidata);
   const user = Studentdata || Aluminidata;
@@ -23,6 +31,7 @@ const [replyTo, setReplyTo] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
   const [previewImg, setPreviewImg] = useState(null);
 const [loading, setLoading] = useState(true);
+const messageRefs = useRef({});
 
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -32,6 +41,27 @@ const [loading, setLoading] = useState(true);
   const menuRef = useRef(null);
   const socketRef = useRef(null);
   const bottomRef = useRef(null);
+  const attachmentMenuRef = useRef(null);
+
+useEffect(() => {
+  const handleClickOutside = (event) => {
+    if (
+      attachmentMenuRef.current &&
+      !attachmentMenuRef.current.contains(event.target)
+    ) {
+      setShowAttachmentOptions(false);
+    }
+  };
+
+  if (showAttachmentOptions) {
+    document.addEventListener("mousedown", handleClickOutside);
+  }
+
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, [showAttachmentOptions]);
+
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -114,10 +144,12 @@ socketRef.current.on("messageRecieved", ({
   createdAt: msg.createdAt,
   senderId: msg.fromuserId,
   repliedtext: msg.repliedtext,
-  repliedImage: msg.repliedImage,  // <-- NEW
+  repliedImage: msg.repliedImage,
   repliedToId: msg.repliedToId,
   repliedById: msg.repliedById,
+  repliedToCreatedAt: msg.repliedToCreatedAt, // ✅ NEW
 }));
+
 
 
     setMessages(formatted);
@@ -166,10 +198,12 @@ socketRef.current.on("messageRecieved", ({
   image: imagePreview || "",
   messageType: imagePreview ? "image" : "text",
   repliedtext: isReplying ? replyTo.text : null,
-  repliedImage: isReplying ? replyTo.image : null,  // <-- NEW
+  repliedImage: isReplying ? replyTo.image : null,
   repliedToId: isReplying ? (isReplyingToOtherUser ? targetuserId : fromuserId) : null,
   repliedById: isReplying ? fromuserId : null,
+  repliedToCreatedAt: isReplying ? replyTo.createdAt : null, // ✅ NEW
 };
+
 
 
   socketRef.current.emit("sendmessage", messagePayload);
@@ -184,11 +218,13 @@ setMessages((prev) => [
     createdAt: new Date().toISOString(),
     senderId: fromuserId,
     repliedtext: messagePayload.repliedtext,
-    repliedImage: messagePayload.repliedImage, // ✅ ADD THIS LINE
+    repliedImage: messagePayload.repliedImage,
     repliedToId: messagePayload.repliedToId,
     repliedById: messagePayload.repliedById,
+    repliedToCreatedAt: messagePayload.repliedToCreatedAt, // ✅ NEW
   },
 ]);
+
 
 
 
@@ -389,8 +425,14 @@ setMessages((prev) => [
   return (
   <div
   key={index}
-  className={`flex items-end gap-2 ${isMe ? "justify-end" : "justify-start"}`}
+  ref={(el) => {
+    const key = `${msg.createdAt}-${msg.senderId}`;
+    if (el) messageRefs.current[key] = el;
+  }}
+  className={`flex items-start gap-2 ${isMe ? "justify-end" : "justify-start"}`}
+
 >
+
   {!isMe && (
     <img
       src={sender?.photourl || "/default-avatar.png"}
@@ -406,27 +448,39 @@ setMessages((prev) => [
       }`}
     >
       {/* Replied Message */}
-      {(msg.repliedtext || msg.repliedImage) && (
-        <div className="bg-white bg-opacity-20 text-xs text-gray-100 px-3 py-2 rounded mb-1 border-l-2 border-gray-300">
-          <div className="mb-1 font-semibold">
-            {msg.repliedToId === user._id ? "You" : selectedUser?.fullName || "Someone"}
-          </div>
+     {(msg.repliedtext || msg.repliedImage) && (
+  <div
+    className="bg-white bg-opacity-20 text-xs text-gray-100 px-3 py-2 rounded mb-1 border-l-2 border-gray-300 cursor-pointer hover:bg-opacity-30 transition"
+    onClick={() => {
+      const key = `${msg.repliedToCreatedAt}-${msg.repliedToId}`;
+      const el = messageRefs.current[key];
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        el.classList.add("fade-highlight");
+        setTimeout(() => el.classList.remove("fade-highlight"), 2000);
+      }
+    }}
+  >
+    <div className="mb-1 font-semibold">
+      {msg.repliedById === user._id ? "You" : selectedUser?.fullName}
+    </div>
 
-          {msg.repliedImage && (
-            <div className="max-w-[240px] sm:max-w-[300px] overflow-hidden rounded mb-1">
-              <img
-                src={msg.repliedImage}
-                alt="replied"
-                className="w-full h-auto rounded border"
-              />
-            </div>
-          )}
+    {msg.repliedImage && (
+      <div className="max-w-[240px] sm:max-w-[300px] overflow-hidden rounded mb-1">
+        <img
+          src={msg.repliedImage}
+          alt="replied"
+          className="w-full h-auto rounded border"
+        />
+      </div>
+    )}
 
-          {msg.repliedtext && (
-            <div className="italic text-gray-200 truncate">{msg.repliedtext}</div>
-          )}
-        </div>
-      )}
+    {msg.repliedtext && (
+      <div className="italic text-gray-200 truncate">{msg.repliedtext}</div>
+    )}
+  </div>
+)}
+
 
       {/* Main Message Content */}
       <div>
@@ -563,23 +617,65 @@ setMessages((prev) => [
     />
 
     {/* New file input for image with styling */}
-    <label
-      htmlFor="imageUpload"
-      className={`px-3 py-2 bg-gray-200 rounded-full cursor-pointer flex items-center justify-center ${
-        !selectedUser ? "opacity-50 cursor-not-allowed" : ""
-      }`}
-      title="Attach image"
-    >
-      📷
-    </label>
-    <input
-      id="imageUpload"
-      type="file"
-      accept="image/*"
-      className="hidden"
-      onChange={handleImageChange}
-      disabled={!selectedUser}
-    />
+    <div className="relative">
+  <button
+    type="button"
+    onClick={() => setShowAttachmentOptions((prev) => !prev)}
+    disabled={!selectedUser}
+    className={`px-3 py-2 bg-gray-200 rounded-full cursor-pointer flex items-center justify-center ${
+      !selectedUser ? "opacity-50 cursor-not-allowed" : ""
+    }`}
+    title="Attach"
+  >
+    <Paperclip className="w-5 h-5" />
+  </button>
+
+  {showAttachmentOptions && (
+    <div ref={attachmentMenuRef} className="absolute bottom-full mb-2 left-0 bg-white border shadow rounded z-50 w-32">
+       
+      <button
+  onClick={() => {
+    fileInputRef.current?.click();
+    setShowAttachmentOptions(false);
+  }}
+  className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-100 text-sm"
+>
+  <Camera className="w-4 h-4" />
+  Image
+</button>
+<button
+  onClick={() => {
+    docInputRef.current?.click();
+    setShowAttachmentOptions(false);
+  }}
+  className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-100 text-sm"
+>
+  <FileText className="w-4 h-4" />
+  Document
+</button>
+
+    </div>
+  )}
+
+  {/* Hidden File Inputs */}
+  <input
+    ref={fileInputRef}
+    type="file"
+    accept="image/*"
+    className="hidden"
+    onChange={handleImageChange}
+  />
+  <input
+    ref={docInputRef}
+    type="file"
+    accept=".pdf,.doc,.docx"
+    className="hidden"
+    onChange={() => {
+      // Future logic for document upload
+    }}
+  />
+</div>
+
 
     <button
       onClick={handleSend}

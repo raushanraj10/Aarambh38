@@ -20,7 +20,7 @@ socket.join(RoomId)
  })
 
 
-socket.on("sendmessage", async ({ fromuserId, targetuserId,text="",image = "",messageType = "text",repliedtext,repliedToId,repliedById,repliedImage}) => {
+socket.on("sendmessage", async ({ fromuserId, targetuserId,text="",image = "",messageType = "text",repliedtext,repliedToId,repliedById,repliedImage,repliedToCreatedAt}) => {
 const RoomId = [fromuserId, targetuserId].sort().join("_");
 // console.log(" fromuserId  "+fromuserId+" targetuserId  "+targetuserId+" repliedToId  "+repliedToId+" repliedById  "+repliedById)
  try {
@@ -42,7 +42,8 @@ targetuserId,
 repliedImage,
  repliedtext,
  repliedById,
-repliedToId
+repliedToId,
+repliedToCreatedAt
  });
 
 
@@ -57,6 +58,7 @@ io.to(RoomId).emit("messageRecieved", {
   repliedById,
   repliedImage,
   repliedToId,
+  repliedToCreatedAt,
   _id: message._id,
   createdAt: message.createdAt,
 });
