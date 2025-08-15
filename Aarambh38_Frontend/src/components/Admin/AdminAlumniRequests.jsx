@@ -5,6 +5,7 @@ import { CheckCircle, XCircle, Search, X } from "lucide-react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Shimmer from "../../Shimmer";
+import moment from "moment";
 
 const AdminAlumniRequests = () => {
   const [requests, setRequests] = useState([]);
@@ -103,59 +104,69 @@ const AdminAlumniRequests = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {filteredRequests.map((alum) => (
-              <div
-                key={alum._id}
-                className="bg-white p-6 rounded-xl shadow-lg border hover:shadow-xl transition"
-              >
-                <div className="flex items-center gap-4 mb-4">
-                  {alum.photourl ? (
-                    <img
-                      src={alum.photourl}
-                      alt={alum.fullName}
-                      className="w-16 h-16 rounded-full object-cover shadow cursor-pointer hover:scale-105 transition"
-                      onClick={() => setSelectedImage(alum.photourl)}
-                    />
-                  ) : (
-                    <div className="w-16 h-16 rounded-full bg-blue-600 text-white flex items-center justify-center text-xl font-bold shadow">
-                      {alum.fullName?.[0]?.toUpperCase() || "?"}
-                    </div>
-                  )}
-                  <div>
-                    <h2 className="text-lg font-semibold">{alum.fullName}</h2>
-                    <p className="text-sm text-gray-500">{alum.emailId}</p>
-                    <p className="text-sm text-gray-500">
-                      {alum.role} @ {alum.company}
-                    </p>
-                  </div>
-                </div>
+  <div
+    key={alum._id}
+    className="bg-white p-6 rounded-xl shadow-lg border hover:shadow-xl transition"
+  >
+    <div className="flex justify-between items-center mb-4">
+      {/* Left: Profile picture & basic info */}
+      <div className="flex items-center gap-4">
+        {alum.photourl ? (
+          <img
+            src={alum.photourl}
+            alt={alum.fullName}
+            className="w-16 h-16 rounded-full object-cover shadow cursor-pointer hover:scale-105 transition"
+            onClick={() => setSelectedImage(alum.photourl)}
+          />
+        ) : (
+          <div className="w-16 h-16 rounded-full bg-blue-600 text-white flex items-center justify-center text-xl font-bold shadow">
+            {alum.fullName?.[0]?.toUpperCase() || "?"}
+          </div>
+        )}
+        <div>
+          <h2 className="text-lg font-semibold">{alum.fullName}</h2>
+          <p className="text-sm text-gray-500">{alum.emailId}</p>
+          <p className="text-sm text-gray-500">
+            {alum.role} @ {alum.company}
+          </p>
+        </div>
+      </div>
 
-                <div className="text-sm text-gray-700 space-y-1">
-                  <p><strong>Gender:</strong> {alum.gender}</p>
-                  <p><strong>College:</strong> {alum.collegeName}</p>
-                  <p><strong>Branch:</strong> {alum.branch}</p>
-                  <p><strong>Batch:</strong> {alum.batch}</p>
-                  <p><strong>Age:</strong> {alum.age}</p>
-                  <p><strong>Mobile:</strong> {alum.mobileNumber}</p>
-                  <p><strong>About:</strong> {alum.about}</p>
-                  <p><strong>Registration No.:</strong> {alum.registration}</p>
-                </div>
+      {/* Right: Request date/time */}
+      <p className="text-xs text-gray-400 self-center">
+        <strong>Requested On:</strong>{" "}
+        {moment(alum.createdAt).format("DD MMM YYYY, h:mm A")}
+      </p>
+    </div>
 
-                <div className="mt-4 flex gap-4">
-                  <button
-                    onClick={() => openActionModal(alum, "Approved")}
-                    className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md text-sm font-medium"
-                  >
-                    <CheckCircle size={18} /> Approve
-                  </button>
-                  <button
-                    onClick={() => openActionModal(alum, "Reject")}
-                    className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md text-sm font-medium"
-                  >
-                    <XCircle size={18} /> Reject
-                  </button>
-                </div>
-              </div>
-            ))}
+    <div className="text-sm text-gray-700 space-y-1">
+      <p><strong>Gender:</strong> {alum.gender}</p>
+      <p><strong>College:</strong> {alum.collegeName}</p>
+      <p><strong>Branch:</strong> {alum.branch}</p>
+      <p><strong>Batch:</strong> {alum.batch}</p>
+      <p><strong>Age:</strong> {alum.age}</p>
+      <p><strong>Mobile:</strong> {alum.mobileNumber}</p>
+      <p><strong>About:</strong> {alum.about}</p>
+      <p><strong>Registration No.:</strong> {alum.registration}</p>
+    </div>
+
+    <div className="mt-4 flex gap-4">
+      <button
+        onClick={() => openActionModal(alum, "Approved")}
+        className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md text-sm font-medium"
+      >
+        <CheckCircle size={18} /> Approve
+      </button>
+      <button
+        onClick={() => openActionModal(alum, "Reject")}
+        className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md text-sm font-medium"
+      >
+        <XCircle size={18} /> Reject
+      </button>
+    </div>
+  </div>
+))}
+
           </div>
         )}
 

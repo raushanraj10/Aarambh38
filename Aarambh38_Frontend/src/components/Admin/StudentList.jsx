@@ -5,6 +5,8 @@ import { BASE_URL } from "../../constants/AllUrl";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Shimmer from "../../Shimmer";
+import moment from "moment";
+
 
 const StudentList = () => {
   const [alumni, setAlumni] = useState([]);
@@ -160,33 +162,45 @@ const StudentList = () => {
                 </div>
 
                 {expandedId === alum._id && (
-                  <div className="bg-gray-50 px-6 mt-4 text-sm text-gray-700 space-y-1">
-                    <p><strong>Gender:</strong> {alum.gender}</p>
-                    <p><strong>College:</strong> {alum.collegeName}</p>
-                    <p><strong>Branch:</strong> {alum.branch}</p>
-                    <p><strong>Batch:</strong> {alum.batch}</p>
-                    <p><strong>Age:</strong> {alum.age}</p>
-                    <p><strong>Mobile:</strong> {alum.mobileNumber}</p>
-                    <p><strong>Registration Number:</strong> {alum.registration}</p>
+  <div className="bg-gray-50 px-6 mt-4 text-sm text-gray-700">
+    <div className="flex justify-between items-center">
+      {/* Left: Student details */}
+      <div className="space-y-1">
+        <p><strong>Gender:</strong> {alum.gender}</p>
+        <p><strong>College:</strong> {alum.collegeName}</p>
+        <p><strong>Branch:</strong> {alum.branch}</p>
+        <p><strong>Batch:</strong> {alum.batch}</p>
+        <p><strong>Age:</strong> {alum.age}</p>
+        <p><strong>Mobile:</strong> {alum.mobileNumber}</p>
+        <p><strong>Registration Number:</strong> {alum.registration}</p>
+      </div>
 
-                    <div className="flex gap-4 pt-4">
-                      <button
-                        onClick={() =>
-                          setDeleteModal({ show: true, id: alum._id })
-                        }
-                        className="flex items-center gap-2 px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded-md"
-                      >
-                        <Trash2 size={16} /> Delete Student
-                      </button>
-                      <button
-                        onClick={() => openEmailModal(alum.emailId)}
-                        className="flex items-center gap-2 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-md"
-                      >
-                        <Mail size={16} /> Send Email
-                      </button>
-                    </div>
-                  </div>
-                )}
+      {/* Right: Added On */}
+      <p className="text-xs text-gray-400 ml-4 self-center">
+        <strong>Added On:</strong> {moment(alum.createdAt).format("DD MMM YYYY, h:mm A")}
+      </p>
+    </div>
+
+    {/* Action buttons */}
+    <div className="flex gap-4 pt-4">
+      <button
+        onClick={() => setDeleteModal({ show: true, id: alum._id })}
+        className="flex items-center gap-2 px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded-md"
+      >
+        <Trash2 size={16} /> Delete Student
+      </button>
+      <button
+        onClick={() => openEmailModal(alum.emailId)}
+        className="flex items-center gap-2 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-md"
+      >
+        <Mail size={16} /> Send Email
+      </button>
+    </div>
+  </div>
+)}
+
+
+
               </div>
             ))
           )}

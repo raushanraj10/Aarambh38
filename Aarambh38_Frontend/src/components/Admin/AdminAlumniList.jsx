@@ -5,6 +5,7 @@ import { BASE_URL } from "../../constants/AllUrl";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Shimmer from "../../Shimmer";
+import moment from "moment";
 
 const AdminAlumniList = () => {
   const [alumni, setAlumni] = useState([]);
@@ -157,10 +158,10 @@ const [deleteModal, setDeleteModal] = useState({ show: false, id: null });
       </div>
 
       {/* Added on - right side */}
-      <div className="text-xs text-gray-400 pl-4">
-        Added on:<br />
-        {new Date(alum.createdAt).toLocaleString()}
-      </div>
+      <p className="text-xs text-gray-400 text-right">
+        <strong>Added On:</strong> {moment(alum.createdAt).format("DD MMM YYYY, h:mm A")}
+          </p>
+      
     </div>
 
     <div className="flex gap-4 pt-4">

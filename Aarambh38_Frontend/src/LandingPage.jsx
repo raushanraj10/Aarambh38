@@ -151,7 +151,7 @@ const handleSendRequest = async () => {
             const isAccepted = acceptedStatus[id];
             const isLoading = loadingAlumniId === id;
 
-            return (
+            return (Studentdata&&
               <div
                 key={id}
                 className="relative w-full max-w-4xl bg-white rounded-2xl shadow-md border transform transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-[1.015]"

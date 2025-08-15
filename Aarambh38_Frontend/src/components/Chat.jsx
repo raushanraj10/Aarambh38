@@ -472,7 +472,11 @@ setMessages((prev) => [
    // empty body if not needed
   { withCredentials: true }
 );
+ await axios.delete(`${BASE_URL}/clearchat/${selectedUser._id}`, {
+          withCredentials: true,
+        });
 
+          Navigate("/alumnimentees")
           // Optionally remove messages and mark as blocked
           setMessages([]);
           setReloadConnections(prev => prev + 1);
@@ -502,7 +506,10 @@ setMessages((prev) => [
    // empty body if not needed
   { withCredentials: true }
 );
-
+ await axios.delete(`${BASE_URL}/clearchat/${selectedUser._id}`, {
+          withCredentials: true,
+        });
+       Navigate("/landingpage")
           // Optionally remove messages and mark as blocked
           setMessages([]);
           setReloadConnections(prev => prev + 1);

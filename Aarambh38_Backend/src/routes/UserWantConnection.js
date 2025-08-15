@@ -209,7 +209,7 @@ UserRouter.get("/deletealumnibystudent/:fromuserId",UserAuth,async (req,res)=>{
   // const touserId=decode
 
   
-  const checking = await ModelUserSendConnection.findOne({
+  const checking = await ModelUserSendConnection.deleteOne({
   
     fromuserId: fromuserId, touserId: touserId, status: "accepted"
    
@@ -221,10 +221,10 @@ UserRouter.get("/deletealumnibystudent/:fromuserId",UserAuth,async (req,res)=>{
 
  
 
-  checking.status="sended"
+  // checking.status="sended"
   //  const realdata=ModelUserSendConnection(checking)
   //  console.log(checking)
-   await checking.save()  
+  //  await checking.save()  
   res.send("delete from u")
 
   }catch(err){res.send(err.message)}

@@ -121,7 +121,7 @@ if(loading) return <Shimmer/>
   const isRequestSent = requestStatus[alumni._id];
   const isAccepted = acceptedStatus[alumni._id];
   
-  return (
+  return (Studentdata&&
     <div className="min-h-screen bg-gradient-to-tr from-white via-blue-50 to-green-100 py-16 px-6">
       {/* Modal for large image */}
       {showImageModal && (
