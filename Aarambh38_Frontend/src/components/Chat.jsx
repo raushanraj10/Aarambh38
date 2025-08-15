@@ -24,6 +24,14 @@ const ChatApp = () => {
  },[])
   const [imageFile, setImageFile] = useState(null);    
   const [imagePreview, setImagePreview] = useState(null);
+  const [selectedMessages, setSelectedMessages] = useState([]);
+const [selectionMode, setSelectionMode] = useState(false);
+const [confirmModal, setConfirmModal] = useState({
+  open: false,
+  message: "",
+  onConfirm: null
+});
+
 
   const [showAttachmentOptions, setShowAttachmentOptions] = useState(false);
 const fileInputRef = useRef();
@@ -39,7 +47,7 @@ const [replyTo, setReplyTo] = useState(null);
   const [previewImg, setPreviewImg] = useState(null);
 const [loading, setLoading] = useState(true);
 const messageRefs = useRef({});
-
+ const [reloadConnections, setReloadConnections] = useState(0);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
@@ -86,7 +94,7 @@ useEffect(() => {
   }
     };
     if (user) fetchUsers();
-  }, [Studentdata, Aluminidata]);
+  }, [Studentdata, Aluminidata, reloadConnections]);
 
   useEffect(() => {
     if (!user) return;
@@ -282,6 +290,13 @@ setMessages((prev) => [
   const groupedMessages = groupMessagesByDate(messages);
  if (loading) return <Shimmer />;
  if(!fetchMessages) return <Shimmer />
+
+ 
+
+
+
+
+
   return (
     <div className="h-screen w-full flex bg-gray-100 relative overflow-hidden">
       {/* Sidebar */}
@@ -342,6 +357,54 @@ setMessages((prev) => [
 
       {/* Chat Area */}
       <div className="flex-1 flex flex-col relative z-0 overflow-hidden">
+        {selectionMode && (
+  <div className="flex items-center justify-between bg-gray-200 px-4 py-2">
+    <span>{selectedMessages.length} selected</span>
+    <div className="flex gap-2">
+      <button
+        className="bg-red-500 text-white px-3 py-1 rounded"
+        onClick={() => {
+  if (!selectedUser || selectedMessages.length === 0) return;
+  setConfirmModal({
+    open: true,
+    message: `Are you sure you want to delete ${selectedMessages.length} message(s)?`,
+    onConfirm: async () => {
+      try {
+        await axios.post(
+          `${BASE_URL}/deletemessages`,
+          { messageKeys: selectedMessages, targetUserId: selectedUser._id },
+          { withCredentials: true }
+        );
+        setMessages((prev) =>
+          prev.filter(
+            (msg) => !selectedMessages.includes(`${msg.createdAt}-${msg.senderId}`)
+          )
+        );
+        setSelectedMessages([]);
+        setSelectionMode(false);
+      } catch (err) {
+        console.error("Failed to delete messages:", err);
+      }
+    }
+  });
+}}
+
+      >
+        Delete
+      </button>
+      <button
+        className="bg-gray-400 text-white px-3 py-1 rounded"
+        onClick={() => {
+          setSelectedMessages([]);
+          setSelectionMode(false);
+        }}
+      >
+        Cancel
+      </button>
+    </div>
+  </div>
+)}
+
         <div className="relative px-4 py-3 border-b bg-gradient-to-r from-blue-600 to-green-600 text-white flex justify-between items-center z-30">
           <div className="sm:hidden block">
             <Menu className="cursor-pointer" onClick={() => setSidebarOpen(!sidebarOpen)} />
@@ -373,20 +436,86 @@ setMessages((prev) => [
                   <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Report</li> */}
                   <li
   className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-  onClick={async () => {
-    if (!selectedUser) return;
-    try {
-      await axios.delete(`${BASE_URL}/clearchat/${selectedUser._id}`, {
-        withCredentials: true,
-      });
-      setMessages([]);
-    } catch (err) {
-      console.error("Failed to clear chat:", err);
+ onClick={() => {
+  if (!selectedUser) return;
+  setConfirmModal({
+    open: true,
+    message: `Are you sure you want to clear the chat with ${selectedUser.fullName}?`,
+    onConfirm: async () => {
+      try {
+        await axios.delete(`${BASE_URL}/clearchat/${selectedUser._id}`, {
+          withCredentials: true,
+        });
+        setMessages([]);
+      } catch (err) {
+        console.error("Failed to clear chat:", err);
+      }
     }
-  }}
+  });
+}}
+
 >
   Clear Chat
 </li>
+
+{Aluminidata&&<li
+  className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-red-600"
+  onClick={() => {
+    if (!selectedUser) return;
+    setConfirmModal({
+      open: true,
+      message: `Are you sure you want to block ${selectedUser.fullName}? They will no longer be able to message you.`,
+      onConfirm: async () => {
+        try {
+          await axios.get(
+  `${BASE_URL}/alumniblockstudent/${selectedUser._id}`,
+   // empty body if not needed
+  { withCredentials: true }
+);
+
+          // Optionally remove messages and mark as blocked
+          setMessages([]);
+          setReloadConnections(prev => prev + 1);
+          console.log(`${selectedUser.fullName} blocked successfully.`);
+        } catch (err) {
+          console.error("Failed to block user:", err);
+        }
+      }
+    });
+  }}
+>
+  Block Student
+</li>}
+
+
+{StudentData&&<li
+  className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-red-600"
+  onClick={() => {
+    if (!selectedUser) return;
+    setConfirmModal({
+      open: true,
+      message: `Are you sure you want to block ${selectedUser.fullName}? They will no longer be able to message you.`,
+      onConfirm: async () => {
+        try {
+          await axios.get(
+  `${BASE_URL}/deletealumnibystudent/${selectedUser._id}`,
+   // empty body if not needed
+  { withCredentials: true }
+);
+
+          // Optionally remove messages and mark as blocked
+          setMessages([]);
+          setReloadConnections(prev => prev + 1);
+          console.log(`${selectedUser.fullName} blocked successfully.`);
+        } catch (err) {
+          console.error("Failed to block user:", err);
+        }
+      }
+    });
+  }}
+>
+  Delete Mentor
+</li>}
 
 
                 </ul>
@@ -432,13 +561,29 @@ setMessages((prev) => [
   return (
   <div
   key={index}
+  onClick={() => {
+    if (selectionMode) {
+      const key = `${msg.createdAt}-${msg.senderId}`;
+      setSelectedMessages((prev) =>
+        prev.includes(key) ? prev.filter((id) => id !== key) : [...prev, key]
+      );
+    }
+  }}
+  onContextMenu={(e) => {
+    e.preventDefault();
+    const key = `${msg.createdAt}-${msg.senderId}`;
+    setSelectionMode(true);
+    setSelectedMessages([key]);
+  }}
   ref={(el) => {
     const key = `${msg.createdAt}-${msg.senderId}`;
     if (el) messageRefs.current[key] = el;
   }}
-  className={`flex items-start gap-2 ${isMe ? "justify-end" : "justify-start"}`}
-
+  className={`flex items-start gap-2 ${isMe ? "justify-end" : "justify-start"} ${
+    selectedMessages.includes(`${msg.createdAt}-${msg.senderId}`) ? "bg-yellow-100" : ""
+  }`}
 >
+
 
   {!isMe && (
     <img
@@ -713,6 +858,32 @@ setMessages((prev) => [
         alt="Preview"
         className="rounded-lg object-contain max-w-[90vw] max-h-[90vh] shadow-lg"
       />
+    </div>
+  </div>
+)}
+
+{confirmModal.open && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+    <div className="bg-white rounded-lg p-6 w-80 shadow-lg text-center">
+      <h2 className="text-lg font-semibold mb-4">Confirm Action</h2>
+      <p className="text-gray-700 mb-6">{confirmModal.message}</p>
+      <div className="flex justify-center gap-4">
+        <button
+          className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
+          onClick={() => setConfirmModal({ ...confirmModal, open: false })}
+        >
+          Cancel
+        </button>
+        <button
+          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+          onClick={() => {
+            confirmModal.onConfirm?.();
+            setConfirmModal({ ...confirmModal, open: false });
+          }}
+        >
+          Yes, Proceed
+        </button>
+      </div>
     </div>
   </div>
 )}

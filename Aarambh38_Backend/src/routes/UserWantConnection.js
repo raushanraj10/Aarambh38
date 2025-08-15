@@ -169,6 +169,68 @@ UserRouter.post("/alumni/:status/:fromuserId",UserAuth,async (req,res)=>{
 })
 
 
+UserRouter.get("/alumniblockstudent/:fromuserId",UserAuth,async (req,res)=>{
+  try{
+    const touserId=req.params.fromuserId
+    const fromuserId=req.decode._id
+    // console.log(touserId)
+  //direct fromuserId me nhi ho rha
+  // const touserId=decode
+
+  
+  const checking = await ModelUserSendConnection.findOne({
+  
+    fromuserId: touserId, touserId: fromuserId, status: "accepted"
+   
+
+});
+  // console.log("hsdhfksdf")
+  if(!checking)
+    return res.status(400).send("Connection not found or already handled")
+
+ 
+
+  checking.status="blocked"
+  //  const realdata=ModelUserSendConnection(checking)
+  //  console.log(checking)
+   await checking.save()  
+  res.send("Blocked")
+
+  }catch(err){res.send(err.message)}
+})
+
+
+UserRouter.get("/deletealumnibystudent/:fromuserId",UserAuth,async (req,res)=>{
+  try{
+    const touserId=req.params.fromuserId
+    const fromuserId=req.decode._id
+    // console.log(touserId)
+  //direct fromuserId me nhi ho rha
+  // const touserId=decode
+
+  
+  const checking = await ModelUserSendConnection.findOne({
+  
+    fromuserId: fromuserId, touserId: touserId, status: "accepted"
+   
+
+});
+  // console.log("hsdhfksdf")
+  if(!checking)
+    return res.status(400).send("Connection not found or already handled")
+
+ 
+
+  checking.status="sended"
+  //  const realdata=ModelUserSendConnection(checking)
+  //  console.log(checking)
+   await checking.save()  
+  res.send("delete from u")
+
+  }catch(err){res.send(err.message)}
+})
+
+
 UserRouter.post("/sendemailbyuser", async (req, res) => {
   const { useremail, subject, usermessage } = req.body;
   try {

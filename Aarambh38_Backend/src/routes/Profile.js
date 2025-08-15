@@ -208,6 +208,50 @@ ProfileRouter.delete("/clearchat/:touserId",UserAuth,async(req,res)=>{
   
 })
 
+// import mongoose from "mongoose";
+
+ProfileRouter.post("/deletemessages", UserAuth, async (req, res) => {
+  try {
+    const fromuserId = req.decode._id;
+    const { messageKeys, targetUserId } = req.body;
+
+    if (!Array.isArray(messageKeys) || messageKeys.length === 0) {
+      return res.status(400).send("No messages selected");
+    }
+
+    const conditions = messageKeys.map((key) => {
+      const dashIndex = key.lastIndexOf("-");
+      const createdAt = key.substring(0, dashIndex);
+      const senderId = key.substring(dashIndex + 1);
+
+      return {
+        createdAt: new Date(createdAt),
+        fromuserId: senderId // still cast later if needed
+      };
+    });
+
+    const result = await ModelMessage.deleteMany({
+      $and: [
+        {
+          $or: [
+            { fromuserId, targetuserId: targetUserId },
+            { fromuserId: targetUserId, targetuserId: fromuserId }
+          ]
+        },
+        { $or: conditions }
+      ]
+    });
+
+    res.send(`Deleted ${result.deletedCount} message(s)`);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+
+
+
+
 
 
 module.exports=ProfileRouter
