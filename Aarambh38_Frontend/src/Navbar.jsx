@@ -57,7 +57,6 @@ export default function Navbar() {
       );
     }
 
-    // Role-specific default dashboard links
     let dashboardLink = { to: "/landingpage", label: "Dashboard" };
     if (Alumnidata) {
       dashboardLink = { to: "/alumnirecievedrequest", label: "Received Requests" };
@@ -85,19 +84,8 @@ export default function Navbar() {
         ]
       : [
           { to: "/getstudentlist", label: "Students" },
-          { to: "/recivedrequestfromalumni", label: "Received Requests" }, // ✅ Admin specific
+          { to: "/recivedrequestfromalumni", label: "Received Requests" },
         ];
-
-    // 🔔 Notification tab for student and alumni
-    // const notifications = (Studentdata || Alumnidata) && (
-    //   <Link
-    //     to="/notifications"
-    //     onClick={closeMenu}
-    //     className="text-yellow-600 hover:text-yellow-700 flex items-center"
-    //   >
-    //     🔔 Notifications
-    //   </Link>
-    // );
 
     const logoutButton = (
       <button
@@ -124,15 +112,17 @@ export default function Navbar() {
             {item.label}
           </Link>
         ))}
-        {/* {notifications} */}
         {logoutButton}
       </div>
     );
   };
 
+  const loggedUser = Studentdata || Alumnidata || Admindata;
+
   return (
     <nav className="bg-white border-b shadow-md sticky top-0 z-50 transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+        {/* Logo */}
         <Link
           to="/"
           className="text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-green-600"
@@ -140,16 +130,42 @@ export default function Navbar() {
           Aarambh38
         </Link>
 
-        {/* Hamburger (mobile) */}
-        <button
-          onClick={() => setMenuOpen(!menuOpen)}
-          className="md:hidden text-gray-700"
-        >
-          <Menu size={28} />
-        </button>
+        {/* Right side */}
+        <div className="flex items-center space-x-4">
+          {/* Desktop Links */}
+          {renderLinks(false)}
 
-        {/* Desktop menu */}
-        {renderLinks(false)}
+          {/* Profile section (only if logged in) */}
+        {/* Profile section (only if logged in) */}
+{loggedUser && (
+  <Link
+    to={
+      Studentdata
+        ? "/editprofileuser"
+        : Alumnidata
+        ? "/editprofilealumni"
+        : "/editprofileadmin"
+    }
+    className="flex items-center space-x-2"
+    onClick={closeMenu} // closes menu if open
+  >
+    <img
+      src={loggedUser.photourl || "/default-avatar.png"}
+      alt="Profile"
+      className="w-9 h-9 rounded-full border border-gray-300 object-cover hover:scale-105 transition-transform"
+    />
+  </Link>
+)}
+
+
+          {/* Hamburger for mobile */}
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="md:hidden text-gray-700"
+          >
+            <Menu size={28} />
+          </button>
+        </div>
       </div>
 
       {/* Mobile Dropdown */}

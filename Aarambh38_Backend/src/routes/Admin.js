@@ -7,8 +7,8 @@ const SendEmailToUserByAdmin = require("../utils/SendEmailToUserByAdmin");
 const AlumniAcceptanceEmail = require("../utils/AlumniAcceptanceEmail");
 
 const AdminRouter=express.Router()
-const alumniselectdatalist="_id fullName  gender collegeName emailId branch role company batch age photourl about mobileNumber registration"
-const studentdatalist="_id fullName gender collegeName emailId branch batch age photourl mobileNumber registration"
+const alumniselectdatalist="_id fullName  gender collegeName emailId branch role company batch age photourl about mobileNumber registration createdAt"
+const studentdatalist="_id fullName gender collegeName emailId branch batch age photourl mobileNumber registration createdAt"
 
 
 AdminRouter.get("/getallalumni",UserAuth, async (req,res)=>{
@@ -18,7 +18,7 @@ AdminRouter.get("/getallalumni",UserAuth, async (req,res)=>{
     
     if(!Admindata)
         return res.status(400).send("Not Available Data")
-    const AlumniList=await ModelAlumini.find({}).select(alumniselectdatalist)
+    const AlumniList=await ModelAlumini.find({toshow:true}).select(alumniselectdatalist)
     res.send(AlumniList)}
     catch(err){res.send(err.message)}
     

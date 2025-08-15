@@ -20,7 +20,7 @@ AuthRouter.post("/sendemail",async (req,res)=>{
     const {emailId}=req.body
     const tempdata=ModelOtp({emailId:emailId,code:code})
     await tempdata.save();
-    // console.log(code)
+    console.log(code)
     await SendEmail(emailId,code)
     res.send("Email Sent")
 }

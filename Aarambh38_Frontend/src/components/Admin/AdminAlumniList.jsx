@@ -134,6 +134,7 @@ const [deleteModal, setDeleteModal] = useState({ show: false, id: null });
                       </p>
                     </div>
                   </div>
+                  
                   {expandedId === alum._id ? (
                     <ChevronUp className="text-gray-500" />
                   ) : (
@@ -141,34 +142,45 @@ const [deleteModal, setDeleteModal] = useState({ show: false, id: null });
                   )}
                 </div>
 
-                {expandedId === alum._id && (
-                  <div className="bg-gray-50 px-6 mt-4 text-sm text-gray-700 space-y-1">
-                    <p><strong>Gender:</strong> {alum.gender}</p>
-                    <p><strong>College:</strong> {alum.collegeName}</p>
-                    <p><strong>Branch:</strong> {alum.branch}</p>
-                    <p><strong>Batch:</strong> {alum.batch}</p>
-                    <p><strong>Age:</strong> {alum.age}</p>
-                    <p><strong>Mobile:</strong> {alum.mobileNumber}</p>
-                    <p><strong>About:</strong> {alum.about}</p>
-                    <p><strong>Registration Number:</strong> {alum.registration}</p>
+              {expandedId === alum._id && (
+  <div className="bg-gray-50 px-6 mt-4 text-sm text-gray-700 space-y-1">
+    <div className="flex justify-between items-center">
+      <div>
+        <p><strong>Gender:</strong> {alum.gender}</p>
+        <p><strong>College:</strong> {alum.collegeName}</p>
+        <p><strong>Branch:</strong> {alum.branch}</p>
+        <p><strong>Batch:</strong> {alum.batch}</p>
+        <p><strong>Age:</strong> {alum.age}</p>
+        <p><strong>Mobile:</strong> {alum.mobileNumber}</p>
+        <p><strong>About:</strong> {alum.about}</p>
+        <p><strong>Registration Number:</strong> {alum.registration}</p>
+      </div>
 
-                    <div className="flex gap-4 pt-4">
-                      <button
-  onClick={() => setDeleteModal({ show: true, id: alum._id })}
-  className="flex items-center gap-2 px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded-md"
->
-  <Trash2 size={16} /> Delete Alumni
-</button>
+      {/* Added on - right side */}
+      <div className="text-xs text-gray-400 pl-4">
+        Added on:<br />
+        {new Date(alum.createdAt).toLocaleString()}
+      </div>
+    </div>
 
-                      <button
-                        onClick={() => openEmailModal(alum.emailId)}
-                        className="flex items-center gap-2 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-md"
-                      >
-                        <Mail size={16} /> Send Email
-                      </button>
-                    </div>
-                  </div>
-                )}
+    <div className="flex gap-4 pt-4">
+      <button
+        onClick={() => setDeleteModal({ show: true, id: alum._id })}
+        className="flex items-center gap-2 px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded-md"
+      >
+        <Trash2 size={16} /> Delete Alumni
+      </button>
+
+      <button
+        onClick={() => openEmailModal(alum.emailId)}
+        className="flex items-center gap-2 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-md"
+      >
+        <Mail size={16} /> Send Email
+      </button>
+    </div>
+  </div>
+)}
+
               </div>
             ))
           )}

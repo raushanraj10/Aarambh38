@@ -9,12 +9,19 @@ import { BASE_URL } from "../constants/AllUrl";
 import Shimmer from "../Shimmer";
 import { Paperclip } from "lucide-react";
 import { Camera, FileText } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 
 
 
 const ChatApp = () => {
-
+ const StudentData=useSelector((store)=>store.studentdata)
+ const AlumniData=useSelector((store)=>store.aluminidata)
+ const Navigate =useNavigate()
+ useEffect(()=>{
+  if(!StudentData && !AlumniData)
+    return Navigate("/loginselectorpage");
+ },[])
   const [imageFile, setImageFile] = useState(null);    
   const [imagePreview, setImagePreview] = useState(null);
 
@@ -486,17 +493,20 @@ setMessages((prev) => [
       <div>
       {msg.image && (
   <div
-    className="max-w-[240px] sm:max-w-[300px] overflow-hidden rounded mb-1 cursor-pointer"
-    onClick={() => setPreviewImg(msg.image)}
-    title="Click to enlarge"
-  >
-    <img
-      src={msg.image}
-      alt="sent"
-      className="w-full h-auto rounded hover:brightness-90 transition"
-      style={{ marginBottom: msg.text ? "0.4rem" : 0 }}
-    />
-  </div>
+  className="relative group max-w-[240px] sm:max-w-[300px] overflow-hidden rounded-xl mb-1 cursor-pointer border border-gray-200 shadow-md hover:shadow-lg transition-transform duration-300 hover:scale-[1.02]"
+  onClick={() => setPreviewImg(msg.image)}
+  title="Click to enlarge"
+>
+  <img
+    src={msg.image}
+    alt="sent"
+    className="w-full h-auto object-cover"
+    style={{
+      borderRadius: '12px',
+    }}
+  />
+</div>
+
 )}
 
 
@@ -643,7 +653,7 @@ setMessages((prev) => [
   <Camera className="w-4 h-4" />
   Image
 </button>
-<button
+{/* <button
   onClick={() => {
     docInputRef.current?.click();
     setShowAttachmentOptions(false);
@@ -652,7 +662,7 @@ setMessages((prev) => [
 >
   <FileText className="w-4 h-4" />
   Document
-</button>
+</button> */}
 
     </div>
   )}
