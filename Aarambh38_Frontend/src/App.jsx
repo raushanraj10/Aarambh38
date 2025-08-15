@@ -31,6 +31,7 @@ import AlumniProfilePage from "./AlumniProfilePage"
 import AdminAlumniList from "./components/Admin/AdminAlumniList"
 import StudentList from "./components/Admin/StudentList"
 import AdminAlumniRequests from "./components/Admin/AdminAlumniRequests"
+import ChatHelpPage from "./components/ChatHelp"
 
 
 
@@ -69,6 +70,7 @@ function App() {
           <Route path="/getstudentlist" element={<StudentList/>} />
           <Route path="/recivedrequestfromalumni" element={<AdminAlumniRequests/>} />
            <Route path="/about" element={<About/>} />
+           <Route path="/chathelp" element={<ChatHelpPage/>} />
         </Route>
       </Routes>
     </BrowserRouter>

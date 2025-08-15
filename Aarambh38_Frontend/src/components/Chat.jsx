@@ -10,6 +10,7 @@ import Shimmer from "../Shimmer";
 import { Paperclip } from "lucide-react";
 import { Camera, FileText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import ChatHelpPage from "./ChatHelp";
 
 
 
@@ -523,6 +524,14 @@ setMessages((prev) => [
 >
   Delete Mentor
 </li>}
+
+
+<li
+  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+  onClick={() =>{Navigate("/chathelp")}}
+>
+  Help and Tips
+</li>
 
 
                 </ul>
