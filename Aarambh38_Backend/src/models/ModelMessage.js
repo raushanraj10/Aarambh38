@@ -21,6 +21,10 @@ const messageSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    document: {              
+      type: String,          
+      default: "",           
+    },
     messageType: {
       type: String,
       enum: ["text", "image", "file", "video", "audio"]
@@ -44,6 +48,10 @@ const messageSchema = new mongoose.Schema(
     repliedImage:{
       type: String,
       default: "",
+    },
+    repliedDocument: {     
+      type: String,        
+      default: "",         
     },
     repliedToCreatedAt: {
   type: Date,
