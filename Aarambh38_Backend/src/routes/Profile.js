@@ -141,25 +141,7 @@ ProfileRouter.get("/getmessageswith/:targetuserId", UserAuth, async (req, res) =
   }
 });
 
-ProfileRouter.post("/uploaddocument",UserAuth, async (req, res) => {
-  try {
-    const { file, filename } = req.body;
-    if (!file) {
-      return res.status(400).json({ error: "No file provided" });
-    }
 
-    // You can adjust resource_type if you want to allow other file types
-    const result = await cloudinary.uploader.upload(file, {
-      resource_type: "raw", // for any file types (pdf, doc, docx, etc.)
-      public_id: `chat_files/${Date.now()}_${filename || "document"}`
-    });
-
-    return res.json({ url: result.secure_url });
-  } catch (err) {
-    console.error("Upload failed:", err);
-    return res.status(500).json({ error: "Upload failed" });
-  }
-});
 
 ProfileRouter.get("/getstudentprofile",UserAuth,async(req,res)=>{
   try{
