@@ -35,15 +35,16 @@ const result = await cloudinary.uploader.upload(image);
  imageUrl = result.secure_url;
  }
 
- if (messageType === "file" && document) {
-            const extension = path.extname(originalFilename) || ".pdf";
-            const publicId = `chat_files/${Date.now()}${extension}`;
-            const docResult = await cloudinary.uploader.upload(document, {
-              resource_type: "raw",
-              public_id: publicId,
-            });
-            documentUrl = docResult.secure_url;
-          }
+ if (messageType === "document" && document) {
+  const extension = path.extname(originalFilename) || ".pdf";
+  const publicId = `chat_files/${Date.now()}${extension}`;
+  const docResult = await cloudinary.uploader.upload(document, {
+    resource_type: "raw",
+    public_id: publicId,
+  });
+  documentUrl = docResult.secure_url;
+}
+
 
 
  // Save to MongoDB
@@ -57,6 +58,7 @@ targetuserId,
 repliedImage,
  repliedtext,
  repliedDocument,
+  //  originalFilename,
  repliedById,
 repliedToId,
 repliedToCreatedAt
@@ -74,6 +76,7 @@ io.to(RoomId).emit("messageRecieved", {
   repliedtext,
   repliedById,
   repliedImage,
+  // originalFilename,
   repliedDocument,
   repliedToId,
   repliedToCreatedAt,
