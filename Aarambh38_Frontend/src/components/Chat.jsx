@@ -1384,29 +1384,67 @@ const ChatApp = () => {
     {menuOpen && (
       <div className="absolute right-0 mt-2 w-44 bg-white text-black border rounded-md shadow-xl z-50 py-1">
         <ul className="text-sm">
-          <li
-            className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-            onClick={() => {
-              if (!selectedUser) return;
-              setConfirmModal({
-                open: true,
-                message: `Are you sure you want to clear the chat with ${selectedUser.fullName}?`,
-                onConfirm: async () => {
-                  try {
-                    await axios.delete(`${BASE_URL}/clearchat/${selectedUser._id}`, {
-                      withCredentials: true,
-                    });
-                    setMessages([]);
-                  } catch (err) {
-                    console.error("Failed to clear chat:", err);
-                  }
-                }
-              });
-            }}
-          >
-            Clear Chat
-          </li>
-        </ul>
+  <li
+    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+    onClick={() => {
+      if (!selectedUser) return;
+      setConfirmModal({
+        open: true,
+        message: `Are you sure you want to clear the chat with ${selectedUser.fullName}?`,
+        onConfirm: async () => {
+          try {
+            await axios.delete(`${BASE_URL}/clearchat/${selectedUser._id}`, {
+              withCredentials: true,
+            });
+            setMessages([]);
+          } catch (err) {
+            console.error("Failed to clear chat:", err);
+          }
+        }
+      });
+    }}
+  >
+    Clear Chat
+  </li>
+  <li
+    className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-red-600"
+    onClick={() => {
+      if (!selectedUser) return;
+      setConfirmModal({
+        open: true,
+        message: `Are you sure you want to block ${selectedUser.fullName}?`,
+        onConfirm: async () => {
+          try {
+            // Use correct endpoint depending on user role
+            if (Aluminidata) {
+              await axios.get(`${BASE_URL}/alumniblockstudent/${selectedUser._id}`, { withCredentials: true });
+              await axios.delete(`${BASE_URL}/clearchat/${selectedUser._id}`, { withCredentials: true });
+              Navigate("/alumnimentees");
+            } else if (StudentData) {
+              await axios.get(`${BASE_URL}/deletealumnibystudent/${selectedUser._id}`, { withCredentials: true });
+              await axios.delete(`${BASE_URL}/clearchat/${selectedUser._id}`, { withCredentials: true });
+              Navigate("/landingpage");
+            }
+            setMessages([]);
+            setReloadConnections(prev => prev + 1);
+            console.log(`${selectedUser.fullName} blocked successfully.`);
+          } catch (err) {
+            console.error("Failed to block user:", err);
+          }
+        }
+      });
+    }}
+  >
+    Block
+  </li>
+  <li
+    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+    onClick={() => { Navigate("/chathelp"); }}
+  >
+    Help
+  </li>
+</ul>
+
       </div>
     )}
   </div>
