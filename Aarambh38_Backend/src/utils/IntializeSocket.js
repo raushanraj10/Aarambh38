@@ -104,6 +104,7 @@ const socket = require("socket.io");
 const ModelMessage = require("../models/ModelMessage");
 const BASE_URL = require("../constants/ALLURL");
 const { cloudinary } = require("./cloudinary");
+const path = require("path");
 
 const IntializeSocket = (server) => {
   const io = socket(server, {
@@ -126,11 +127,15 @@ const IntializeSocket = (server) => {
         targetuserId,
         text = "",
         image = "",
+        document = "",
         messageType = "text",
+        originalFilename = "",
         repliedtext,
         repliedToId,
         repliedById,
         repliedImage,
+        repliedDocument,
+        repliedOriginalFilename,
         repliedToCreatedAt,
       }) => {
         const RoomId = [fromuserId, targetuserId].sort().join("_");
@@ -138,6 +143,7 @@ const IntializeSocket = (server) => {
 
         try {
           let imageUrl = "";
+          let documentUrl = "";
 
           if (messageType === "image" && image) {
             // Upload base64 image to Cloudinary
@@ -145,14 +151,33 @@ const IntializeSocket = (server) => {
             imageUrl = result.secure_url;
           }
 
+          if (messageType === "file" && document) {
+          // If already a URL, use directly. Otherwise, upload to Cloudinary.
+          if (/^https?:\/\//.test(document)) {
+            documentUrl = document;
+          } else {
+            const filenameWithoutExt = path.basename(originalFilename, path.extname(originalFilename));
+            const extension = path.extname(originalFilename) || ".pdf";
+            const publicId = `chat_files/${Date.now()}_${filenameWithoutExt}${extension}`;
+            const docResult = await cloudinary.uploader.upload(document, {
+              resource_type: "raw",
+              public_id: publicId,
+            });
+            documentUrl = docResult.secure_url;
+          }
+        }
+
           // Save to MongoDB
           const message = new ModelMessage({
             fromuserId,
             targetuserId,
             text,
             image: imageUrl,
+            document: documentUrl,
+            originalFilename,
             messageType,
             repliedImage,
+            repliedDocument,
             repliedtext,
             repliedById,
             repliedToId,
@@ -166,9 +191,14 @@ const IntializeSocket = (server) => {
             targetuserId,
             text,
             image: imageUrl,
+            document: documentUrl,
+            originalFilename,
+            messageType,
             repliedtext,
             repliedById,
             repliedImage,
+            repliedDocument,
+            repliedOriginalFilename,
             repliedToId,
             repliedToCreatedAt,
             _id: message._id,

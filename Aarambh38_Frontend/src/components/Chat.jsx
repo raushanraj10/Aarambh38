@@ -900,7 +900,7 @@ const ChatApp = () => {
 
   const [showAttachmentOptions, setShowAttachmentOptions] = useState(false);
   const fileInputRef = useRef();
-
+  const docInputRef = useRef(null);
   const Studentdata = useSelector((store) => store.studentdata);
   const Aluminidata = useSelector((store) => store.aluminidata);
   const user = Studentdata || Aluminidata;
@@ -921,6 +921,12 @@ const ChatApp = () => {
   const socketRef = useRef(null);
   const bottomRef = useRef(null);
   const attachmentMenuRef = useRef(null);
+  const [documentFile, setDocumentFile] = useState(null);
+  const [originalDocName, setOriginalDocName] = useState("");
+  const [documentPreview, setDocumentPreview] = useState(null);
+  const [originalName, setOriginalName] = useState("");
+
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -962,33 +968,43 @@ const ChatApp = () => {
     socketRef.current = SocketConnection();
 
     socketRef.current.on("messageRecieved", ({
-      fromuserId,
+  fromuserId,
+  text,
+  image,
+  document,
+  originalFilename,
+  repliedtext,
+  repliedImage,
+  repliedDocument,
+  repliedOriginalFilename,
+  repliedToId,
+  repliedById,
+  messageType,
+  createdAt,
+}) => {
+  if (fromuserId === user._id) return;
+
+  setMessages((prev) => [
+    ...prev,
+    {
+      from: "them",
       text,
       image,
+      document,
+      originalFilename,
+      messageType,
+      createdAt: createdAt || new Date().toISOString(),
       repliedtext,
-      repliedImage, // <-- NEW
+      repliedImage,
+      repliedDocument,
+      repliedOriginalFilename,
       repliedToId,
       repliedById,
-      messageType,
-    }) => {
-      if (fromuserId === user._id) return;
+      targetUserId: fromuserId,
+    },
+  ]);
+});
 
-      setMessages((prev) => [
-        ...prev,
-        {
-          from: "them",
-          text,
-          image,
-          messageType,
-          createdAt: new Date().toISOString(),
-          repliedtext,
-          repliedImage, // <-- NEW
-          repliedToId,
-          repliedById,
-          targetUserId: fromuserId,
-        },
-      ]);
-    });
 
     return () => {
       socketRef.current?.disconnect();
@@ -1003,6 +1019,16 @@ const ChatApp = () => {
     });
   }, [selectedUser, user]);
 
+  const handleDocumentChange = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  setOriginalDocName(file.name);
+  setDocumentPreview(file.name);
+  const reader = new FileReader();
+  reader.onloadend = () => setDocumentFile(reader.result);
+  reader.readAsDataURL(file);
+};
+
   const fetchMessages = async (targetUserId) => {
     setMessageLoading(true);
     try {
@@ -1014,11 +1040,15 @@ const ChatApp = () => {
         from: msg.fromuserId === user._id ? "me" : "them",
         text: msg.text,
         image: msg.image,
+        document: msg.document,    
+        originalFilename: msg.originalFilename,
         messageType: msg.messageType,
         createdAt: msg.createdAt,
         senderId: msg.fromuserId,
         repliedtext: msg.repliedtext,
         repliedImage: msg.repliedImage,
+        repliedDocument: msg.repliedDocument,
+        repliedOriginalFilename: msg.repliedOriginalFilename,
         repliedToId: msg.repliedToId,
         repliedById: msg.repliedById,
         repliedToCreatedAt: msg.repliedToCreatedAt,
@@ -1051,53 +1081,134 @@ const ChatApp = () => {
     setSidebarOpen(false);
   };
 
-  const handleSend = () => {
-    if (!input.trim() && !imagePreview) return;
-    if (!selectedUser) return;
+  // const handleSend = () => {
+  //   if (!input.trim() && !imagePreview) return;
+  //   if (!selectedUser) return;
 
-    const fromuserId = user._id;
-    const targetuserId = selectedUser._id;
+  //   const fromuserId = user._id;
+  //   const targetuserId = selectedUser._id;
 
-    const isReplying = !!replyTo;
-    const isReplyingToOtherUser = isReplying && replyTo.from === "them";
+  //   const isReplying = !!replyTo;
+  //   const isReplyingToOtherUser = isReplying && replyTo.from === "them";
 
-    const messagePayload = {
-      fromuserId,
-      targetuserId,
-      text: input,
-      image: imagePreview || "",
-      messageType: imagePreview ? "image" : "text",
-      repliedtext: isReplying ? replyTo.text : null,
-      repliedImage: isReplying ? replyTo.image : null,
-      repliedToId: isReplying ? (isReplyingToOtherUser ? targetuserId : fromuserId) : null,
-      repliedById: isReplying ? fromuserId : null,
-      repliedToCreatedAt: isReplying ? replyTo.createdAt : null,
-    };
+  //   const messagePayload = {
+  //     fromuserId,
+  //     targetuserId,
+  //     text: input,
+  //     image: imagePreview || "",
+  //     messageType: imagePreview ? "image" : "text",
+  //     repliedtext: isReplying ? replyTo.text : null,
+  //     repliedImage: isReplying ? replyTo.image : null,
+  //     repliedToId: isReplying ? (isReplyingToOtherUser ? targetuserId : fromuserId) : null,
+  //     repliedById: isReplying ? fromuserId : null,
+  //     repliedToCreatedAt: isReplying ? replyTo.createdAt : null,
+  //   };
 
-    socketRef.current.emit("sendmessage", messagePayload);
+  //   socketRef.current.emit("sendmessage", messagePayload);
 
-    setMessages((prev) => [
-      ...prev,
-      {
-        from: "me",
-        text: input,
-        image: imagePreview,
-        messageType: imagePreview ? "image" : "text",
-        createdAt: new Date().toISOString(),
-        senderId: fromuserId,
-        repliedtext: messagePayload.repliedtext,
-        repliedImage: messagePayload.repliedImage,
-        repliedToId: messagePayload.repliedToId,
-        repliedById: messagePayload.repliedById,
-        repliedToCreatedAt: messagePayload.repliedToCreatedAt,
-      },
-    ]);
+  //   setMessages((prev) => [
+  //     ...prev,
+  //     {
+  //       from: "me",
+  //       text: input,
+  //       image: imagePreview,
+  //       messageType: imagePreview ? "image" : "text",
+  //       createdAt: new Date().toISOString(),
+  //       senderId: fromuserId,
+  //       repliedtext: messagePayload.repliedtext,
+  //       repliedImage: messagePayload.repliedImage,
+  //       repliedToId: messagePayload.repliedToId,
+  //       repliedById: messagePayload.repliedById,
+  //       repliedToCreatedAt: messagePayload.repliedToCreatedAt,
+  //     },
+  //   ]);
 
-    setInput("");
-    setReplyTo(null);
-    setImageFile(null);
-    setImagePreview(null);
+  //   setInput("");
+  //   setReplyTo(null);
+  //   setImageFile(null);
+  //   setImagePreview(null);
+  // };
+
+
+  const handleSend = async () => {
+  if (!input.trim() && !imagePreview && !documentFile) return;
+  if (!selectedUser) return;
+
+  let documentUrl = "";
+
+  // Upload document first if selected, get URL by posting to /uploaddocument API
+  if (documentFile) {
+    try {
+      const uploadRes = await axios.post(
+        `${BASE_URL}/uploaddocument`,
+        { file: documentFile, filename: originalDocName },
+        { withCredentials: true }
+      );
+      documentUrl = uploadRes.data.url;
+    } catch (err) {
+      alert("Failed to upload document. Please try again.");
+      return;
+    }
+  }
+
+  const fromuserId = user._id;
+  const targetuserId = selectedUser._id;
+  const isReplying = !!replyTo;
+  const isReplyingToOtherUser = isReplying && replyTo.from === "them";
+
+  const messageType = imagePreview
+    ? "image"
+    : documentUrl
+    ? "file"
+    : "text";
+
+  const messagePayload = {
+    fromuserId,
+    targetuserId,
+    text: input,
+    image: imagePreview || "",
+    document: documentUrl || "",
+    originalFilename: originalDocName || "",
+    messageType,
+    repliedtext: isReplying ? replyTo.text : null,
+    repliedImage: isReplying ? replyTo.image : null,
+    repliedDocument: isReplying ? replyTo.document : null,
+    repliedOriginalFilename:isReplying ?  replyTo.originalFilename :"",
+    repliedToId: isReplying ? (isReplyingToOtherUser ? targetuserId : fromuserId) : null,
+    repliedById: isReplying ? fromuserId : null,
+    repliedToCreatedAt: isReplying ? replyTo.createdAt : null,
   };
+
+  socketRef.current.emit("sendmessage", messagePayload);
+
+  setMessages((prev) => [
+    ...prev,
+    {
+      from: "me",
+      text: input,
+      image: imagePreview,
+      document: documentUrl || "",
+      originalFilename: originalDocName || "",
+      messageType,
+      createdAt: new Date().toISOString(),
+      senderId: fromuserId,
+      repliedtext: messagePayload.repliedtext,
+      repliedImage: messagePayload.repliedImage,
+      repliedDocument: messagePayload.repliedDocument,
+      repliedToId: messagePayload.repliedToId,
+      repliedById: messagePayload.repliedById,
+      repliedToCreatedAt: messagePayload.repliedToCreatedAt,
+    },
+  ]);
+
+  setInput("");
+  setReplyTo(null);
+  setImageFile(null);
+  setImagePreview(null);
+  setDocumentFile(null);
+  setDocumentPreview(null);
+  setOriginalDocName(null);
+};
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -1378,38 +1489,59 @@ const ChatApp = () => {
                               }`}
                             >
                               {/* Replied Message */}
-                              {(msg.repliedtext || msg.repliedImage) && (
-                                <div
-                                  className="bg-white bg-opacity-20 text-xs text-gray-100 px-3 py-2 rounded mb-1 border-l-2 border-gray-300 cursor-pointer hover:bg-opacity-30 transition"
-                                  onClick={() => {
-                                    const key = `${msg.repliedToCreatedAt}-${msg.repliedToId}`;
-                                    const el = messageRefs.current[key];
-                                    if (el) {
-                                      el.scrollIntoView({ behavior: "smooth", block: "center" });
-                                      el.classList.add("fade-highlight");
-                                      setTimeout(() => el.classList.remove("fade-highlight"), 2000);
-                                    }
-                                  }}
-                                >
-                                  <div className="mb-1 font-semibold">
-                                    {msg.repliedById === user._id ? "You" : selectedUser?.fullName}
-                                  </div>
-                                  {msg.repliedImage && (
-                                    <div className="max-w-[240px] sm:max-w-[300px] overflow-hidden rounded mb-1">
-                                      <img
-                                        src={msg.repliedImage}
-                                        alt="replied"
-                                        className="w-full h-auto rounded border"
-                                      />
-                                    </div>
-                                  )}
-                                  {msg.repliedtext && (
-                                    <div className="italic text-gray-200 truncate">
-                                      {msg.repliedtext}
-                                    </div>
-                                  )}
-                                </div>
-                              )}
+                              {(msg.repliedtext || msg.repliedImage || msg.repliedDocument) && (
+  <div
+    className="bg-white bg-opacity-20 text-xs text-gray-100 px-3 py-2 rounded mb-1 border-l-2 border-gray-300 cursor-pointer hover:bg-opacity-30 transition"
+    onClick={() => {
+      const key = `${msg.repliedToCreatedAt}-${msg.repliedToId}`;
+      const el = messageRefs.current[key];
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        el.classList.add("fade-highlight");
+        setTimeout(() => el.classList.remove("fade-highlight"), 2000);
+      }
+    }}
+  >
+    <div className="mb-1 font-semibold">
+      {msg.repliedById === user._id ? "You" : selectedUser?.fullName}
+    </div>
+    {/* Document reply */}
+    {msg.repliedDocument && (
+      <div className="flex items-center gap-2 border p-2 rounded bg-white mb-1">
+        <FileText className="w-5 h-5 text-gray-500" />
+        {/* Mention the file name */}
+        <span className="truncate flex-1 text-gray-500">
+          {msg.repliedOriginalFilename || msg.repliedDocument.split("/").pop() || "Document"}
+        </span>
+        <a
+          href={msg.repliedDocument}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-500 font-medium"
+          title="Open document"
+        >
+          Open
+        </a>
+      </div>
+    )}
+    {/* Image reply */}
+    {msg.repliedImage && (
+      <div className="max-w-[240px] sm:max-w-[300px] overflow-hidden rounded mb-1">
+        <img
+          src={msg.repliedImage}
+          alt="replied"
+          className="w-full h-auto rounded border"
+        />
+      </div>
+    )}
+    {/* Text reply */}
+    {msg.repliedtext && (
+      <div className="italic text-gray-200 truncate">{msg.repliedtext}</div>
+    )}
+  </div>
+)}
+
+
                               {/* Main Message Content */}
                               <div>
                                 {msg.image && (
@@ -1428,6 +1560,24 @@ const ChatApp = () => {
                                     />
                                   </div>
                                 )}
+                                {msg.messageType === "file" && msg.document && (
+                                  <div className="flex items-center gap-3 mb-1 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                                    <FileText className="w-6 h-6 text-gray-600 flex-shrink-0" />
+                                    <span className="flex-1 font-semibold text-gray-600 truncate">
+                                      {msg.originalFilename || msg.document.split("/").pop()}
+                                    </span>
+                                    <a
+                                      href={msg.document}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-blue-600"
+                                      title="Open document"
+                                    >
+                                      Open
+                                    </a>
+                                  </div>
+                                )}
+
                                 {msg.text && <div>{msg.text}</div>}
                               </div>
                             </div>
@@ -1483,6 +1633,20 @@ const ChatApp = () => {
                 className="max-w-[80px] max-h-[80px] rounded mt-1 mb-1 border"
               />
             )}
+            {replyTo.document && (
+      <div className="flex items-center gap-2 border p-2 rounded bg-white mb-1">
+        <FileText className="w-5 h-5 text-gray-500" />
+        <span className="truncate flex-1">{replyTo.originalFilename || "Document"}</span>
+        <a
+          href={replyTo.document}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-500 font-medium"
+          title="Open document"
+        >
+        </a>
+      </div>
+    )}
             {replyTo.text && <div className="text-gray-800 truncate">{replyTo.text}</div>}
             <button
               className="absolute top-1 right-2 text-gray-500 hover:text-gray-700 text-sm"
@@ -1514,6 +1678,27 @@ const ChatApp = () => {
               </button>
             </div>
           )}
+
+          {documentPreview && (
+  <div className="flex items-center bg-gray-100 border border-gray-300 rounded-md px-3 py-1 mt-2 max-w-xs">
+    <span className="flex-1 text-gray-700 truncate">{documentPreview}</span>
+    <button
+      onClick={() => {
+        setDocumentFile(null);
+        setDocumentPreview(null);
+        setOriginalName("");
+      }}
+      className="ml-3 text-red-500 hover:text-red-700 font-bold focus:outline-none"
+      aria-label="Remove document"
+      title="Remove document"
+    >
+      ×
+    </button>
+  </div>
+)}
+
+
+
           <div className="flex gap-2">
             <input
               type="text"
@@ -1543,22 +1728,30 @@ const ChatApp = () => {
                 <Paperclip className="w-5 h-5" />
               </button>
               {showAttachmentOptions && (
-                <div
-                  ref={attachmentMenuRef}
-                  className="absolute bottom-full mb-2 left-0 bg-white border shadow rounded z-50 w-32"
-                >
-                  <button
-                    onClick={() => {
-                      fileInputRef.current?.click();
-                      setShowAttachmentOptions(false);
-                    }}
-                    className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-100 text-sm"
-                  >
-                    <Camera className="w-4 h-4" />
-                    Image
-                  </button>
-                </div>
-              )}
+  <div ref={attachmentMenuRef} className="absolute bottom-full mb-2 left-0 bg-white border shadow rounded z-50 w-32">
+    <button
+      onClick={() => {
+        fileInputRef.current?.click();
+        setShowAttachmentOptions(false);
+      }}
+      className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-100 text-sm"
+    >
+      <Camera className="w-4 h-4" />
+      Image
+    </button>
+    <button
+      onClick={() => {
+        docInputRef.current?.click();
+        setShowAttachmentOptions(false);
+      }}
+      className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-100 text-sm"
+    >
+      <FileText className="w-4 h-4" />
+      Document
+    </button>
+  </div>
+)}
+
               {/* Hidden file input */}
               <input
                 ref={fileInputRef}
@@ -1567,6 +1760,14 @@ const ChatApp = () => {
                 className="hidden"
                 onChange={handleImageChange}
               />
+              <input
+                ref={docInputRef}
+                type="file"
+                accept=".pdf,.doc,.docx"
+                className="hidden"
+                onChange={handleDocumentChange}
+              />
+
             </div>
             <button
               onClick={handleSend}

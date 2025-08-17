@@ -252,6 +252,24 @@ ProfileRouter.post("/deletemessages", UserAuth, async (req, res) => {
 
 
 
+ProfileRouter.post("/uploaddocument",UserAuth, async (req, res) => {
+  try {
+    const { file, filename } = req.body;
+    if (!file) return res.status(400).json({ error: "No file provided" });
+
+    const result = await cloudinary.uploader.upload(file, {
+      resource_type: "raw",
+      public_id: `chat_files/${Date.now()}_${filename || "document"}`
+    });
+    return res.json({ url: result.secure_url });
+  } catch (err) {
+    console.error("Upload failed:", err);
+    return res.status(500).json({ error: "Upload failed" });
+  }
+});
+
+
+
 
 
 

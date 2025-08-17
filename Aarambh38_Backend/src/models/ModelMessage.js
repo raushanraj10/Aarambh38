@@ -89,6 +89,14 @@ const messageSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    document: {
+      type: String,
+      default: "",
+    },
+    originalFilename: {
+      type: String,
+      default: "",
+    },
     messageType: {
       type: String,
       enum: ["text", "image", "file", "video", "audio"],
@@ -110,6 +118,14 @@ const messageSchema = new mongoose.Schema(
       default: null,
     },
     repliedImage: {
+      type: String,
+      default: "",
+    },
+    repliedDocument: {
+      type: String,
+      default: "",
+    },
+    repliedOriginalFilename: {
       type: String,
       default: "",
     },
