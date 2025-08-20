@@ -9,9 +9,11 @@ const UserRouter=express.Router()
 UserRouter.post("/sendrequest/:touserId",UserAuth,async(req,res)=>{
     try{
   const touserId = req.params.touserId;
+  // console.log(touserId)
   const decode=req.decode._id
   //direct fromuserId me nhi ho rha
   const fromuserId=decode
+  // console.log(fromuserId)
 
   if(touserId===fromuserId)
     return res.send("Something Error")
@@ -229,6 +231,38 @@ UserRouter.get("/deletealumnibystudent/:fromuserId",UserAuth,async (req,res)=>{
 
   }catch(err){res.send(err.message)}
 })
+
+
+UserRouter.get("/deletestudentbyalumni/:fromuserId",UserAuth,async (req,res)=>{
+  try{
+    const fromuserId=req.params.fromuserId
+    const touserId=req.decode._id
+    // console.log(touserId)
+  //direct fromuserId me nhi ho rha
+  // const touserId=decode
+
+  
+  const checking = await ModelUserSendConnection.deleteOne({
+  
+    fromuserId: fromuserId, touserId: touserId, status: "accepted"
+   
+
+});
+  // console.log("hsdhfksdf")
+  if(!checking)
+    return res.status(400).send("Connection not found or already handled")
+
+ 
+
+  // checking.status="sended"
+  //  const realdata=ModelUserSendConnection(checking)
+  //  console.log(checking)
+  //  await checking.save()  
+  res.send("delete from u")
+
+  }catch(err){res.send(err.message)}
+})
+
 
 
 UserRouter.post("/sendemailbyuser", async (req, res) => {

@@ -10,9 +10,6 @@ const ModelAdmin = require("../models/ModelAdmin");
 const ModelMessage = require("../models/ModelMessage");
 const SendRequestEmail=require("../utils/EmailTheConnection");
 const { cloudinary } = require("../utils/cloudinary");
-const multer = require("multer");
-// const cloudinary = require("cloudinary").v2;
-const upload = multer({ dest: "uploads/" });
 
 const ProfileRouter=express.Router()
 
@@ -137,7 +134,6 @@ ProfileRouter.get("/getmessageswith/:targetuserId", UserAuth, async (req, res) =
         { fromuserId: targetuserId, targetuserId: fromuserId }
       ],
     }).sort({ createdAt: 1 });
-  //  console.log(messages);
 
     res.send(messages);
   } catch (err) {
@@ -145,29 +141,7 @@ ProfileRouter.get("/getmessageswith/:targetuserId", UserAuth, async (req, res) =
   }
 });
 
-ProfileRouter.post(
-  "/uploaddocument",
-  UserAuth,
-  upload.single("file"), // 👈 match "file" from frontend
-  async (req, res) => {
-    try {
-      if (!req.file) {
-        return res.status(400).json({ error: "No file provided" });
-      }
 
-      // upload to Cloudinary
-      const result = await cloudinary.uploader.upload(req.file.path, {
-        resource_type: "raw", // allow pdf, docx, etc.
-        public_id: `chat_files/${Date.now()}_${req.file.originalname}`,
-      });
-
-      return res.json({ url: result.secure_url });
-    } catch (err) {
-      console.error("Upload failed:", err);
-      return res.status(500).json({ error: "Upload failed" });
-    }
-  }
-);
 
 ProfileRouter.get("/getstudentprofile",UserAuth,async(req,res)=>{
   try{
@@ -273,6 +247,24 @@ ProfileRouter.post("/deletemessages", UserAuth, async (req, res) => {
     res.send(`Deleted ${result.deletedCount} message(s)`);
   } catch (err) {
     res.status(500).send(err.message);
+  }
+});
+
+
+
+ProfileRouter.post("/uploaddocument",UserAuth, async (req, res) => {
+  try {
+    const { file, filename } = req.body;
+    if (!file) return res.status(400).json({ error: "No file provided" });
+
+    const result = await cloudinary.uploader.upload(file, {
+      resource_type: "raw",
+      public_id: `chat_files/${Date.now()}_${filename || "document"}`
+    });
+    return res.json({ url: result.secure_url });
+  } catch (err) {
+    console.error("Upload failed:", err);
+    return res.status(500).json({ error: "Upload failed" });
   }
 });
 

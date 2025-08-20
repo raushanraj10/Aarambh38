@@ -43,7 +43,7 @@ export default function LoginAdmin() {
         { withCredentials: true }
       );
 
-      setMessage("✅ Welcome, Admin. Login successful. Redirecting to your dashboard...");
+      setMessage("✅ Login successful. Please wait while we redirect you to your dashboard…");
       setMessageType("success");
       setShowMessage(true);
       dispatch(Verifieduser());

@@ -45,7 +45,7 @@ export default function LoginAlumini() {
       dispatch(addalumini(res.data));
       dispatch(Verifieduser());
 
-      setMessage("Welcome back! Redirecting...");
+      setMessage("A warm welcome back to our aarambh38 family.");
       setMessageType("success");
       setShowMessage(true);
 

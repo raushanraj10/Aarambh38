@@ -11,31 +11,38 @@
   scrollbar-width: none;
 }
 
-/* Optimized reply highlight glow */
+
+.fade-highlight {
+  animation: replyGlow 2.5s ease-in-out;
+  border-radius: 0.75rem;
+  position: relative;
+  z-index: 0;
+  overflow: hidden;
+  background: linear-gradient(90deg, rgba(37, 99, 235, 0.25), rgba(22, 163, 74, 0.25));
+  background-size: 200% 200%; /* for movement */
+}
+
+/* Smooth gradient movement */
 @keyframes replyGlow {
   0% {
-    box-shadow: 0 0 0px rgba(59, 130, 246, 0);
-    background-color: rgba(59, 130, 246, 0.1); /* soft blue tint from the start */
+    background-position: 0% 50%;
+    box-shadow: 0 0 12px rgba(37, 99, 235, 0.5),
+                0 0 18px rgba(22, 163, 74, 0.4);
   }
-  30% {
-    box-shadow: 0 0 12px rgba(59, 130, 246, 0.5);
-    background-color: rgba(59, 130, 246, 0.15);
+  50% {
+    background-position: 100% 50%;
+    box-shadow: 0 0 16px rgba(59, 130, 246, 0.4),
+                0 0 22px rgba(34, 197, 94, 0.3);
   }
   100% {
-    box-shadow: 0 0 0px rgba(59, 130, 246, 0);
-    background-color: transparent;
+    background-position: 0% 50%;
+    background: inherit; /* fade back to normal */
+    box-shadow: none;
   }
 }
 
-.fade-highlight {
-  animation: replyGlow 1.2s ease-in-out;
-  border-radius: 0.75rem;
-  transition: none;
-  position: relative;
-  z-index: 0; /* Let ::after appear properly */
-  background-color: inherit;
-  overflow: hidden; /* Ensure pseudo-elements stay inside */
-}
+
+
 
 /* Watermark – improved visibility and layering */
 .fade-highlight::after {

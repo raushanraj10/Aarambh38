@@ -1,5 +1,5 @@
 // import mongoose from "mongoose";
-const mongoose=require("mongoose")
+const mongoose = require("mongoose");
 
 const messageSchema = new mongoose.Schema(
   {
@@ -21,47 +21,63 @@ const messageSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-    document: {              
-      type: String,          
-      default: "",           
+    document: {
+      type: String,
+      default: "",
+    },
+    originalFilename: {
+      type: String,
+      default: "",
     },
     messageType: {
       type: String,
-      enum: ["text", "image", "file", "video", "audio"]
+      enum: ["text", "image", "file", "video", "audio"],
     },
-    // originalFilename: { type: String, default: "" }, 
     repliedmessageType: {
       type: String,
-      enum: ["text", "image", "file", "video", "audio"]
+      enum: ["text", "image", "file", "video", "audio"],
     },
-    repliedtext:{
+    repliedtext: {
       type: String,
       default: "",
     },
-    repliedById:{
+    repliedById: {
       type: mongoose.Schema.Types.ObjectId,
-      default:null
+      default: null,
     },
-    repliedToId:{
+    repliedToId: {
       type: mongoose.Schema.Types.ObjectId,
-      default:null
+      default: null,
     },
-    repliedImage:{
+    repliedImage: {
       type: String,
       default: "",
     },
-    repliedDocument: {     
-      type: String,        
-      default: "",         
+    repliedDocument: {
+      type: String,
+      default: "",
+    },
+    repliedOriginalFilename: {
+      type: String,
+      default: "",
     },
     repliedToCreatedAt: {
-  type: Date,
-  default: null,
-   },
-
+      type: Date,
+      default: null,
+    },
+    messageId: {
+    type: String,
+    required: true,
+    unique: true,       // ensure no duplicate messageId
+  },
+  repliedMessageId:{
+    type:String,
+    default:null
+  },
+  
   },
   { timestamps: true }
 );
 
-const ModelMessage=mongoose.model("ModelMessage", messageSchema);
-module.exports=ModelMessage
+const ModelMessage = mongoose.model("ModelMessage", messageSchema);
+module.exports = ModelMessage;
