@@ -14,6 +14,8 @@ import ChatHelpPage from "./ChatHelp";
 import { Loader2 } from "lucide-react";
 import { Image as ImageIcon } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
+ // holds messageIds being deleted
+
 
 
 
@@ -37,7 +39,7 @@ const ChatApp = () => {
     onConfirm: null,
   });
 const [pendingMessages, setPendingMessages] = useState([]);
-
+const [deletingMessages, setDeletingMessages] = useState([]);
   const [showAttachmentOptions, setShowAttachmentOptions] = useState(false);
   const fileInputRef = useRef();
   const docInputRef = useRef(null);
@@ -535,27 +537,43 @@ const handleRetry = async (pending) => {
             open: true,
             message: `Are you sure you want to delete ${selectedMessages.length} message(s)?`,
             onConfirm: async () => {
-              try {
-                await axios.post(
-                  `${BASE_URL}/deletemessages`,
-                  {
-                    messageIds: selectedMessages, // <-- now messageId array
-                    targetUserId: selectedUser._id,
-                  },
-                  { withCredentials: true }
-                );
+  try {
+    setDeletingMessages(selectedMessages);
 
-                // filter out deleted messages
-                setMessages((prev) =>
-                  prev.filter((msg) => !selectedMessages.includes(msg.messageId))
-                );
+    // ✅ scroll to first deleted message
+    const firstMsgId = selectedMessages[0];
+    const firstMsgEl = messageRefs.current[firstMsgId];
+    if (firstMsgEl) {
+      firstMsgEl.scrollIntoView({
+        behavior: "smooth",
+        block: "center", // center in viewport
+      });
+    }
 
-                setSelectedMessages([]);
-                setSelectionMode(false);
-              } catch (err) {
-                console.error("Failed to delete messages:", err);
-              }
-            },
+    await axios.post(
+      `${BASE_URL}/deletemessages`,
+      {
+        messageIds: selectedMessages,
+        targetUserId: selectedUser._id,
+      },
+      { withCredentials: true }
+    );
+
+    // delay removal so animation is visible
+    setTimeout(() => {
+      setMessages((prev) =>
+        prev.filter((msg) => !selectedMessages.includes(msg.messageId))
+      );
+      setDeletingMessages([]);
+    }, 1000);
+
+    setSelectedMessages([]);
+    setSelectionMode(false);
+  } catch (err) {
+    console.error("Failed to delete messages:", err);
+  }
+}
+
           });
         }}
       >
@@ -613,15 +631,25 @@ const handleRetry = async (pending) => {
         open: true,
         message: `Are you sure you want to clear the chat with ${selectedUser.fullName}?`,
         onConfirm: async () => {
-          try {
-            await axios.delete(`${BASE_URL}/clearchat/${selectedUser._id}`, {
-              withCredentials: true,
-            });
-            setMessages([]);
-          } catch (err) {
-            console.error("Failed to clear chat:", err);
-          }
-        }
+  try {
+    await axios.delete(`${BASE_URL}/clearchat/${selectedUser._id}`, {
+      withCredentials: true,
+    });
+
+    // ✅ trigger shimmer + exit on all messages
+    const allIds = messages.map((m) => m.messageId);
+    setDeletingMessages(allIds);
+
+    // ✅ delay removal so animations are visible
+    setTimeout(() => {
+      setMessages([]);
+      setDeletingMessages([]);
+    }, 1000); // match shimmer duration
+  } catch (err) {
+    console.error("Failed to clear chat:", err);
+  }
+}
+
       });
     }}
   >
@@ -780,8 +808,8 @@ const handleRetry = async (pending) => {
                       const isMe = msg.from === "me";
                       const sender = isMe ? user : selectedUser;
                       return (
-                        <div
-  key={msg.messageId} // better than index
+         <div
+  key={msg.messageId}
   onClick={() => {
     if (selectionMode) {
       setSelectedMessages((prev) => {
@@ -796,19 +824,26 @@ const handleRetry = async (pending) => {
   onContextMenu={(e) => {
     e.preventDefault();
     setSelectionMode(true);
-    setSelectedMessages([msg.messageId]); // ✅ use messageId
+    setSelectedMessages([msg.messageId]);
   }}
   ref={(el) => {
     if (el) messageRefs.current[msg.messageId] = el;
   }}
-  className={`flex items-start gap-2 ${
-    isMe ? "justify-end" : "justify-start"
-  } ${
-    selectedMessages.includes(msg.messageId) // ✅ check by messageId
-      ? "bg-yellow-100"
-      : ""
-  }`}
+  className={`relative flex items-start gap-2 transition-all duration-200
+    ${isMe ? "justify-end" : "justify-start"}
+    ${
+      selectedMessages.includes(msg.messageId)
+        ? "bg-blue-50 border-l-4 border-blue-400 shadow-sm"
+        : "bg-white"
+    }
+    ${deletingMessages.includes(msg.messageId) ? "opacity-50 animate-pulse" : ""}
+    rounded-lg px-3 py-2`}
 >
+  {/* Shimmer overlay for delete (WhatsApp style) */}
+  {deletingMessages.includes(msg.messageId) && (
+  <div className="flush-overlay"></div>
+)}
+
                           {!isMe && (
                             <img
                               src={sender?.photourl || "/default-avatar.png"}

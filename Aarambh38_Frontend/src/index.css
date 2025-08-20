@@ -11,7 +11,7 @@
   scrollbar-width: none;
 }
 
-
+/* --- Reply highlight effect --- */
 .fade-highlight {
   animation: replyGlow 2.5s ease-in-out;
   border-radius: 0.75rem;
@@ -19,10 +19,9 @@
   z-index: 0;
   overflow: hidden;
   background: linear-gradient(90deg, rgba(37, 99, 235, 0.25), rgba(22, 163, 74, 0.25));
-  background-size: 200% 200%; /* for movement */
+  background-size: 200% 200%;
 }
 
-/* Smooth gradient movement */
 @keyframes replyGlow {
   0% {
     background-position: 0% 50%;
@@ -36,15 +35,12 @@
   }
   100% {
     background-position: 0% 50%;
-    background: inherit; /* fade back to normal */
+    background: inherit;
     box-shadow: none;
   }
 }
 
-
-
-
-/* Watermark – improved visibility and layering */
+/* --- Watermark fade-out (optional) --- */
 .fade-highlight::after {
   content: "Aarambh38";
   position: absolute;
@@ -60,27 +56,48 @@
   -webkit-text-fill-color: transparent;
   color: transparent;
   pointer-events: none;
-  white-space: nowrap;
   user-select: none;
-  z-index: 0;
   opacity: 1;
-  animation: fadeOut 1s ease-in-out forwards; /* 👈 fade out */
+  animation: fadeOut 1s ease-in-out forwards;
 }
 
 @keyframes fadeOut {
-  0% {
-    opacity: 0.1;
-  }
-  100% {
-    opacity: 0;
-  }
+  0% { opacity: 0.1; }
+  100% { opacity: 0; }
 }
-
-
-
 
 @media (min-width: 640px) {
   .fade-highlight::after {
     font-size: 1rem;
   }
+}
+
+/* --- Flush shimmer for delete --- */
+@keyframes flushShimmer {
+  0% {
+    transform: translateX(-150%) skewX(-20deg);
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateX(150%) skewX(-20deg);
+    opacity: 0;
+  }
+}
+
+.flush-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    120deg,
+    rgba(37, 99, 235, 0) 0%,         /* transparent */
+    rgba(37, 99, 235, 0.6) 40%,      /* 👈 strong blue streak */
+    rgba(37, 99, 235, 0) 80%         /* transparent */
+  );
+  animation: flushShimmer 1s ease-in-out forwards;
+  border-radius: 0.5rem;
+  pointer-events: none;
+  z-index: 50; /* 👈 always above message */
 }
