@@ -524,51 +524,57 @@ const handleRetry = async (pending) => {
       {/* Chat Area */}
       <div className="flex-1 flex flex-col relative z-0 overflow-hidden">
         {selectionMode && (
-          <div className="flex items-center justify-between bg-gray-200 px-4 py-2">
-            <span>{selectedMessages.length} selected</span>
-            <div className="flex gap-2">
-              <button
-                className="bg-red-500 text-white px-3 py-1 rounded"
-                onClick={() => {
-                  if (!selectedUser || selectedMessages.length === 0) return;
-                  setConfirmModal({
-                    open: true,
-                    message: `Are you sure you want to delete ${selectedMessages.length} message(s)?`,
-                    onConfirm: async () => {
-                      try {
-                        await axios.post(
-                          `${BASE_URL}/deletemessages`,
-                          { messageKeys: selectedMessages, targetUserId: selectedUser._id },
-                          { withCredentials: true }
-                        );
-                        setMessages((prev) =>
-                          prev.filter(
-                            (msg) => !selectedMessages.includes(`${msg.createdAt}-${msg.senderId}`)
-                          )
-                        );
-                        setSelectedMessages([]);
-                        setSelectionMode(false);
-                      } catch (err) {
-                        console.error("Failed to delete messages:", err);
-                      }
-                    },
-                  });
-                }}
-              >
-                Delete
-              </button>
-              <button
-                className="bg-gray-400 text-white px-3 py-1 rounded"
-                onClick={() => {
-                  setSelectedMessages([]);
-                  setSelectionMode(false);
-                }}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        )}
+  <div className="flex items-center justify-between bg-gray-200 px-4 py-2">
+    <span>{selectedMessages.length} selected</span>
+    <div className="flex gap-2">
+      <button
+        className="bg-red-500 text-white px-3 py-1 rounded"
+        onClick={() => {
+          if (!selectedUser || selectedMessages.length === 0) return;
+          setConfirmModal({
+            open: true,
+            message: `Are you sure you want to delete ${selectedMessages.length} message(s)?`,
+            onConfirm: async () => {
+              try {
+                await axios.post(
+                  `${BASE_URL}/deletemessages`,
+                  {
+                    messageIds: selectedMessages, // <-- now messageId array
+                    targetUserId: selectedUser._id,
+                  },
+                  { withCredentials: true }
+                );
+
+                // filter out deleted messages
+                setMessages((prev) =>
+                  prev.filter((msg) => !selectedMessages.includes(msg.messageId))
+                );
+
+                setSelectedMessages([]);
+                setSelectionMode(false);
+              } catch (err) {
+                console.error("Failed to delete messages:", err);
+              }
+            },
+          });
+        }}
+      >
+        Delete
+      </button>
+
+      <button
+        className="bg-gray-400 text-white px-3 py-1 rounded"
+        onClick={() => {
+          setSelectedMessages([]);
+          setSelectionMode(false);
+        }}
+      >
+        Cancel
+      </button>
+    </div>
+  </div>
+)}
+
 
         <div className="relative px-4 py-3 border-b bg-gradient-to-r from-blue-600 to-green-600 text-white flex justify-between items-center z-30">
   <div className="sm:hidden block">
@@ -775,32 +781,34 @@ const handleRetry = async (pending) => {
                       const sender = isMe ? user : selectedUser;
                       return (
                         <div
-                          key={index}
-                          onClick={() => {
-                            if (selectionMode) {
-                              const key = `${msg.createdAt}-${msg.senderId}`;
-                              setSelectedMessages((prev) =>
-                                prev.includes(key)
-                                  ? prev.filter((id) => id !== key)
-                                  : [...prev, key]
-                              );
-                            }
-                          }}
-                          onContextMenu={(e) => {
-                            e.preventDefault();
-                            const key = `${msg.createdAt}-${msg.senderId}`;
-                            setSelectionMode(true);
-                            setSelectedMessages([key]);
-                          }}
-                          ref={(el) => {
-                            if (el) messageRefs.current[msg.messageId] = el;
-                          }}
-                          className={`flex items-start gap-2 ${isMe ? "justify-end" : "justify-start"} ${
-                            selectedMessages.includes(`${msg.createdAt}-${msg.senderId}`)
-                              ? "bg-yellow-100"
-                              : ""
-                          }`}
-                        >
+  key={msg.messageId} // better than index
+  onClick={() => {
+    if (selectionMode) {
+      setSelectedMessages((prev) => {
+        if (prev.includes(msg.messageId)) {
+          return prev.filter((id) => id !== msg.messageId);
+        } else {
+          return [...prev, msg.messageId];
+        }
+      });
+    }
+  }}
+  onContextMenu={(e) => {
+    e.preventDefault();
+    setSelectionMode(true);
+    setSelectedMessages([msg.messageId]); // ✅ use messageId
+  }}
+  ref={(el) => {
+    if (el) messageRefs.current[msg.messageId] = el;
+  }}
+  className={`flex items-start gap-2 ${
+    isMe ? "justify-end" : "justify-start"
+  } ${
+    selectedMessages.includes(msg.messageId) // ✅ check by messageId
+      ? "bg-yellow-100"
+      : ""
+  }`}
+>
                           {!isMe && (
                             <img
                               src={sender?.photourl || "/default-avatar.png"}

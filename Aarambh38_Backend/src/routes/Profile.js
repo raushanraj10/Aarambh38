@@ -215,22 +215,11 @@ ProfileRouter.delete("/clearchat/:touserId",UserAuth,async(req,res)=>{
 ProfileRouter.post("/deletemessages", UserAuth, async (req, res) => {
   try {
     const fromuserId = req.decode._id;
-    const { messageKeys, targetUserId } = req.body;
+    const { messageIds, targetUserId } = req.body;
 
-    if (!Array.isArray(messageKeys) || messageKeys.length === 0) {
+    if (!Array.isArray(messageIds) || messageIds.length === 0) {
       return res.status(400).send("No messages selected");
     }
-
-    const conditions = messageKeys.map((key) => {
-      const dashIndex = key.lastIndexOf("-");
-      const createdAt = key.substring(0, dashIndex);
-      const senderId = key.substring(dashIndex + 1);
-
-      return {
-        createdAt: new Date(createdAt),
-        fromuserId: senderId // still cast later if needed
-      };
-    });
 
     const result = await ModelMessage.deleteMany({
       $and: [
@@ -240,7 +229,7 @@ ProfileRouter.post("/deletemessages", UserAuth, async (req, res) => {
             { fromuserId: targetUserId, targetuserId: fromuserId }
           ]
         },
-        { $or: conditions }
+        { messageId: { $in: messageIds } } // <-- match messageId
       ]
     });
 
@@ -249,6 +238,7 @@ ProfileRouter.post("/deletemessages", UserAuth, async (req, res) => {
     res.status(500).send(err.message);
   }
 });
+
 
 
 
