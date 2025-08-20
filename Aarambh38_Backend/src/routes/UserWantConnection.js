@@ -3,6 +3,8 @@ const UserAuth = require("./middleware/UserAuth");
 const ModelUserSendConnection = require("../models/ModelUserSendConnection");
 const ModelAlumini = require("../models/ModelAlumini");
 const SendEmailByUser = require("../utils/SendEmailByUser");
+const Requestonlineemail = require("../utils/RequestOnlineEmail");
+const ModelUser = require("../models/ModelUser");
 
 const UserRouter=express.Router()
 
@@ -272,6 +274,27 @@ UserRouter.post("/sendemailbyuser", async (req, res) => {
       useremail,
       subject,
       usermessage,
+    });
+    res.status(200).send("Email sent successfully");
+  } catch (err) {
+    console.error("Email error:", err);
+    res.status(500).send("Email failed");
+  }
+});
+
+
+UserRouter.get("/requestonlineemail/:Id", UserAuth,async (req, res) => {
+  try {
+    const Id=req.params.Id
+    // console.log(Id)
+    const check=await ModelUser.findOne({_id:Id})
+    if(!check)
+      res.status(400).send("Email Can't Send");
+    const emailId=check.emailId
+    // console.log(emailId)
+    const fullName=check.fullName
+    await Requestonlineemail({
+      emailId,fullName
     });
     res.status(200).send("Email sent successfully");
   } catch (err) {

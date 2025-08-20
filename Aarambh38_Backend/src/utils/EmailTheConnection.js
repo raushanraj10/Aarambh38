@@ -30,7 +30,7 @@ const SendEmail = async ({ emailId, data, message }) => {
           </p>
 
           <div style="text-align:center; margin-top:30px;">
-            <a href="https://aarambh38.vercel.app" style="display:inline-block; padding:10px 25px; background-color:#3498db; color:#fff; border-radius:5px; text-decoration:none; font-size:15px;">
+            <a href="http://13.60.166.165" style="display:inline-block; padding:10px 25px; background-color:#3498db; color:#fff; border-radius:5px; text-decoration:none; font-size:15px;">
               Go to Dashboard
             </a>
           </div>

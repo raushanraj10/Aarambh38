@@ -67,7 +67,8 @@ const [deletingMessages, setDeletingMessages] = useState([]);
   const [originalDocName, setOriginalDocName] = useState("");
   const [documentPreview, setDocumentPreview] = useState(null);
   const [originalName, setOriginalName] = useState("");
-
+ const [showTooltip, setShowTooltip] = useState(false);
+  const [successMsg, setSuccessMsg] = useState("");
 
 
   useEffect(() => {
@@ -475,18 +476,23 @@ const handleRetry = async (pending) => {
         ${sidebarOpen ? "w-64" : "w-0"} 
         ${sidebarOpen ? "block" : "hidden"} 
         sm:block sm:w-1/4`}>
-        <div className="p-4 text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600 tracking-tight">
-          Connections
-        </div>
-        <div className="px-4 pb-3">
-          <input
-            type="text"
-            placeholder="Search connections..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none text-sm"
-          />
-        </div>
+        <main className="pt-[64px] md:pt-[5px]">
+  <div className="p-4 text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600 tracking-tight">
+    Connections
+  </div>
+  <div className="px-4 pb-3">
+    <input
+      type="text"
+      placeholder="Search connections..."
+      value={search}
+      onChange={(e) => setSearch(e.target.value)}
+      className="w-full px-3 py-2 border rounded-md focus:outline-none text-sm bg-white"
+    />
+  </div>
+</main>
+
+
+
         {filteredList.map((user) => (
           <div
             key={user._id}
@@ -515,6 +521,7 @@ const handleRetry = async (pending) => {
           </div>
         ))}
       </div>
+      
 
       {sidebarOpen && (
         <div
@@ -598,9 +605,79 @@ const handleRetry = async (pending) => {
   <div className="sm:hidden block">
     <Menu className="cursor-pointer" onClick={() => setSidebarOpen(!sidebarOpen)} />
   </div>
-  <div className="absolute inset-0 flex items-center justify-center opacity-10 text-5xl font-extrabold text-white pointer-events-none select-none">
+  {/* <div className="absolute inset-0 flex items-center justify-center opacity-10 text-5xl font-extrabold text-white pointer-events-none select-none">
     Aarambh38
+  </div> */}
+
+{Aluminidata && selectedUser && (
+  <div className="relative">
+    <button
+      className="relative flex items-center justify-center w-10 h-10 rounded-full 
+                 bg-gradient-to-r from-blue-600 to-green-600 shadow-md hover:shadow-lg 
+                 transition-all group"
+      onClick={() => {
+        if (!selectedUser) return;
+
+        // hide tooltip right after click
+        setShowTooltip(false);
+
+        setConfirmModal({
+          open: true,
+          message: `Are you sure you want to send an email to ${selectedUser.fullName}?`,
+          onConfirm: async () => {
+            try {
+              await axios.get(
+                `${BASE_URL}/requestonlineemail/${selectedUser._id}`,
+                { withCredentials: true }
+              );
+
+              setMessages([]);
+              setReloadConnections((prev) => prev + 1);
+
+              // show success popup in center
+              setSuccessMsg(`Invitation sent to ${selectedUser.fullName}`);
+              setTimeout(() => setSuccessMsg(""), 3000); // auto hide after 3s
+            } catch (err) {
+              console.error("Failed to send email:", err);
+            }
+          },
+        });
+      }}
+      onMouseEnter={() => setShowTooltip(true)}
+      onMouseLeave={() => setShowTooltip(false)}
+    >
+      {/* Clean @ symbol */}
+      <span className="font-extrabold text-white text-lg tracking-tight">@</span>
+
+      {/* Tooltip (only visible on hover + if not clicked) */}
+      {showTooltip && (
+        <span className="absolute top-full mt-2 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-xl 
+                         bg-white text-gray-800 text-sm font-medium shadow-lg border border-gray-200
+                         opacity-100 translate-y-0 transition-all duration-200">
+          Invite <span className="font-semibold text-blue-600">{selectedUser.fullName}</span> to come online
+        </span>
+      )}
+    </button>
+
+    {/* Success message in middle of screen */}
+    {successMsg && (
+  <div className="fixed inset-0 z-50 flex items-start justify-center pt-24 pointer-events-none">
+    <div className="bg-green-600 text-white font-semibold shadow-xl px-6 py-3 rounded-2xl border border-green-500 
+                    flex items-center space-x-3 animate-fade-in-down pointer-events-auto">
+      {/* ✅ Icon */}
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+      </svg>
+      <span>{successMsg}</span>
+    </div>
   </div>
+)}
+  </div>
+)}
+
+
+
+
   <div className="z-10 flex items-center gap-3">
     {selectedUser && (
       <img
@@ -612,7 +689,15 @@ const handleRetry = async (pending) => {
     <span className="text-lg font-semibold">
       {selectedUser?.fullName || "Select a user"}
     </span>
+
+
   </div>
+
+ 
+
+
+
+
 
   {/* Add the menu (three dots) and its dropdown here */}
   <div className="relative z-50" ref={menuRef}>
@@ -620,6 +705,8 @@ const handleRetry = async (pending) => {
       className="cursor-pointer"
       onClick={() => setMenuOpen(!menuOpen)}
     />
+
+    
     {menuOpen && (
       <div className="absolute right-0 mt-2 w-44 bg-white text-black border rounded-md shadow-xl z-50 py-1">
         <ul className="text-sm">
@@ -767,8 +854,11 @@ const handleRetry = async (pending) => {
 
       </div>
     )}
+    
   </div>
+  
 </div>
+
 
 
         {/* Messages */}

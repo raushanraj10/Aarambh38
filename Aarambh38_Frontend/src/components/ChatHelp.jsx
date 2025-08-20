@@ -1,163 +1,121 @@
 import React from "react";
+import {
+  ChatBubbleLeftEllipsisIcon,
+  ArrowPathIcon,
+  CursorArrowRippleIcon,
+  TrashIcon,
+  UserMinusIcon,
+  ExclamationTriangleIcon,
+} from "@heroicons/react/24/outline";
 
-const ChatHelpPage = () => {
-  return (
-    <div className="bg-gray-100 min-h-screen py-10 px-4">
-      <div className="max-w-3xl mx-auto">
+const iconComponents = [
+  ChatBubbleLeftEllipsisIcon,
+  ArrowPathIcon,
+  CursorArrowRippleIcon,
+  TrashIcon,
+  UserMinusIcon,
+  ExclamationTriangleIcon,
+];
 
-        {/* Header */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 text-center">
-          <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600 tracking-tight">
-            Aarambh38 – Chat Help
-          </h1>
-          <p className="text-gray-500 mt-2">
-            Your quick guide to chatting, replying, and managing messages with ease.
-          </p>
-        </div>
+const ChatHelpPage = () => (
+  <main className="bg-gray-50 min-h-screen py-20 px-6">
+    <div className="max-w-3xl mx-auto prose prose-gray">
+      {/* Header */}
+      <header className="mb-14 text-center">
+        <h1 className="text-4xl font-extrabold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent tracking-tight leading-tight">
+          Aarambh38 – Chat Help
+        </h1>
+        <p className="mt-4 text-lg leading-relaxed max-w-lg mx-auto text-gray-700">
+          Your quick guide to chatting, replying, and managing messages with ease.
+        </p>
+      </header>
 
-        {/* Sections */}
-        <div className="mt-8 space-y-6">
+      {/* Steps Section */}
+      <section className="space-y-10">
+        {[
+          {
+            title: "Starting a Chat",
+            steps: [
+              <>Click <strong>“Go to Chat”</strong> to open the chat window.</>,
+              <>If you see a blank space, select a user from your contact list to begin chatting.</>,
+            ],
+          },
+          {
+            title: "Replying to a Message",
+            steps: [
+              <>On desktop: Hover over a message, click the arrow icon, type your reply, and send.</>,
+              <>On mobile: Tap the arrow icon directly to reply.</>,
+            ],
+          },
+          {
+            title: "Jump to Original Message",
+            steps: [
+              <>For replies, <strong>left-click</strong> the message to navigate to its original.</>,
+              <>The original message will be highlighted for quick reference.</>,
+              <>This makes following conversation threads effortless.</>,
+            ],
+          },
+          {
+            title: "Deleting a Message",
+            steps: [
+              <>
+                Right-click a message to select it, then use right-click + tap on other messages to multi-select for bulk delete (desktop & mobile).
+              </>,
+              <>This is permanent—deleted messages cannot be recovered.</>,
+              <>If there’s a glitch, you might lose important conversations—keep backups if needed.</>,
+            ],
+          },
+          {
+            title: "Deleting or Blocking a User",
+            steps: [
+              <>When you <strong>delete</strong> or <strong>block</strong> a user, all messages with them are erased automatically.</>,
+              <>This action is <strong>irreversible</strong>; always back up important messages first.</>,
+            ],
+          },
+          {
+            title: "Prevent Accidental Deletion",
+            steps: [
+              <>Always confirm before deleting a message.</>,
+              <>Avoid deleting during high network lag.</>,
+              <>Back up critical chats regularly.</>,
+            ],
+          },
+        ].map((section, idx) => {
+          const Icon = iconComponents[idx];
+          return (
+            <article
+              key={section.title}
+              className="flex items-start gap-5 bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-200"
+            >
+              <Icon
+                className="w-7 h-7 text-gray-500 mt-1 flex-shrink-0"
+                aria-hidden="true"
+              />
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900 mb-3 tracking-tight">
+                  Step {idx + 1}: {section.title}
+                </h2>
+                <ul className="list-disc pl-5 space-y-2 text-gray-700 text-base leading-relaxed">
+                  {section.steps.map((step, i) => (
+                    <li key={i}>{step}</li>
+                  ))}
+                </ul>
+              </div>
+            </article>
+          );
+        })}
+      </section>
 
-          {/* Starting a Chat */}
-          <div className="bg-white rounded-xl shadow-md p-6 flex gap-4">
-            <div className="flex-shrink-0">
-              <div className="bg-blue-100 text-blue-500 p-3 rounded-full text-lg">💬</div>
-            </div>
-            <div>
-              <h2 className="text-xl font-semibold text-blue-500">
-                1. Starting a Chat
-              </h2>
-              <ul className="list-disc pl-5 mt-2 space-y-1 text-gray-700">
-                <li>
-                  Click <strong>"Go to Chat"</strong> to open the chat window.
-                </li>
-                <li>
-                  If you see a blank space, simply select a user from your contact list to begin chatting.
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          {/* Replying to a Message */}
-          <div className="bg-white rounded-xl shadow-md p-6 flex gap-4">
-            <div className="flex-shrink-0">
-              <div className="bg-green-100 text-green-500 p-3 rounded-full text-lg">↩️</div>
-            </div>
-            <div>
-              <h2 className="text-xl font-semibold text-green-500">
-                2. Replying to a Message
-              </h2>
-              <ul className="list-disc pl-5 mt-2 space-y-1 text-gray-700">
-                <li>
-                  <strong>Desktop:</strong> Hover over a message, click the arrow icon, type your reply, and send.
-                </li>
-                <li>
-                  <strong>Mobile:</strong> Tap the arrow icon directly to reply.
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          {/* Jump to Original Message */}
-          <div className="bg-white rounded-xl shadow-md p-6 flex gap-4">
-            <div className="flex-shrink-0">
-              <div className="bg-orange-100 text-orange-500 p-3 rounded-full text-lg">🖱️</div>
-            </div>
-            <div>
-              <h2 className="text-xl font-semibold text-orange-500">
-                3. Jump to Original Message
-              </h2>
-              <ul className="list-disc pl-5 mt-2 space-y-1 text-gray-700">
-                <li>
-                  For replies, <strong>left-click</strong> the message to instantly navigate to its original.
-                </li>
-                <li>
-                  The original message will be highlighted in a
-                  <span className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600">
-                    {" "}Blue Replied Bubble{" "}
-                  </span>
-                  for quick and clear reference.
-                </li>
-                <li>
-                  This makes following conversation threads effortless.
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          {/* Deleting a Message */}
-          <div className="bg-white rounded-xl shadow-md p-6 flex gap-4">
-            <div className="flex-shrink-0">
-              <div className="bg-red-100 text-red-500 p-3 rounded-full text-lg">🗑️</div>
-            </div>
-            <div>
-              <h2 className="text-xl font-semibold text-red-500">
-                4. Deleting a Message
-              </h2>
-              <ul className="list-disc pl-5 mt-2 space-y-1 text-gray-700">
-                <li>
-                  <strong>Desktop & Mobile:</strong> Right-click on a message and select <em>Delete</em>.
-                </li>
-                <li>
-                  <strong>Warning:</strong> This is permanent—deleted messages cannot be recovered.
-                </li>
-                <li>
-                  If a glitch occurs, you might lose important conversations—keep backups if needed.
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          {/* Deleting or Blocking a User */}
-          <div className="bg-white rounded-xl shadow-md p-6 flex gap-4">
-            <div className="flex-shrink-0">
-              <div className="bg-purple-100 text-purple-500 p-3 rounded-full text-lg">🚫</div>
-            </div>
-            <div>
-              <h2 className="text-xl font-semibold text-purple-500">
-                5. Deleting or Blocking a User
-              </h2>
-              <ul className="list-disc pl-5 mt-2 space-y-1 text-gray-700">
-                <li>
-                  When you <strong>delete</strong> or <strong>block</strong> a user, all messages with them are erased automatically.
-                </li>
-                <li>
-                  This action is <strong>irreversible</strong> — always back up important messages first.
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          {/* Prevent Accidental Deletion */}
-          <div className="bg-white rounded-xl shadow-md p-6 flex gap-4">
-            <div className="flex-shrink-0">
-              <div className="bg-yellow-100 text-yellow-500 p-3 rounded-full text-lg">⚠️</div>
-            </div>
-            <div>
-              <h2 className="text-xl font-semibold text-yellow-500">
-                6. Prevent Accidental Deletion
-              </h2>
-              <ul className="list-disc pl-5 mt-2 space-y-1 text-gray-700">
-                <li>Always confirm before deleting a message.</li>
-                <li>Avoid deleting during high network lag to prevent glitches.</li>
-                <li>Back up critical chats regularly.</li>
-              </ul>
-            </div>
-          </div>
-
-        </div>
-
-        {/* Footer */}
-        <div className="mt-10 text-center text-gray-500 text-sm">
-          💬 With{" "}
-          <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600 tracking-tight">
-            Aarambh38
-          </span>
-          , chatting is simple, clear, and secure.
-        </div>
-      </div>
+      {/* Footer */}
+      <footer className="mt-20 pt-8 border-t border-gray-100 text-center text-sm text-gray-500">
+        💬 With{" "}
+        <span className="font-extrabold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent px-1">
+          Aarambh38
+        </span>
+        , chatting is simple, clear, and secure.
+      </footer>
     </div>
-  );
-};
+  </main>
+);
 
 export default ChatHelpPage;
