@@ -447,7 +447,7 @@ const handleRetry = async (pending) => {
   if (!Studentdata && !Aluminidata) return <LoginSelectorPage />;
 
   const filteredList = chatlist.filter((u) =>
-    u.fullName?.toLowerCase().includes(search.toLowerCase())
+    u?.fullName?.toLowerCase().includes(search.toLowerCase())
   );
 
   const groupMessagesByDate = (msgs) => {
@@ -605,9 +605,9 @@ const handleRetry = async (pending) => {
   <div className="sm:hidden block">
     <Menu className="cursor-pointer" onClick={() => setSidebarOpen(!sidebarOpen)} />
   </div>
-  {/* <div className="absolute inset-0 flex items-center justify-center opacity-10 text-5xl font-extrabold text-white pointer-events-none select-none">
+  <div className="absolute inset-0 flex items-center justify-center opacity-10 text-5xl font-extrabold text-white pointer-events-none select-none">
     Aarambh38
-  </div> */}
+  </div>
 
 {Aluminidata && selectedUser && (
   <div className="relative">
