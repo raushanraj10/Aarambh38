@@ -67,7 +67,7 @@ const [deletingMessages, setDeletingMessages] = useState([]);
   const [originalDocName, setOriginalDocName] = useState("");
   const [documentPreview, setDocumentPreview] = useState(null);
   const [originalName, setOriginalName] = useState("");
- const [showTooltip, setShowTooltip] = useState(false);
+//  const [showTooltip, setShowTooltip] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
 
 
@@ -605,27 +605,30 @@ const handleRetry = async (pending) => {
   <div className="sm:hidden block">
     <Menu className="cursor-pointer" onClick={() => setSidebarOpen(!sidebarOpen)} />
   </div>
-  <div className="absolute inset-0 flex items-center justify-center opacity-10 text-5xl font-extrabold text-white pointer-events-none select-none">
+<div className="absolute inset-0 flex items-center justify-center opacity-10 text-5xl font-extrabold text-white pointer-events-none select-none">
     Aarambh38
   </div>
+
+
 
 {Aluminidata && selectedUser && (
   <div className="relative">
     <button
-      className="relative flex items-center justify-center w-10 h-10 rounded-full 
-                 bg-gradient-to-r from-blue-600 to-green-600 shadow-md hover:shadow-lg 
-                 transition-all group"
+      disabled={sending} // disable button while sending
+      className={`flex items-center justify-center h-10 w-10 hover:w-56 rounded-full
+                 bg-white hover:bg-gray-100
+                 shadow-md hover:shadow-lg transition-all duration-300
+                 overflow-hidden group
+                 ${sending ? "cursor-not-allowed opacity-70" : ""}`}
       onClick={() => {
         if (!selectedUser) return;
 
-        // hide tooltip right after click
-        setShowTooltip(false);
-
         setConfirmModal({
           open: true,
-          message: `Are you sure you want to send an email to ${selectedUser.fullName}?`,
+          message: `Are you sure you want to invite ${selectedUser.fullName} to join online?`,
           onConfirm: async () => {
             try {
+              setSending(true); // start shimmer
               await axios.get(
                 `${BASE_URL}/requestonlineemail/${selectedUser._id}`,
                 { withCredentials: true }
@@ -634,46 +637,69 @@ const handleRetry = async (pending) => {
               setMessages([]);
               setReloadConnections((prev) => prev + 1);
 
-              // show success popup in center
               setSuccessMsg(`Invitation sent to ${selectedUser.fullName}`);
-              setTimeout(() => setSuccessMsg(""), 3000); // auto hide after 3s
+              setTimeout(() => setSuccessMsg(""), 3000);
             } catch (err) {
               console.error("Failed to send email:", err);
+            } finally {
+              setSending(false); // stop shimmer
             }
           },
         });
       }}
-      onMouseEnter={() => setShowTooltip(true)}
-      onMouseLeave={() => setShowTooltip(false)}
     >
-      {/* Clean @ symbol */}
-      <span className="font-extrabold text-white text-lg tracking-tight">@</span>
+      {/* Gmail Logo or Loader */}
+      <div className="flex items-center justify-center w-10 h-10 flex-shrink-0">
+        {sending ? (
+          // Circle shimmer loader
+          <div className="w-6 h-6 rounded-full border-4 border-t-4 border-gray-300 border-t-blue-500 animate-spin"></div>
+        ) : (
+          <svg xmlns="http://www.w3.org/2000/svg"
+               className="h-6 w-6"
+               viewBox="0 0 48 48">
+            <path fill="#e0e0e0" d="M44 39c0 2.2-1.8 4-4 4H8c-2.2 0-4-1.8-4-4V9c0-2.2 1.8-4 4-4h32c2.2 0 4 1.8 4 4v30z"/>
+            <path fill="#f44336" d="M24 27L4 12V9c0-2.2 1.8-4 4-4h32c2.2 0 4 1.8 4 4v3L24 27z"/>
+            <path fill="#fff" d="M24 27L4 12V9c0-2.2 1.8-4 4-4h32c2.2 0 4 1.8 4 4v3L24 27z"/>
+            <path fill="#f44336" d="M44 12L24 27 4 12V9l20 15 20-15v3z"/>
+          </svg>
+        )}
+      </div>
 
-      {/* Tooltip (only visible on hover + if not clicked) */}
-      {showTooltip && (
-        <span className="absolute top-full mt-2 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-xl 
-                         bg-white text-gray-800 text-sm font-medium shadow-lg border border-gray-200
-                         opacity-100 translate-y-0 transition-all duration-200">
-          Invite <span className="font-semibold text-blue-600">{selectedUser.fullName}</span> to come online
-        </span>
-      )}
+      {/* Gradient Expanding Text */}
+      <span
+        className="ml-2 whitespace-nowrap transform translate-x-5 opacity-0 
+                   group-hover:translate-x-0 group-hover:opacity-100 
+                   transition-all duration-300 ease-out
+                   font-extrabold text-transparent bg-clip-text 
+                   bg-gradient-to-r from-blue-600 to-green-600 tracking-tight"
+      >
+        Send Online Invite
+      </span>
     </button>
 
-    {/* Success message in middle of screen */}
+    {/* Success Message */}
     {successMsg && (
-  <div className="fixed inset-0 z-50 flex items-start justify-center pt-24 pointer-events-none">
-    <div className="bg-green-600 text-white font-semibold shadow-xl px-6 py-3 rounded-2xl border border-green-500 
-                    flex items-center space-x-3 animate-fade-in-down pointer-events-auto">
-      {/* ✅ Icon */}
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-      </svg>
-      <span>{successMsg}</span>
-    </div>
+      <div className="fixed inset-0 z-50 flex items-start justify-center pt-24 pointer-events-none">
+        <div className="bg-green-600 text-white font-semibold shadow-xl px-6 py-3 rounded-2xl border border-green-500 
+                        flex items-center space-x-3 animate-fade-in-down pointer-events-auto">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" 
+               viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+          </svg>
+          <span>{successMsg}</span>
+        </div>
+      </div>
+    )}
   </div>
 )}
-  </div>
-)}
+
+
+
+
+
+
+
+
 
 
 
@@ -902,13 +928,11 @@ const handleRetry = async (pending) => {
   key={msg.messageId}
   onClick={() => {
     if (selectionMode) {
-      setSelectedMessages((prev) => {
-        if (prev.includes(msg.messageId)) {
-          return prev.filter((id) => id !== msg.messageId);
-        } else {
-          return [...prev, msg.messageId];
-        }
-      });
+      setSelectedMessages((prev) =>
+        prev.includes(msg.messageId)
+          ? prev.filter((id) => id !== msg.messageId)
+          : [...prev, msg.messageId]
+      );
     }
   }}
   onContextMenu={(e) => {
@@ -924,11 +948,12 @@ const handleRetry = async (pending) => {
     ${
       selectedMessages.includes(msg.messageId)
         ? "bg-blue-50 border-l-4 border-blue-400 shadow-sm"
-        : "bg-white"
+        : ""
     }
     ${deletingMessages.includes(msg.messageId) ? "opacity-50 animate-pulse" : ""}
     rounded-lg px-3 py-2`}
 >
+
   {/* Shimmer overlay for delete (WhatsApp style) */}
   {deletingMessages.includes(msg.messageId) && (
   <div className="flush-overlay"></div>
@@ -989,13 +1014,20 @@ const handleRetry = async (pending) => {
       className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition"
       title="Open Document"
     >
-      <svg xmlns="http://www.w3.org/2000/svg" 
-           fill="none" 
-           viewBox="0 0 24 24" 
-           strokeWidth={2} 
-           stroke="currentColor" 
-           className="w-4 h-4">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M8 17l4 4m0 0l4-4m-4 4V3" />
+      {/* External Link Icon */}
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        strokeWidth={2}
+        stroke="currentColor"
+        className="w-4 h-4"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M13 7h6m0 0v6m0-6L10 16"
+        />
       </svg>
     </a>
   </div>
@@ -1113,31 +1145,30 @@ const handleRetry = async (pending) => {
                                 )}
   {msg.messageType === "file" && msg.document && (
   <div
-  className={`flex items-center gap-2 px-3 py-2 rounded-xl border shadow-sm transition-all duration-200 cursor-pointer
-    max-w-[260px] sm:max-w-[260px] md:max-w-[260px]
-    ${isMe ? "bg-blue-50 border-blue-200 ml-auto" : "bg-white border-gray-200"}
-  `}
->
-  {/* File Icon */}
-  <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-blue-100 flex-shrink-0">
-    <FileText className="w-5 h-5 text-blue-600" />
-  </div>
+    className={`flex items-center gap-2 px-3 py-2 rounded-xl border shadow-sm transition-all duration-200 cursor-pointer
+      max-w-[260px] sm:max-w-[260px] md:max-w-[260px]
+      ${isMe ? "bg-blue-50 border-blue-200 ml-auto" : "bg-white border-gray-200"}
+    `}
+  >
+    {/* File Icon */}
+    <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-blue-100 flex-shrink-0">
+      <FileText className="w-5 h-5 text-blue-600" />
+    </div>
 
-  {/* File Details */}
-  <div className="flex-1 min-w-0">
-    <p
-      className="text-sm font-medium text-gray-900 truncate"
-      title={msg.originalFilename || msg.document.split("/").pop()}
-    >
-      {msg.originalFilename || msg.document.split("/").pop()}
-    </p>
-    <p className="text-xs text-gray-500 truncate">
-      {msg.fileSize ? `${(msg.fileSize / 1024).toFixed(1)} KB` : "Document"}
-    </p>
-  </div>
+    {/* File Details */}
+    <div className="flex-1 min-w-0">
+      <p
+        className="text-sm font-medium text-gray-900 truncate"
+        title={msg.originalFilename || msg.document.split("/").pop()}
+      >
+        {msg.originalFilename || msg.document.split("/").pop()}
+      </p>
+      <p className="text-xs text-gray-500 truncate">
+        {msg.fileSize ? `${(msg.fileSize / 1024).toFixed(1)} KB` : "Document"}
+      </p>
+    </div>
 
-  {/* Actions */}
-  <div className="flex items-center flex-shrink-0">
+    {/* Open Document Button */}
     <a
       href={msg.document}
       target="_blank"
@@ -1145,6 +1176,7 @@ const handleRetry = async (pending) => {
       className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition"
       title="Open Document"
     >
+      {/* External Link Icon */}
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -1156,14 +1188,13 @@ const handleRetry = async (pending) => {
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
-          d="M8 17l4 4m0 0l4-4m-4 4V3"
+          d="M13 7h6m0 0v6m0-6L10 16"
         />
       </svg>
     </a>
   </div>
-</div>
-
 )}
+
 
 
 

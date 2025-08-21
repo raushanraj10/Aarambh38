@@ -2,6 +2,7 @@ import axios from "axios";
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { BASE_URL } from "./constants/AllUrl";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function Footer() {
   const [showPrivacy, setShowPrivacy] = useState(false);
@@ -22,14 +23,14 @@ export default function Footer() {
         { withCredentials: true }
       );
 
-      alert("Message sent successfully!");
+      toast.success("Email sent successfully!");
       setShowContact(false);
       setuseremail("");
       setusermessage("");
       setusersubject("");
     } catch (error) {
       console.error("Failed to send message", error);
-      alert("Failed to send message. Please try again later.");
+      toast.error("Failed to send message. Please try again later.");
     } finally {
       setIsSending(false);
     }
@@ -50,12 +51,26 @@ export default function Footer() {
 
   return (
     <footer className="relative bg-white border-t border-gray-200 text-gray-600">
+      {/* Toaster for notifications */}
+      <Toaster
+  toastOptions={{
+    className: "bg-white shadow-lg rounded-lg px-4 py-2 text-sm",
+    style: {
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)", // center
+    },
+  }}
+/>
+
+
       <div className="max-w-7xl mx-auto px-4 py-8 flex flex-col md:flex-row justify-between items-center">
         <p className="text-sm text-gray-500 mb-4 md:mb-0 text-center md:text-left">
           © {new Date().getFullYear()}{" "}
           <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600 tracking-tight">
             Aarambh38
-          </span>. All rights reserved.
+          </span>
+          . All rights reserved.
         </p>
 
         <div className="relative flex gap-4 items-center">
@@ -82,23 +97,27 @@ export default function Footer() {
 
           {/* Privacy Popup */}
           {showPrivacy && (
-            <div
-              ref={popupRef}
-              className="absolute bottom-12 left-1/2 -translate-x-1/2 sm:left-auto sm:right-0 sm:translate-x-0 w-80 bg-white border border-gray-200 shadow-lg p-4 rounded-lg z-50"
-            >
-              <h3 className="text-base font-semibold mb-2">Privacy Policy</h3>
-              <p className="text-sm text-gray-600 mb-2">
-                We respect your privacy. Your data is safe and will not be shared with third parties.
-              </p>
-              <p className="text-sm text-gray-600">
-                Only students and alumni of{" "}
-                <span className="font-semibold text-blue-600">
-                  Bihar Engineering University
-                </span>{" "}
-                are allowed to register and access this platform.
-              </p>
-            </div>
-          )}
+  <div
+    ref={popupRef}
+    className="absolute bottom-12 left-1/2 -translate-x-1/2 sm:left-auto sm:right-0 sm:translate-x-0 w-80 bg-white border border-gray-200 shadow-lg p-4 rounded-lg z-50"
+  >
+    <h3 className="text-base font-semibold mb-2">Privacy Policy</h3>
+    <p className="text-sm text-gray-600 mb-2">
+      We respect your privacy. Your data is safe and will not be shared with third parties.
+    </p>
+    <p className="text-sm text-gray-600 mb-2">
+      Only students and alumni of{" "}
+      <span className="font-semibold text-blue-600">
+        Bihar Engineering University
+      </span>{" "}
+      are allowed to register and access this platform.
+    </p>
+    <p className="text-sm text-gray-600">
+      Only <span className="font-semibold text-green-600">Aarambh38 verified alumni</span> are shown in the student dashboard, allowing them to provide guidance privately without sharing their personal contact info.
+    </p>
+  </div>
+)}
+
 
           {/* Contact Us Popup */}
           {showContact && (
