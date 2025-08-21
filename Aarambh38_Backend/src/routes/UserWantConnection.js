@@ -286,13 +286,13 @@ UserRouter.post("/sendemailbyuser", async (req, res) => {
 UserRouter.get("/requestonlineemail/:Id", UserAuth,async (req, res) => {
   try {
     const Id=req.params.Id
-    // console.log(Id)
+    const {fullName}=req?.body
     const check=await ModelUser.findOne({_id:Id})
     if(!check)
       res.status(400).send("Email Can't Send");
     const emailId=check.emailId
     // console.log(emailId)
-    const fullName=check.fullName
+    
     await Requestonlineemail({
       emailId,fullName
     });

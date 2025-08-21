@@ -625,14 +625,17 @@ const handleRetry = async (pending) => {
 
         setConfirmModal({
           open: true,
-          message: `Are you sure you want to invite ${Aluminidata?.fullName} to join online?`,
+          message: `Are you sure you want to invite ${selectedUser?.fullName} to join online?`,
           onConfirm: async () => {
             try {
+              const fullName=AlumniData.fullName
               setSending(true); // start shimmer
-              await axios.get(
-                `${BASE_URL}/requestonlineemail/${selectedUser._id}`,
-                { withCredentials: true }
-              );
+              await axios.post(
+  `${BASE_URL}/requestonlineemail/${selectedUser._id}`,
+  { fullName }, // request body
+  { withCredentials: true } // config
+);
+
 
               setMessages([]);
               setReloadConnections((prev) => prev + 1);
