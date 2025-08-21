@@ -27,7 +27,9 @@ export default function Home() {
   "Get Clarity on Your Dream Career from Alumni",
   "Understand What It Takes to Achieve Your Aim",
   "Plan Your Future with Alumni Who've Been There",
-  "Make Smarter Choices with Real-World Insights"
+  "Make Smarter Choices with Real-World Insights",
+  "Alumni Can Privately Help Students Without Sharing Personal Info",
+   "Only Verified Alumni Are Shown in the Student Dashboard"
 ]
 
 

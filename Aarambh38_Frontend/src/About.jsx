@@ -115,14 +115,29 @@ const About = () => {
       Once an alumni accepts the request, a secure real-time <span className="font-semibold text-green-600">chat interface</span> becomes active, enabling direct, one-on-one communication. 
       Students can then ask questions, seek career advice, request referrals, or just have meaningful conversations about opportunities and challenges in their field.
     </p>
+    
+    {/* Added Verified Alumni Privacy Point */}
     <p className="mt-3 text-gray-700 leading-relaxed">
-      The platform is built using a robust tech stack — a modern <span className="font-semibold">React-based frontend</span> ensures a fast and smooth user experience, while powerful <span className="font-semibold">Node.js and Express APIs</span> manage data, authentication, and connections on the backend.
+      To maintain trust and privacy, only <span className="font-semibold text-green-600">Aarambh38 verified alumni</span> are displayed in the student dashboard. 
+      This allows alumni to provide guidance, mentorship, and career advice privately within the platform without sharing personal contact information like email or phone numbers. 
+      Students can safely interact, ask questions, and request insights, while alumni retain full control over their personal privacy.
     </p>
+
+    <p className="mt-3 text-gray-700 leading-relaxed">
+  All chats on <span className="font-semibold text-green-600">Aarambh38</span> are fully private and secure. 
+  Students can interact with alumni one-on-one, ask questions, seek guidance, and request mentorship without any personal contact information being shared. 
+  This ensures a safe environment where students get real advice, and alumni maintain complete privacy.
+</p>
+    
+    {/* <p className="mt-3 text-gray-700 leading-relaxed">
+      The platform is built using a robust tech stack — a modern <span className="font-semibold">React-based frontend</span> ensures a fast and smooth user experience, while powerful <span className="font-semibold">Node.js and Express APIs</span> manage data, authentication, and connections on the backend.
+    </p> */}
     <p className="mt-3 text-gray-700 leading-relaxed">
       Every action — from discovering mentors to initiating chats — is designed to be simple, secure, and scalable, ensuring that students can focus on learning and growing with the guidance of their alumni network.
     </p>
   </div>
 </div>
+
 
       </div>
 
@@ -130,12 +145,12 @@ const About = () => {
       <div className="bg-gray-100 py-10 text-center">
   <p className="text-md text-gray-700 transition-opacity duration-1000 opacity-80 hover:opacity-100">
     Designed & Developed by{" "}
-    <span className="font-semibold text-blue-600 hover:text-blue-700 transition-colors duration-300">
+    {/* <span className="font-semibold text-blue-600 hover:text-blue-700 transition-colors duration-300">
       Raushan Raj, Shikha Kumari
-    </span>{" "}
-    <span className="text-gray-500 font-medium">&nbsp;from&nbsp;</span>
+    </span>{" "} */}
+    {/* <span className="text-gray-500 font-medium">&nbsp;from&nbsp;</span> */}
     <span className="font-semibold text-green-600 hover:text-green-700 transition-colors duration-300">
-      BCE Patna
+      BCE Patna Student
     </span>
   </p>
 </div>

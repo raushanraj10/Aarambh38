@@ -228,4 +228,3 @@ const ChatHelpPage = () => (
 );
 
 export default ChatHelpPage;
-
