@@ -283,7 +283,7 @@ UserRouter.post("/sendemailbyuser", async (req, res) => {
 });
 
 
-UserRouter.get("/requestonlineemail/:Id", UserAuth,async (req, res) => {
+UserRouter.post("/requestonlineemail/:Id", UserAuth,async (req, res) => {
   try {
     const Id=req.params.Id
     const {fullName}=req?.body
