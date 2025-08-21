@@ -6,8 +6,8 @@ import {
   UserMinusIcon,
   ExclamationTriangleIcon,
   InformationCircleIcon,
-  EnvelopeIcon,
 } from "@heroicons/react/24/outline";
+
 
 // Feature definitions for the comparison table
 const features = [
@@ -38,13 +38,6 @@ const features = [
     student: true,
     icon: UserMinusIcon,
     description: "Students can remove a mentor (Alumni) from contacts. Deletes chat history.",
-  },
-  {
-    name: "Send Online Invite",
-    alumni: true,
-    student: false,
-    icon: EnvelopeIcon, // could replace with a mail icon if you want
-    description: "Alumni can send an email invitation asking students to come online.",
   },
   {
     name: "Help and Tips",
@@ -120,11 +113,22 @@ const chatGuideOptions = [
       <>Back up critical chats regularly.</>,
     ],
   },
+  // ✅ New safety & privacy section added
+  {
+    icon: InformationCircleIcon,
+    title: "Chat Safety & Privacy",
+    steps: [
+      <>All your conversations are <strong>safe & secure</strong>.</>,
+      <>Your chats are <strong>not read or accessed by anyone</strong> (including admins).</>,
+      <>Only you and the person you chat with can see the messages.</>,
+    ],
+  },
 ];
+
 
 const roleColors = {
   alumni: "bg-blue-50 border-blue-400",
-  student: "bg-green-50 border-green-400",
+  student: "bg-green-50 border-green-400"
 };
 
 const ChatInstructions = () => (
@@ -138,10 +142,7 @@ const ChatInstructions = () => (
       {chatGuideOptions.map((item, idx) => {
         const Icon = item.icon;
         return (
-          <li
-            key={idx}
-            className="flex flex-col sm:flex-row gap-4 sm:gap-5 items-start border-b border-gray-100 pb-6 last:border-0 last:pb-0"
-          >
+          <li key={idx} className="flex flex-col sm:flex-row gap-4 sm:gap-5 items-start border-b border-gray-100 pb-6 last:border-0 last:pb-0">
             <Icon className="h-8 w-8 text-green-600 mt-1 flex-shrink-0" />
             <div>
               <h3 className="text-lg font-semibold text-gray-800 mb-2">{item.title}</h3>
@@ -167,9 +168,7 @@ const ChatHelpPage = () => (
           Aarambh38 Chat Help
         </h1>
         <p className="text-base sm:text-lg text-gray-600 max-w-3xl mx-auto">
-          Learn how to use the chat features—whether you are a{" "}
-          <span className="font-semibold text-blue-700">Student</span> or{" "}
-          <span className="font-semibold text-green-700">Alumni</span>.
+          Learn how to use the chat features—whether you are a <span className="font-semibold text-blue-700">Student</span> or <span className="font-semibold text-green-700">Alumni</span>.
         </p>
       </header>
 
@@ -195,18 +194,14 @@ const ChatHelpPage = () => (
                   </td>
                   <td className={`py-3 px-3 text-center ${roleColors.alumni} whitespace-nowrap`}>
                     {f.alumni ? (
-                      <span className="inline-block px-3 py-1 rounded-full text-blue-700 font-semibold bg-blue-100 border border-blue-400 select-none">
-                        ✓
-                      </span>
+                      <span className="inline-block px-3 py-1 rounded-full text-blue-700 font-semibold bg-blue-100 border border-blue-400 select-none">✓</span>
                     ) : (
                       "-"
                     )}
                   </td>
                   <td className={`py-3 px-3 text-center ${roleColors.student} whitespace-nowrap`}>
                     {f.student ? (
-                      <span className="inline-block px-3 py-1 rounded-full text-green-700 font-semibold bg-green-100 border border-green-400 select-none">
-                        ✓
-                      </span>
+                      <span className="inline-block px-3 py-1 rounded-full text-green-700 font-semibold bg-green-100 border border-green-400 select-none">✓</span>
                     ) : (
                       "-"
                     )}
@@ -224,11 +219,10 @@ const ChatHelpPage = () => (
 
       {/* Footer */}
       <footer className="mt-16 pt-8 border-t border-gray-200 text-center text-sm sm:text-md text-gray-500 px-2 sm:px-6">
-        <span className="font-extrabold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-          Aarambh38
-        </span>{" "}
-        – Secure, seamless conversations for alumni and students.
-      </footer>
+  <span className="font-extrabold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
+    Aarambh38
+  </span> – Secure, seamless conversations for alumni and students.
+</footer>
     </div>
   </main>
 );
