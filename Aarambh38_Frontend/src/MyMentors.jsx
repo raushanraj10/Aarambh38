@@ -51,14 +51,14 @@ export default function MyMentors() {
         <div className="flex flex-col gap-6 items-center">
           {mentors.map((mentor) => (
             <div
-              key={mentor._id}
+              key={mentor?._id}
               onClick={() => handleProfileClick(mentor._id)}
               className="w-full max-w-4xl bg-white rounded-2xl shadow-md border p-6 flex flex-col sm:flex-row gap-6 cursor-pointer transition-transform duration-200 hover:shadow-xl hover:-translate-y-1"
             >
               {/* Profile Image */}
               <img
                 src={
-                  mentor.photourl ||
+                  mentor?.photourl ||
                   "https://cdn-icons-png.flaticon.com/512/194/194938.png"
                 }
                 alt="mentor"
@@ -68,28 +68,28 @@ export default function MyMentors() {
               {/* Mentor Info */}
               <div className="flex-1 space-y-1 text-sm text-gray-800">
                 <p>
-                  <strong>👤 Name:</strong> {mentor.fullName}
+                  <strong>👤 Name:</strong> {mentor?.fullName}
                 </p>
                 <p>
-                  <strong>🏢 Company:</strong> {mentor.company}
+                  <strong>🏢 Company:</strong> {mentor?.company}
                 </p>
                 <p>
-                  <strong>💼 Role:</strong> {mentor.role}
+                  <strong>💼 Role:</strong> {mentor?.role}
                 </p>
                 <p>
-                  <strong>🎓 Batch:</strong> {mentor.batch}
+                  <strong>🎓 Batch:</strong> {mentor?.batch}
                 </p>
                 <p>
-                  <strong>🏫 College:</strong> {mentor.collegeName}
+                  <strong>🏫 College:</strong> {mentor?.collegeName}
                 </p>
                 <p>
-                  <strong>🏫 Branch:</strong> {mentor.branch}
+                  <strong>🏫 Branch:</strong> {mentor?.branch}
                 </p>
                 <p>
-                  <strong>⚧ Gender:</strong> {mentor.gender}
+                  <strong>⚧ Gender:</strong> {mentor?.gender}
                 </p>
                 <p>
-                  <strong>📄 About:</strong> {mentor.about || "N/A"}
+                  <strong>📄 About:</strong> {mentor?.about || "N/A"}
                 </p>
               </div>
 
