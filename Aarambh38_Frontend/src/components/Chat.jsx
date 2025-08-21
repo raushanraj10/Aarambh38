@@ -625,7 +625,7 @@ const handleRetry = async (pending) => {
 
         setConfirmModal({
           open: true,
-          message: `Are you sure you want to invite ${selectedUser.fullName} to join online?`,
+          message: `Are you sure you want to invite ${Aluminidata?.fullName} to join online?`,
           onConfirm: async () => {
             try {
               setSending(true); // start shimmer
