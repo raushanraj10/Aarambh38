@@ -5,6 +5,7 @@ const ModelAlumini = require("../models/ModelAlumini");
 const SendEmailByUser = require("../utils/SendEmailByUser");
 const Requestonlineemail = require("../utils/RequestOnlineEmail");
 const ModelUser = require("../models/ModelUser");
+const ModelMessage = require("../models/ModelMessage");
 
 const UserRouter=express.Router()
 
@@ -285,6 +286,7 @@ UserRouter.post("/sendemailbyuser", async (req, res) => {
 
 UserRouter.post("/requestonlineemail/:Id", UserAuth,async (req, res) => {
   try {
+    
     const Id=req.params.Id
     const {fullName}=req?.body
     const check=await ModelUser.findOne({_id:Id})
@@ -303,6 +305,94 @@ UserRouter.post("/requestonlineemail/:Id", UserAuth,async (req, res) => {
   }
 });
 
+
+UserRouter.get("/alumnireadedoff/:fromuserId", UserAuth,async (req, res) => {
+  try {
+    // console.log("hsdufhsd")
+    const fromuserId=req.params.fromuserId
+     const targetuserId=req.decode._id
+     const listofstudentofunread = await ModelMessage.find({
+  targetuserId,
+  alumnireaded: "NO",
+  fromuserId
+});
+
+if (!listofstudentofunread || listofstudentofunread.length === 0) {
+  return res.send("off"); // no unread messages
+}
+
+// update all matching docs
+await ModelMessage.updateMany(
+  { targetuserId, alumnireaded: "NO", fromuserId },
+  { $set: { alumnireaded: "YES" } }
+);
+
+return res.send("updated")}  
+    
+  catch(err){res.send(err.message)}
+});
+
+UserRouter.get("/alumnireaded", UserAuth, async (req, res) => {
+  try {
+    const targetuserId = req.decode._id;
+
+    // Distinct ensures all IDs are unique
+    const unreadIds = await ModelMessage.distinct("fromuserId", {
+      targetuserId,
+      alumnireaded: "NO"
+    });
+
+    // Convert ObjectIds to string for frontend
+    const idsAsStrings = unreadIds.map(id => id.toString());
+    // console.log(idsAsStrings)
+    res.json(idsAsStrings);
+  } catch (err) {
+    console.error("Error in /alumnireaded:", err);
+    res.status(500).send(err.message);
+  }
+});
+
+
+
+UserRouter.get("/studentreaded", UserAuth, async (req, res) => {
+  try {
+    const fromuserId = req.decode._id;
+
+    // Get unique targetuserIds where student has not read messages
+    const unreadIds = await ModelMessage.distinct("targetuserId", {
+      fromuserId,
+      studentreaded: "NO"
+    });
+
+    // Convert ObjectIds → strings
+    const idsAsStrings = unreadIds.map(id => id.toString());
+
+    res.json(idsAsStrings);
+  } catch (err) {
+    console.error("Error in /studentreaded:", err);
+    res.status(500).send(err.message);
+  }
+});
+
+
+
+UserRouter.get("/studentreadedoff/:targetuserId", UserAuth,async (req, res) => {
+  try {
+    const targetuserId=req.params.targetuserId
+     const fromuserId=req.decode._id
+     const listofstudentofunread=await ModelMessage.find({targetuserId:targetuserId,alumnireaded:"NO",fromuserId:fromuserId})
+    //  console.log(listofstudentofunread)
+     if (!listofstudentofunread || listofstudentofunread.length === 0) {
+  return res.send("off"); // no unread messages
+}
+     await ModelMessage.updateMany(
+  { targetuserId, alumnireaded: "NO", fromuserId },
+  { $set: { alumnireaded: "YES" } }
+);
+     res.send("off")}
+    
+  catch(err){res.send(err.message)}
+});
 
 
 

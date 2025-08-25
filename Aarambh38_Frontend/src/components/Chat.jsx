@@ -24,7 +24,7 @@ const ChatApp = () => {
   const StudentData = useSelector((store) => store.studentdata);
   const AlumniData = useSelector((store) => store.aluminidata);
   const Navigate = useNavigate();
-
+// const [readedlist, setReadedlist] = useState([]);
   useEffect(() => {
     if (!StudentData && !AlumniData) return Navigate("/loginselectorpage");
   }, [StudentData, AlumniData, Navigate]);
@@ -67,8 +67,48 @@ const [deletingMessages, setDeletingMessages] = useState([]);
   const [originalDocName, setOriginalDocName] = useState("");
   const [documentPreview, setDocumentPreview] = useState(null);
   const [originalName, setOriginalName] = useState("");
-//  const [showTooltip, setShowTooltip] = useState(false);
+const [readedList, setReadedList] = useState([]);
   const [successMsg, setSuccessMsg] = useState("");
+ // Example helper
+const isUnread = (userId) => {
+  if (!readedList || readedList.length === 0) {
+    return false; // nothing unread
+  }
+  if(selectedUser?._id===userId) return false
+  return readedList.includes(userId.toString()); // true if this user is unread
+};
+
+
+
+
+useEffect(() => {
+  if (!StudentData && !AlumniData) return;
+
+  const fetchReadedList = async () => {
+    try {
+      if (StudentData) {
+        const res = await axios.get(`${BASE_URL}/studentreaded`, { withCredentials: true });
+        setReadedList(res.data);
+      }
+      if (AlumniData) {
+        const res = await axios.get(`${BASE_URL}/alumnireaded`, { withCredentials: true });
+        setReadedList(res.data);
+      }
+    } catch (error) {
+      console.error("Error fetching readed list:", error);
+    }
+  };
+
+   fetchReadedList();
+
+  // create interval that always calls fresh function
+  const interval = setInterval(() => {
+    fetchReadedList();
+  }, 5000);
+
+  return () => clearInterval(interval);
+}, [StudentData, AlumniData,selectedUser]);
+
 
 
   useEffect(() => {
@@ -106,57 +146,73 @@ const [deletingMessages, setDeletingMessages] = useState([]);
     if (user) fetchUsers();
   }, [Studentdata, Aluminidata, reloadConnections, user]);
 
-  useEffect(() => {
-    if (!user) return;
-    socketRef.current = SocketConnection();
+useEffect(() => {
+  if (!user || !selectedUser?._id) return;
 
-    socketRef.current.on("messageRecieved", ({
-  fromuserId,
-  messageId,
-  text,
-  image,
-  document,
-  originalFilename,
-  repliedtext,
-  repliedImage,
-  repliedDocument,
-  repliedMessageId,
-  repliedOriginalFilename,
-  repliedToId,
-  repliedById,
-  messageType,
-  createdAt,
-}) => {
-  if (fromuserId === user._id) return;
-console.log(messageId)
-  setMessages((prev) => [
-    ...prev,
-    {
-      from: "them",
+  socketRef.current = SocketConnection();
+
+  socketRef.current.on(
+    "messageRecieved",
+    ({
+      fromuserId,
+      targetuserId, // make sure backend emits this
+      messageId,
       text,
       image,
       document,
       originalFilename,
-      repliedMessageId,
-      messageType,
-      createdAt: createdAt || new Date().toISOString(),
       repliedtext,
       repliedImage,
       repliedDocument,
-      messageId,
+      repliedMessageId,
       repliedOriginalFilename,
       repliedToId,
       repliedById,
-      targetUserId: fromuserId,
-    },
-  ]);
-});
+      messageType,
+      createdAt,
+    }) => {
+      if (fromuserId === user._id) return;
+      // Ignore messages that are not part of this conversation
+      if (
+        !(
+          (fromuserId === selectedUser._id && targetuserId === user._id) ||
+          (fromuserId === user._id && targetuserId === selectedUser._id)
+        )
+      ) {
+        return;
+      }
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          from: fromuserId === user._id ? "me" : "them",
+          text,
+          image,
+          document,
+          originalFilename,
+          repliedMessageId,
+          messageType,
+          createdAt: createdAt || new Date().toISOString(),
+          repliedtext,
+          repliedImage,
+          repliedDocument,
+          messageId,
+          repliedOriginalFilename,
+          repliedToId,
+          repliedById,
+          targetUserId: targetuserId,
+        },
+      ]);
+    }
+  );
+
+  return () => {
+    socketRef.current?.off("messageRecieved");
+    socketRef.current?.disconnect();
+  };
+}, [user?._id, selectedUser?._id]);
 
 
-    return () => {
-      socketRef.current?.disconnect();
-    };
-  }, [user]);
 
   useEffect(() => {
     if (!user || !selectedUser || !socketRef.current) return;
@@ -223,12 +279,30 @@ console.log(messageId)
     }
   };
 
-  const handleSelectUser = (user) => {
+  const handleSelectUser = async (user) => {
+  try {
     setSelectedUser(user);
     setMessages([]);
     fetchMessages(user._id);
     setSidebarOpen(false);
-  };
+
+    if (StudentData) {
+  await axios.get(`${BASE_URL}/studentreadedoff/${user._id}`, { withCredentials: true });
+}
+
+if (Aluminidata) {
+  await axios.get(`${BASE_URL}/alumnireadedoff/${user._id}`, { withCredentials: true });
+}
+
+
+    // Optionally update state immediately so unread dot disappears
+    setReadedList((prev) => prev.filter((id) => id !== user._id));
+
+  } catch (error) {
+    console.error("Error marking messages as read:", error);
+  }
+};
+
 
   // const handleSend = () => {
   //   if (!input.trim() && !imagePreview) return;
@@ -332,7 +406,8 @@ console.log(messageId)
     // 3. Prepare IDs
     const fromuserId = user._id;
     const targetuserId = selectedUser._id;
-
+    let findId=fromuserId===Aluminidata?._id?"alumni":"student"
+    // console.log(findId)
     // 4. Handle reply logic
     const isReplying = !!replyTo;
     const isReplyingToOtherUser = isReplying && replyTo.from === "them";
@@ -343,11 +418,12 @@ console.log(messageId)
       : documentUrl
       ? "file"
       : "text";
-console.log(replyTo)
+// console.log(replyTo)
     // 6. Build message payload
     const messagePayload = {
       fromuserId,
       targetuserId,
+      findId,
       messageId: newMessageId,
       text: input,
       image: imagePreview || "",
@@ -472,63 +548,73 @@ const handleRetry = async (pending) => {
   return (
     <div className="h-screen w-full flex bg-gray-100 relative overflow-hidden">
       {/* Sidebar */}
-      <div className={`bg-white border-r overflow-y-auto z-40 fixed top-0 left-0 h-full sm:static sm:h-auto transition-all duration-300
+      <div
+  className={`bg-white border-r overflow-y-auto z-40 fixed top-0 left-0 h-full sm:static sm:h-auto transition-all duration-300
         ${sidebarOpen ? "w-64" : "w-0"} 
         ${sidebarOpen ? "block" : "hidden"} 
-        sm:block sm:w-1/4`}>
-        <main className="pt-[64px] md:pt-[5px]">
-  <div className="p-4 text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600 tracking-tight">
-    Connections
-  </div>
-  <div className="px-4 pb-3">
-    <input
-      type="text"
-      placeholder="Search connections..."
-      value={search}
-      onChange={(e) => setSearch(e.target.value)}
-      className="w-full px-3 py-2 border rounded-md focus:outline-none text-sm bg-white"
-    />
-  </div>
-</main>
+        sm:block sm:w-1/4`}
+>
+  <main className="pt-[64px] md:pt-[5px]">
+    <div className="p-4 text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600 tracking-tight">
+      Connections
+    </div>
+    <div className="px-4 pb-3">
+      <input
+        type="text"
+        placeholder="Search connections..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        className="w-full px-3 py-2 border rounded-md focus:outline-none text-sm bg-white"
+      />
+    </div>
+  </main>
 
+  {filteredList.map((user) => (
+    <div
+      key={user._id}
+      onClick={() => handleSelectUser(user)}
+      className={`flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-gray-100 border-b ${
+        selectedUser?._id === user._id ? "bg-gray-200" : ""
+      }`}
+    >
+      <div className="relative group">
+        <div className="p-[2px] rounded-full bg-gradient-to-r from-blue-500 to-green-500 relative">
+          <img
+            src={user.photourl || "/default-avatar.png"}
+            alt="avatar"
+            className="w-10 h-10 rounded-full object-cover border-2 border-white cursor-pointer hover:scale-105 transition-transform"
+            onClick={(e) => {
+              e.stopPropagation();
+              setPreviewImg(user.photourl || "/default-avatar.png");
+            }}
+          />
 
+          {/* ✅ Green blinking dot if unread */}
+          {/* {console.log("rendering", user._id, isUnread(user._id))} */}
+           {isUnread(user._id) && (
+  <>
+    <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-ping"></span>
+    <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"></span>
+  </>
+)}
 
-        {filteredList.map((user) => (
-          <div
-            key={user._id}
-            onClick={() => handleSelectUser(user)}
-            className={`flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-gray-100 border-b ${
-              selectedUser?._id === user._id ? "bg-gray-200" : ""
-            }`}
-          >
-            <div className="relative group">
-              <div className="p-[2px] rounded-full bg-gradient-to-r from-blue-500 to-green-500">
-                <img
-                  src={user.photourl || "/default-avatar.png"}
-                  alt="avatar"
-                  className="w-10 h-10 rounded-full object-cover border-2 border-white cursor-pointer hover:scale-105 transition-transform"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setPreviewImg(user.photourl || "/default-avatar.png");
-                  }}
-                />
-              </div>
-              <div className="absolute bottom-full left-0 mb-1 hidden group-hover:block text-xs text-white bg-black px-2 py-1 rounded whitespace-nowrap z-10">
-                {user.emailId}
-              </div>
-            </div>
-            <span className="text-sm font-medium">{user.fullName || "Unnamed"}</span>
-          </div>
-        ))}
+        </div>
+        <div className="absolute bottom-full left-0 mb-1 hidden group-hover:block text-xs text-white bg-black px-2 py-1 rounded whitespace-nowrap z-10">
+          {user.emailId}
+        </div>
       </div>
-      
+      <span className="text-sm font-medium">{user.fullName || "Unnamed"}</span>
+    </div>
+  ))}
+</div>
 
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-40 z-30 sm:hidden"
-          onClick={() => setSidebarOpen(false)}
-        ></div>
-      )}
+{sidebarOpen && (
+  <div
+    className="fixed inset-0 bg-black bg-opacity-40 z-30 sm:hidden"
+    onClick={() => setSidebarOpen(false)}
+  ></div>
+)}
+
 
       {/* Chat Area */}
       <div className="flex-1 flex flex-col relative z-0 overflow-hidden">
@@ -1233,7 +1319,7 @@ const handleRetry = async (pending) => {
 ))}
 
 
-  {msg.text && (
+  {msg.text  && (
   <div
     className={`flex ${
       msg.text.length < 40 ? "justify-start" : "justify-end"

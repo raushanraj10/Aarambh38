@@ -20,7 +20,7 @@ AuthRouter.post("/sendemail",async (req,res)=>{
     const {emailId}=req.body
     const tempdata=ModelOtp({emailId:emailId,code:code})
     await tempdata.save();
-    console.log(code)
+    // console.log(code)
     await SendEmail(emailId,code)
     res.send("Email Sent")
 }
@@ -42,121 +42,196 @@ AuthRouter.post("/sendemailadmin",async (req,res)=>{
 }
     catch(err){res.send(err.message)}
 })
-AuthRouter.post("/signupuser",async (req,res)=>{
-    
-    
-    try{
-        const data=req.body;
-    const {emailId,code}=req.body
-    const CheckFirst=await ModelOtp.findOne({emailId:emailId})
-    // console.log(CheckFirst)
-    if(!CheckFirst)
-        return res.status(400).send("May email already exist or re-register")
-    if (Number(CheckFirst.code) !== Number(code))
-    return res.status(400).send("Wrong OTP");
-    
-    await ModelOtp.deleteOne({emailId:emailId})
-    const requiredFields=["fullName","gender","emailId","newPassword","confirmPassword","registration","age","collegeName","branch","photourl"]
-    
-     const allFieldsPresent = requiredFields.every(field => field in data);
+AuthRouter.post("/signupuser", async (req, res) => {
+  try {
+    const data = req.body;
+    const { emailId, code } = req.body;
 
-    if (!allFieldsPresent) {
-        const missingFields = requiredFields.filter(field => !(field in data));
-        return res.status(400).send("Missing fields: " + missingFields.join(", "));
+    // Check OTP
+    const CheckFirst = await ModelOtp.findOne({ emailId: emailId });
+    if (!CheckFirst) {
+      return res.status(400).json({
+        success: false,
+        message: "OTP not found. Please register again.",
+      });
     }
-    // .include not working because data is object and requiredfields are array use "in" keyword
-    const data1=validateBodyData(req,res);
-    if(data1)return
 
-    const checkemailid=await ModelUser.findOne({emailId:req.body.emailId})
-    if(checkemailid)
-        return res.status(400).send("Email already exist")
-    const checkemailid2=await ModelAlumini.findOne({emailId:req.body.emailId})
-    if(checkemailid2)
-        return res.status(400).send("Email already exist")
-    const checkemailid3=await ModelAdmin.findOne({emailId:req.body.emailId})
-    if(checkemailid3)
-        return res.status(400).send("Email already exist")
-
-    if(req.body.newPassword!==req.body.confirmPassword)
-        return res.status(400).send("Password not match")
-
-    const {newPassword,confirmPassword}=req.body
-
-
-
-    const hashnewPassword=await bcrypt.hash(newPassword,10)
-    const hashconfirmPassword=await bcrypt.hash(confirmPassword,10)
-
-    data.newPassword=hashnewPassword;
-    data.confirmPassword=hashconfirmPassword
-
-
-    
-    const finalData=ModelUser(data)
-    await finalData.save()
-    
-    res.send("Signup Successfully")}
-    catch(err){console.log(err)}
-    
-
-})
-
-AuthRouter.post("/signupalumini",async (req,res)=>{
-    
-    const data=req.body;
-    
-    const {emailId,code}=req.body
-    const CheckFirst=await ModelOtp.findOne({emailId:emailId})
-    if(!CheckFirst)
-        return res.status(400).send("May email already exist or re-register")
-   if (Number(CheckFirst.code) !== Number(code))
-    return res.status(400).send("Wrong OTP");
-
-    await ModelOtp.deleteOne({emailId:emailId})
-    const requiredFields=["fullName","gender","emailId","newPassword","confirmPassword","registration","batch","collegeName","company","role","photourl","about","branch"]
-    
-     const allFieldsPresent = requiredFields.every(field => field in data);
-
-    if (!allFieldsPresent) {
-        const missingFields = requiredFields.filter(field => !(field in data));
-        return res.status(400).send("Missing fields: " + missingFields.join(", "));
+    if (Number(CheckFirst.code) !== Number(code)) {
+      return res.status(400).json({
+        success: false,
+        message: "❌ Invalid OTP. Please try again.",
+      });
     }
-    // .include not working because data is object and requiredfields are array use "in" keyword
-    const data1=validateBodyData(req,res);
-    if(data1)
-        return;
 
-    const checkemailid=await ModelUser.findOne({emailId:req.body.emailId})
-    if(checkemailid)
-        return res.status(400).send("Email already exist")
-    const checkemailid2=await ModelAlumini.findOne({emailId:req.body.emailId})
-    if(checkemailid2)
-        return res.status(400).send("Email already exist")
-    const checkemailid3=await ModelAdmin.findOne({emailId:req.body.emailId})
-    if(checkemailid3)
-        return res.status(400).send("Email already exist")
+    // delete OTP after use
+    await ModelOtp.deleteMany({ emailId: emailId });
 
-    if(req.body.newPassword!==req.body.confirmPassword)
-        return res.status(400).send("Password not match")
+    // Required fields check
+    const requiredFields = [
+      "fullName",
+      "gender",
+      "emailId",
+      "newPassword",
+      "confirmPassword",
+      "registration",
+      "age",
+      "collegeName",
+      "branch",
+      "photourl",
+      "batch",
+    ];
+
+    const missingFields = requiredFields.filter((field) => !(field in data));
+    if (missingFields.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: `Missing fields: ${missingFields.join(", ")}`,
+      });
+    }
+
+    // Validate other fields
+    const data1 = validateBodyData(req, res);
+    if (data1) return;
+
+    // Email already exists check
+    const existing =
+      (await ModelUser.findOne({ emailId })) ||
+      (await ModelAlumini.findOne({ emailId })) ||
+      (await ModelAdmin.findOne({ emailId }));
+
+    if (existing) {
+      return res.status(400).json({
+        success: false,
+        message: "❌ Email already exists. Please use another one.",
+      });
+    }
+
+    // Password match
+    if (req.body.newPassword !== req.body.confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "❌ Passwords do not match.",
+      });
+    }
+
+    // Hash password
+    const { newPassword, confirmPassword } = req.body;
+    const hashnewPassword = await bcrypt.hash(newPassword, 10);
+    const hashconfirmPassword = await bcrypt.hash(confirmPassword, 10);
+
+    data.newPassword = hashnewPassword;
+    data.confirmPassword = hashconfirmPassword;
+
+    // Save user
+    const finalData = new ModelUser(data);
+    await finalData.save();
+
+    res.status(200).json({
+      success: true,
+      message: "🎉 Signup successful!",
+    });
+  } catch (err) {
+    console.error("Signup error:", err);
+    res.status(500).json({
+      success: false,
+      message: "⚠️ Internal Server Error. Please try again later.",
+      error: err.message,
+    });
+  }
+});
 
 
-    const {newPassword,confirmPassword}=req.body
+AuthRouter.post("/signupalumini", async (req, res) => {
+  try {
+    const data = req.body;
+    const { emailId, code } = req.body;
 
-    const hashnewPassword=await bcrypt.hash(newPassword,10)
-    const hashconfirmPassword=await bcrypt.hash(confirmPassword,10)
+    // ✅ Check OTP
+    const CheckFirst = await ModelOtp.findOne({ emailId });
+    if (!CheckFirst) {
+      return res.status(400).json({
+        success: false,
+        message: "Email not found or already registered. Please re-register.",
+      });
+    }
 
-    data.newPassword=hashnewPassword;
-    data.confirmPassword=hashconfirmPassword
-    
-    const finalData=ModelAlumini(data)
-    await finalData.save()
-    EmailAlumniRequest(req.body)
-    
-    res.send("Signup Successfully")
-    
+    if (Number(CheckFirst.code) !== Number(code)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or incorrect OTP. Please try again.",
+      });
+    }
 
-})
+    // ✅ Delete OTP
+    await ModelOtp.deleteMany({ emailId });
+
+    // ✅ Required fields
+    const requiredFields = [
+      "fullName", "gender", "emailId", "newPassword", "confirmPassword",
+      "registration", "batch", "collegeName", "company", "role",
+      "photourl", "about", "branch"
+    ];
+
+    const missingFields = requiredFields.filter(field => !(field in data));
+    if (missingFields.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: `Missing fields: ${missingFields.join(", ")}`,
+      });
+    }
+
+    // ✅ Extra validation hook
+    const data1 = validateBodyData(req, res);
+    if (data1) return;
+
+    // ✅ Check duplicate email across collections
+    const checkUser =
+      (await ModelUser.findOne({ emailId })) ||
+      (await ModelAlumini.findOne({ emailId })) ||
+      (await ModelAdmin.findOne({ emailId }));
+
+    if (checkUser) {
+      return res.status(400).json({
+        success: false,
+        message: "Email already exists. Please use another email.",
+      });
+    }
+
+    // ✅ Password match
+    if (req.body.newPassword !== req.body.confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Passwords do not match.",
+      });
+    }
+
+    // ✅ Password hashing
+    const { newPassword, confirmPassword } = req.body;
+    data.newPassword = await bcrypt.hash(newPassword, 10);
+    data.confirmPassword = await bcrypt.hash(confirmPassword, 10);
+
+    // ✅ Save alumni
+    const finalData = new ModelAlumini(data);
+    await finalData.save();
+
+    // ✅ Email notification
+    EmailAlumniRequest(req.body);
+
+    return res.status(201).json({
+      success: true,
+      message: "Signup successful! Please wait while an admin approves your account.",
+    });
+
+  } catch (err) {
+    console.error("Signup error:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error. Please try again later.",
+    });
+  }
+});
+
+
 
 
 

@@ -31,65 +31,75 @@ export default function EmailVerificationAlumini() {
     }
   }, [showMessage]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
 
-    try {
-    setMessage("✅ Verification successful! Your email has been verified. Please wait while an admin reviews and approves your account.");
+  try {
+    const {
+      fullName,
+      branch,
+      gender,
+      emailId,
+      registration,
+      newPassword,
+      confirmPassword,
+      collegeName,
+      role,
+      company,
+      batch,
+      photourl,
+      about,
+    } = verifydata;
 
-
-      setMessageType("success");
-      setShowMessage(true);
-
-
-      const {
-        fullName,
+    const res = await axios.post(
+      `${BASE_URL}/signupalumini`,
+      {
+        photourl,
+        about,
         branch,
+        fullName,
         gender,
         emailId,
         registration,
         newPassword,
         confirmPassword,
-        collegeName,
-        role,
-        company,
         batch,
-        photourl,
-        about,
-      } = verifydata;
+        collegeName,
+        company,
+        role,
+        code,
+      },
+      { withCredentials: true }
+    );
 
-      await axios.post(
-        `${BASE_URL}/signupalumini`,
-        {
-          photourl,
-          about,
-          branch,
-          fullName,
-          gender,
-          emailId,
-          registration,
-          newPassword,
-          confirmPassword,
-          batch,
-          collegeName,
-          company,
-          role,
-          code,
-        },
-        { withCredentials: true }
-      );
+    // ✅ Success message from backend
+    setMessage(`✅ ${res.data.message || "Signup successful!"}`);
+    setMessageType("success");
+    setShowMessage(true);
 
-      setTimeout(() => navigate("/loginselectorpage"), 3000);
-    } catch (err) {
-      console.error("Verification error:", err);
-      setMessage("🔴 Verification failed. Please check the code and try again.");
-      setMessageType("error");
-      setShowMessage(true);
-    }
+    setTimeout(() => navigate("/loginselectorpage"), 3000);
 
-    setLoading(false);
-  };
+  } catch (err) {
+  console.error("Verification error:", err);
+
+  // Show proper backend error
+  if (err.response?.data?.message) {
+    setMessage(`🔴 ${err.response.data.message}`);
+  } else if (err.message) {
+    setMessage(`🔴 ${err.message}`); // network or axios error
+  } else {
+    setMessage("🔴 Something went wrong. Please try again.");
+  }
+
+  setMessageType("error");
+  setShowMessage(true);
+}
+
+
+  setLoading(false);
+};
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-yellow-50 flex items-center justify-center px-4 py-8 relative">

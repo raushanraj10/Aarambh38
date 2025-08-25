@@ -26,7 +26,7 @@ const UserSchema=new mongoose.Schema({
     },
     batch:{
         type:Number,
-        // require:true,
+        require:true,
         default:2022
     },
     age:{

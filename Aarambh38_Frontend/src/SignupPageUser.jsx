@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { pendinguser } from "./utils/EmailSlice";
 import { useDispatch } from "react-redux";
-// import bcrypt from "bcryptjs";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import governmentEngineeringColleges from "./constants/CollegeList";
@@ -18,11 +17,8 @@ export default function SignupPageUser() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // const code = Math.floor(Math.random() * 900000) + 100000;
-
   const [loading, setLoading] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
-
   const [showPassword, setShowPassword] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
   const [formErrors, setFormErrors] = useState({});
@@ -31,14 +27,14 @@ export default function SignupPageUser() {
     fullName: "",
     emailId: "",
     collegeName: "",
+    branch: "",
     registration: "",
+    batch: "",
     age: "",
     gender: "",
     newPassword: "",
     confirmPassword: "",
-    branch: "",
     photourl: "",
-    
   });
 
   useEffect(() => {
@@ -73,25 +69,32 @@ export default function SignupPageUser() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const errors = {};
     Object.entries(formData).forEach(([key, value]) => {
-      if (!value && key !== "code") errors[key] = "This field is required.";
+      if (!value) errors[key] = "This field is required.";
     });
+
     if (!emailRegex.test(formData.emailId)) {
-    errors.emailId = "📧 Please enter a valid email address.";
-  }
+      errors.emailId = "📧 Please enter a valid email address.";
+    }
 
-  if (isNaN(formData.age) || formData.age <= 0) {
-  errors.age = "Enter a valid age.";
-}
-if (isNaN(formData.registration) || formData.registration.length < 4) {
-  errors.registration = "Enter a valid registration number.";
-}
-if (!formData.photourl) {
-  errors.photourl = "Please upload your photo.";
-}
-if (formData.newPassword.length < 6) {
-  errors.newPassword = "Password must be at least 6 characters.";
-}
+    if (isNaN(formData.age) || formData.age <= 0) {
+      errors.age = "Enter a valid age.";
+    }
 
+    if (!/^\d{11}$/.test(formData.registration)) {
+      errors.registration = "Registration number must be exactly 11 digits.";
+    }
+
+    if (!/^\d{4}$/.test(formData.batch)) {
+      errors.batch = "Batch must be exactly 4 digits (e.g., 2025).";
+    }
+
+    if (!formData.photourl) {
+      errors.photourl = "Please upload your photo.";
+    }
+
+    if (formData.newPassword.length < 6) {
+      errors.newPassword = "Password must be at least 6 characters.";
+    }
 
     if (formData.newPassword !== formData.confirmPassword) {
       errors.confirmPassword = "Passwords do not match.";
@@ -126,8 +129,6 @@ if (formData.newPassword.length < 6) {
     try {
       const { emailId } = formData;
       await axios.post(`${BASE_URL}/sendemail`, { emailId }, { withCredentials: true });
-      // console.log(code)
-      // const hashedCode = await bcrypt.hash(code.toString(), 10);
       const updatedFormData = { ...formData };
 
       dispatch(pendinguser(updatedFormData));
@@ -243,20 +244,58 @@ if (formData.newPassword.length < 6) {
           </div>
 
           {/* Registration */}
+         <div>
+  <label className="text-sm font-medium text-gray-700">Registration Number</label>
+  <input
+    type="text"
+    name="registration"
+    value={formData.registration}
+    onChange={(e) => {
+      const onlyNums = e.target.value.replace(/[^0-9]/g, ""); // only numbers
+      setFormData({ ...formData, registration: onlyNums });
+    }}
+    maxLength={11}
+    minLength={11}
+    pattern="\d{11}"
+    className={`w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none ${
+      formErrors.registration
+        ? "border-red-500 ring-2 ring-red-300"
+        : "border-gray-300 focus:ring-2 focus:ring-blue-500"
+    }`}
+    required
+  />
+  {formErrors.registration && (
+    <p className="text-xs text-red-500 mt-1">{formErrors.registration}</p>
+  )}
+</div>
+
+
+          {/* Batch */}
           <div>
-            <label className="text-sm font-medium text-gray-700">Registration Number</label>
-            <input
-              type="number"
-              name="registration"
-              value={formData.registration}
-              onChange={handleChange}
-              className={`w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none ${
-                formErrors.registration ? "border-red-500 ring-2 ring-red-300" : "border-gray-300 focus:ring-2 focus:ring-blue-500"
-              }`}
-              required
-            />
-            {formErrors.registration && <p className="text-xs text-red-500 mt-1">{formErrors.registration}</p>}
-          </div>
+  <label className="text-sm font-medium text-gray-700">Batch</label>
+  <input
+    type="text"
+    name="batch"
+    value={formData.batch}
+    onChange={(e) => {
+      const onlyNums = e.target.value.replace(/[^0-9]/g, ""); // only numbers
+      setFormData({ ...formData, batch: onlyNums });
+    }}
+    maxLength={4}
+    minLength={4}
+    pattern="\d{4}"
+    className={`w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none ${
+      formErrors.batch
+        ? "border-red-500 ring-2 ring-red-300"
+        : "border-gray-300 focus:ring-2 focus:ring-blue-500"
+    }`}
+    required
+  />
+  {formErrors.batch && (
+    <p className="text-xs text-red-500 mt-1">{formErrors.batch}</p>
+  )}
+</div>
+
 
           {/* Age */}
           <div>
@@ -306,7 +345,7 @@ if (formData.newPassword.length < 6) {
                 formErrors.newPassword ? "border-red-500 ring-2 ring-red-300" : "border-gray-300 focus:ring-2 focus:ring-blue-500"
               }`}
               required
-              minLength={3}
+              minLength={6}
             />
             <div
               className="absolute right-3 top-9 text-gray-500 cursor-pointer"
@@ -333,70 +372,61 @@ if (formData.newPassword.length < 6) {
             {formErrors.confirmPassword && <p className="text-xs text-red-500 mt-1">{formErrors.confirmPassword}</p>}
           </div>
 
-          {/* Photo URL */}
-          
-{/* Photo URL */}
-{/* Photo URL */}
-<div>
-  <label className="text-sm font-medium text-gray-700">Photo URL</label>
-  
+          {/* Photo Upload */}
+          <div>
+            <label className="text-sm font-medium text-gray-700">Photo</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-white"
+            />
+            {formErrors.photourl && (
+              <p className="text-xs text-red-500 mt-1">{formErrors.photourl}</p>
+            )}
+            {formData.photourl && (
+              <div className="mt-3 flex flex-col items-center">
+                <p className="text-sm text-gray-600 mb-1">Photo Preview:</p>
+                <div
+                  className="w-24 h-24 rounded-full overflow-hidden border border-gray-300 shadow cursor-pointer hover:scale-105 transition"
+                  onClick={() => setShowImageModal(true)}
+                >
+                  <img
+                    src={formData.photourl}
+                    alt="Preview"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
 
-  <input
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-white"
-          />
-  {formErrors.photourl && (
-    <p className="text-xs text-red-500 mt-1">{formErrors.photourl}</p>
-  )}
+          {/* Image Modal */}
+          {showImageModal && (
+            <div
+              className="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center"
+              onClick={() => setShowImageModal(false)}
+            >
+              <div
+                className="max-w-[90vw] max-h-[90vh] overflow-hidden"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <img
+                  src={formData.photourl}
+                  alt="Enlarged Preview"
+                  className="rounded-lg shadow-lg max-h-[90vh] max-w-full"
+                />
+              </div>
+              <button
+                onClick={() => setShowImageModal(false)}
+                className="absolute top-5 right-5 text-white text-2xl font-bold"
+              >
+                &times;
+              </button>
+            </div>
+          )}
 
-  {/* 👇 Centered image preview with click-to-enlarge */}
-  {formData.photourl && (
-    <div className="mt-3 flex flex-col items-center">
-      <p className="text-sm text-gray-600 mb-1">Photo Preview:</p>
-      <div
-        className="w-24 h-24 rounded-full overflow-hidden border border-gray-300 shadow cursor-pointer hover:scale-105 transition"
-        onClick={() => setShowImageModal(true)}
-      >
-        <img
-          src={formData.photourl}
-          alt="Preview"
-          className="w-full h-full object-cover"
-        />
-      </div>
-    </div>
-  )}
-</div>
-
-{/* Image Modal */}
-{showImageModal && (
-  <div
-    className="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center"
-    onClick={() => setShowImageModal(false)}
-  >
-    <div
-      className="max-w-[90vw] max-h-[90vh] overflow-hidden"
-      onClick={(e) => e.stopPropagation()}
-    >
-      <img
-        src={formData.photourl}
-        alt="Enlarged Preview"
-        className="rounded-lg shadow-lg max-h-[90vh] max-w-full"
-      />
-    </div>
-    <button
-      onClick={() => setShowImageModal(false)}
-      className="absolute top-5 right-5 text-white text-2xl font-bold"
-    >
-      &times;
-    </button>
-  </div>
-)}
-
-
-
-          {/* Submit Button */}
+          {/* Submit */}
           <button
             type="button"
             onClick={handleVerification}

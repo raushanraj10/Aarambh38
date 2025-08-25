@@ -23,6 +23,7 @@ const IntializeSocket = (server) => {
       async ({
         fromuserId,
         targetuserId,
+        findId,
         text = "",
         image = "",
         document = "",
@@ -40,7 +41,7 @@ const IntializeSocket = (server) => {
       }) => {
         const RoomId = [fromuserId, targetuserId].sort().join("_");
         // console.log(" fromuserId  " + fromuserId + " targetuserId  " + targetuserId + " repliedToId  " + repliedToId + " repliedById  " + repliedById)
-
+        // console.log(findId)
         try {
           let imageUrl = "";
           let documentUrl = "";
@@ -82,10 +83,14 @@ const IntializeSocket = (server) => {
             repliedDocument,
             repliedtext,
             repliedById,
+            
             repliedToId,
             repliedToCreatedAt,
           });
-
+           if(findId==="student")
+              message.studentreaded="YES"
+            else
+             message.alumnireaded="YES"
           await message.save();
 
           io.to(RoomId).emit("messageRecieved", {
@@ -108,7 +113,10 @@ const IntializeSocket = (server) => {
             _id: message._id,
             createdAt: message.createdAt,
           });
-        } catch (error) {
+        
+        }
+        
+         catch (error) {
           console.error("Failed to save message:", error);
           socket.emit("messageError", { error: "Message not saved" });
         }

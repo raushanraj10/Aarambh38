@@ -79,25 +79,39 @@ export default function SignupPageAlumini() {
     setFormErrors((prev) => ({ ...prev, collegeName: "" }));
   };
 
- const validateFields = () => {
+const validateFields = () => {
   const errors = {};
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+  // Required check for all fields except "code"
   Object.entries(formData).forEach(([key, value]) => {
-    if (!value && key !== "code") errors[key] = "This field is required.";
+    if (!value && key !== "code") {
+      errors[key] = "This field is required.";
+    }
   });
 
-  if (!emailRegex.test(formData.emailId)) {
+  // Email validation
+  if (formData.emailId && !emailRegex.test(formData.emailId)) {
     errors.emailId = "📧 Please enter a valid email address.";
   }
 
-  if (formData.newPassword !== formData.confirmPassword) {
+  // Password match
+  if (formData.newPassword && formData.confirmPassword && formData.newPassword !== formData.confirmPassword) {
     errors.confirmPassword = "Passwords do not match.";
+  }
+
+  // ✅ Registration must be exactly 11 digits
+  if (formData.registration && formData.registration.length !== 11) {
+    errors.registration = "Registration number must be exactly 11 digits.";
+  }
+
+  // ✅ Batch must be exactly 4 digits
+  if (formData.batch && formData.batch.length !== 4) {
+    errors.batch = "Batch must be exactly 4 digits.";
   }
 
   return errors;
 };
-
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -172,7 +186,7 @@ export default function SignupPageAlumini() {
           today and make a difference!
         </p>
 
-     <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
+   <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
   {[
     "fullName",
     "emailId",
@@ -180,11 +194,13 @@ export default function SignupPageAlumini() {
     "batch",
     "company",
     "role",
-    "photourl", // included for preview
+    "photourl",
   ].map((field) => (
     <div
       key={field}
-      className={`col-span-1 ${field === "photourl" ? "md:col-span-2 order-last" : ""}`}
+      className={`col-span-1 ${
+        field === "photourl" ? "md:col-span-2 order-last" : ""
+      }`}
     >
       <label className="block text-sm font-medium text-gray-700 mb-1">
         {field
@@ -193,124 +209,170 @@ export default function SignupPageAlumini() {
           .replace(/\b\w/g, (c) => c.toUpperCase())}
       </label>
 
-      {field !== "photourl" ? (
+      {/* Registration Number (only 11 digits) */}
+     {field === "registration" ? (
+  // Registration Number (must be exactly 11 digits)
   <input
-    type={field === "emailId" ? "email" : "text"}
-    name={field}
-    value={formData[field]}
-    onChange={handleChange}
+    type="text"
+    name="registration"
+    value={formData.registration}
+    onChange={(e) => {
+      let onlyNums = e.target.value.replace(/[^0-9]/g, ""); // allow only numbers
+      if (onlyNums.length > 11) onlyNums = onlyNums.slice(0, 11); // restrict to 11
+      handleChange({ target: { name: "registration", value: onlyNums } });
+    }}
     className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${
-      formErrors[field]
+      formErrors.registration
         ? "border-red-500 ring-2 ring-red-300"
         : "border-gray-300 focus:ring-2 focus:ring-blue-500"
     }`}
     required
+    minLength={11}
+    maxLength={11}
+    pattern="\d{11}"
+    placeholder="Enter 11-digit registration no."
   />
-) : (
-  <>
-    <input
-      type="file"
-      accept="image/*"
-      onChange={handleFileChange}
-      className="mt-2 w-full border border-gray-300 rounded-lg px-4 py-2 bg-white"
-    />
-
-    {formData.photourl && (
-      <div className="mt-4 flex justify-center">
-        <img
-          src={formData.photourl}
-          alt="Preview"
-          className="h-32 w-32 rounded-full object-cover border border-gray-300 shadow cursor-pointer transition-transform hover:scale-105"
-          onClick={() => setImageModalOpen(true)}
-          onError={(e) => (e.target.style.display = "none")}
+) : field === "batch" ? (
+  // Batch (must be exactly 4 digits)
+  <input
+    type="text"
+    name="batch"
+    value={formData.batch}
+    onChange={(e) => {
+      let onlyNums = e.target.value.replace(/[^0-9]/g, ""); // allow only numbers
+      if (onlyNums.length > 4) onlyNums = onlyNums.slice(0, 4); // restrict to 4
+      handleChange({ target: { name: "batch", value: onlyNums } });
+    }}
+    className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${
+      formErrors.batch
+        ? "border-red-500 ring-2 ring-red-300"
+        : "border-gray-300 focus:ring-2 focus:ring-blue-500"
+    }`}
+    required
+    minLength={4}
+    maxLength={4}
+    pattern="\d{4}"
+    placeholder="e.g. 2025"
+  />
+)  : field !== "photourl" ? (
+        <input
+          type={field === "emailId" ? "email" : "text"}
+          name={field}
+          value={formData[field]}
+          onChange={handleChange}
+          className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${
+            formErrors[field]
+              ? "border-red-500 ring-2 ring-red-300"
+              : "border-gray-300 focus:ring-2 focus:ring-blue-500"
+          }`}
+          required
         />
-      </div>
-    )}
-  </>
-)}
+      ) : (
+        <>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="mt-2 w-full border border-gray-300 rounded-lg px-4 py-2 bg-white"
+          />
 
+          {formData.photourl && (
+            <div className="mt-4 flex justify-center">
+              <img
+                src={formData.photourl}
+                alt="Preview"
+                className="h-32 w-32 rounded-full object-cover border border-gray-300 shadow cursor-pointer transition-transform hover:scale-105"
+                onClick={() => setImageModalOpen(true)}
+                onError={(e) => (e.target.style.display = "none")}
+              />
+            </div>
+          )}
+        </>
+      )}
     </div>
   ))}
 
-          <div className="col-span-1">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              College Name
-            </label>
-            <Select
-              options={collegeOptions}
-              onChange={handleCollegeSelect}
-              value={selectedCollege}
-              className="mt-1"
-              styles={{
-                control: (base) => ({
-                  ...base,
-                  borderColor: formErrors.collegeName ? "red" : "#d1d5db",
-                  boxShadow: formErrors.collegeName
-                    ? "0 0 0 2px rgba(239,68,68,.5)"
-                    : "",
-                }),
-              }}
-            />
-            {formErrors.collegeName && (
-              <p className="text-xs text-red-500 mt-1">
-                {formErrors.collegeName}
-              </p>
-            )}
-          </div>
+  {/* College Name */}
+  <div className="col-span-1">
+    <label className="block text-sm font-medium text-gray-700 mb-1">
+      College Name
+    </label>
+    <Select
+      options={collegeOptions}
+      onChange={handleCollegeSelect}
+      value={selectedCollege}
+      className="mt-1"
+      styles={{
+        control: (base) => ({
+          ...base,
+          borderColor: formErrors.collegeName ? "red" : "#d1d5db",
+          boxShadow: formErrors.collegeName
+            ? "0 0 0 2px rgba(239,68,68,.5)"
+            : "",
+        }),
+      }}
+    />
+    {formErrors.collegeName && (
+      <p className="text-xs text-red-500 mt-1">{formErrors.collegeName}</p>
+    )}
+  </div>
 
-          <div className="col-span-1">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Gender
-            </label>
-            <select
-              name="gender"
-              value={formData.gender}
-              onChange={handleChange}
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${
-                formErrors.gender
-                  ? "border-red-500 ring-2 ring-red-300"
-                  : "border-gray-300 focus:ring-2 focus:ring-blue-500"
-              }`}
-              required
-            >
-              <option value="">Select Gender</option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-              <option value="Other">Other</option>
-            </select>
-            {formErrors.gender && (
-              <p className="text-xs text-red-500 mt-1">{formErrors.gender}</p>
-            )}
-          </div>
+  {/* Gender */}
+  <div className="col-span-1">
+    <label className="block text-sm font-medium text-gray-700 mb-1">
+      Gender
+    </label>
+    <select
+      name="gender"
+      value={formData.gender}
+      onChange={handleChange}
+      className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${
+        formErrors.gender
+          ? "border-red-500 ring-2 ring-red-300"
+          : "border-gray-300 focus:ring-2 focus:ring-blue-500"
+      }`}
+      required
+    >
+      <option value="">Select Gender</option>
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+      <option value="Other">Other</option>
+    </select>
+    {formErrors.gender && (
+      <p className="text-xs text-red-500 mt-1">{formErrors.gender}</p>
+    )}
+  </div>
 
-          <div className="col-span-1">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Branch
-            </label>
-            <select
-              name="branch"
-              value={formData.branch}
-              onChange={handleChange}
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${
-                formErrors.branch
-                  ? "border-red-500 ring-2 ring-red-300"
-                  : "border-gray-300 focus:ring-2 focus:ring-blue-500"
-              }`}
-              required
-            >
-              <option value="">Select Branch</option>
-              {BranchList.map((branch) => (
-                <option key={branch} value={branch}>
-                  {branch}
-                </option>
-              ))}
-            </select>
-            {formErrors.branch && (
-              <p className="text-xs text-red-500 mt-1">{formErrors.branch}</p>
-            )}
-          </div>
+  {/* Branch */}
+  <div className="col-span-1">
+    <label className="block text-sm font-medium text-gray-700 mb-1">
+      Branch
+    </label>
+    <select
+      name="branch"
+      value={formData.branch}
+      onChange={handleChange}
+      className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${
+        formErrors.branch
+          ? "border-red-500 ring-2 ring-red-300"
+          : "border-gray-300 focus:ring-2 focus:ring-blue-500"
+      }`}
+      required
+    >
+      <option value="">Select Branch</option>
+      {BranchList.map((branch) => (
+        <option key={branch} value={branch}>
+          {branch}
+        </option>
+      ))}
+    </select>
+    {formErrors.branch && (
+      <p className="text-xs text-red-500 mt-1">{formErrors.branch}</p>
+    )}
+  </div>
 
-    <div className="col-span-1 md:col-span-2">
+  {/* About */}
+ <div className="col-span-1 md:col-span-2">
   <label className="block text-sm font-medium text-gray-700 mb-1">
     About
   </label>
@@ -327,7 +389,10 @@ export default function SignupPageAlumini() {
         ? "border-red-500 ring-2 ring-red-300"
         : "border-gray-300 focus:ring-2 focus:ring-blue-500"
     }`}
-    placeholder={`1. Internship: Infosys, Summer 2022 (Frontend Developer)\n2. Full-time Experience: TCS (2022–2024), Google (2024–present)\n3. Achievements: GATE qualified, 5⭐ HackerRank in Problem Solving\n4. Guidance: Happy to help with resume building, DSA, project selection`}
+    placeholder={`1. Internship: Infosys, Summer 2022 (Frontend Developer)
+2. Full-time Experience: TCS (2022–2024), Google (2024–present)
+3. Achievements: GATE qualified, 5⭐ HackerRank in Problem Solving
+4. Guidance: Happy to help with resume building, DSA, project selection`}
     required
   />
   {formErrors.about && (
@@ -336,61 +401,62 @@ export default function SignupPageAlumini() {
 </div>
 
 
+  {/* Password */}
+  <div className="col-span-1 relative">
+    <label className="block text-sm font-medium text-gray-700 mb-1">
+      Password
+    </label>
+    <input
+      type={showPassword ? "text" : "password"}
+      name="newPassword"
+      value={formData.newPassword}
+      onChange={handleChange}
+      className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${
+        formErrors.newPassword
+          ? "border-red-500 ring-2 ring-red-300"
+          : "border-gray-300 focus:ring-2 focus:ring-blue-500"
+      }`}
+      required
+      minLength={6}
+    />
+    <div
+      className="absolute right-3 top-9 text-gray-500 cursor-pointer"
+      onClick={() => setShowPassword(!showPassword)}
+    >
+      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+    </div>
+    {formErrors.newPassword && (
+      <p className="text-xs text-red-500 mt-1">{formErrors.newPassword}</p>
+    )}
+  </div>
+
+  {/* Confirm Password */}
+  <div className="col-span-1">
+    <label className="block text-sm font-medium text-gray-700 mb-1">
+      Confirm Password
+    </label>
+    <input
+      type="password"
+      name="confirmPassword"
+      value={formData.confirmPassword}
+      onChange={handleChange}
+      className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${
+        formErrors.confirmPassword
+          ? "border-red-500 ring-2 ring-red-300"
+          : "border-gray-300 focus:ring-2 focus:ring-blue-500"
+      }`}
+      required
+    />
+    {formErrors.confirmPassword && (
+      <p className="text-xs text-red-500 mt-1">
+        {formErrors.confirmPassword}
+      </p>
+    )}
+  </div>
+</form>
 
 
-          <div className="col-span-1 relative">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Password
-            </label>
-            <input
-              type={showPassword ? "text" : "password"}
-              name="newPassword"
-              value={formData.newPassword}
-              onChange={handleChange}
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${
-                formErrors.newPassword
-                  ? "border-red-500 ring-2 ring-red-300"
-                  : "border-gray-300 focus:ring-2 focus:ring-blue-500"
-              }`}
-              required
-              minLength={3}
-            />
-            <div
-              className="absolute right-3 top-9 text-gray-500 cursor-pointer"
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-            </div>
-            {formErrors.newPassword && (
-              <p className="text-xs text-red-500 mt-1">
-                {formErrors.newPassword}
-              </p>
-            )}
-          </div>
 
-          <div className="col-span-1">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Confirm Password
-            </label>
-            <input
-              type="password"
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${
-                formErrors.confirmPassword
-                  ? "border-red-500 ring-2 ring-red-300"
-                  : "border-gray-300 focus:ring-2 focus:ring-blue-500"
-              }`}
-              required
-            />
-            {formErrors.confirmPassword && (
-              <p className="text-xs text-red-500 mt-1">
-                {formErrors.confirmPassword}
-              </p>
-            )}
-          </div>
-        </form>
 
         <button
           type="button"

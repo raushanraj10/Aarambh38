@@ -74,6 +74,16 @@ const messageSchema = new mongoose.Schema(
     type:String,
     default:null
   },
+  alumnireaded:{
+    type:String,
+    enum: ["NO","YES"],
+    default:"NO"
+  },
+  studentreaded:{
+    type:String,
+    enum: ["NO","YES"],
+    default:"NO"
+  }
   
   },
   { timestamps: true }
