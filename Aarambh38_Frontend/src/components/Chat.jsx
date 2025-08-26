@@ -986,8 +986,7 @@ const handleRetry = async (pending) => {
 
 
         {/* Messages */}
-        <div className="flex-1 p-4 space-y-6 z-10 min-w-0 break-words whitespace-normal text-base sm:text-lg md:text-xl font-semibold
-                min-h-[665px] max-h-[400px] overflow-y-auto">
+        <div className="flex-1 p-4 overflow-y-auto space-y-6 z-10 min-w-0 break-words whitespace-normal text-base sm:text-lg md:text-xl font-semibold">
 
           {selectedUser ? (
             messageLoading ? (
@@ -1528,7 +1527,7 @@ const handleRetry = async (pending) => {
     </button>
   </div>
 </div>
-<div className="w-full bg-white h-20"></div> 
+
       </div>
       {previewImg && (
         <div
