@@ -44,6 +44,7 @@ AuthRouter.post("/sendemailadmin",async (req,res)=>{
 })
 AuthRouter.post("/signupuser", async (req, res) => {
   try {
+   
     const data = req.body;
     const { emailId, code } = req.body;
 
@@ -55,7 +56,7 @@ AuthRouter.post("/signupuser", async (req, res) => {
         message: "OTP not found. Please register again.",
       });
     }
-
+  
     if (Number(CheckFirst.code) !== Number(code)) {
       return res.status(400).json({
         success: false,
@@ -300,67 +301,85 @@ const CheckFirst2=await ModelOtpAdmin.findOne({emailId:emailId})
 
 AuthRouter.post("/loginuser",async (req,res)=>{
     const {emailId,newPassword}=req.body
-const checkemail=await ModelUser.findOne({emailId:emailId})
-if(!checkemail)
-    return res.status(400).send("Email not Found Please Register")
-// console.log(checkemail)
-const checkpassword= await bcrypt.compare(newPassword,checkemail.newPassword)
-if(!checkpassword)
-    return res.status(400).send("Password Not Match")
-const token =await jwt.sign({_id:checkemail._id},"#raushanaarambh38")
-res.cookie("token",token)
-const finalemail=await ModelUser.findOne({emailId:emailId}).select("fullName emailId branch collegeName batch photourl age  gender")
-return res.send(checkemail)
+    const checkemail=await ModelUser.findOne({emailId:emailId})
+    if(!checkemail)
+        return res.status(400).send("Email not Found Please Register")
 
+    const checkpassword= await bcrypt.compare(newPassword,checkemail.newPassword)
+    if(!checkpassword)
+        return res.status(400).send("Password Not Match")
+
+    const token = await jwt.sign(
+        {_id:checkemail._id},
+        "#raushanaarambh38",
+        { expiresIn: "2d" }
+    )
+
+    res.cookie("token",token,{
+        maxAge: 2 * 24 * 60 * 60 * 1000   // cookie expires in 2 days
+    })
+
+    const finalemail=await ModelUser.findOne({emailId:emailId})
+        .select("fullName emailId branch collegeName batch photourl age gender")
+
+    return res.send(checkemail)
 })
 
 AuthRouter.post("/loginalumini",async (req,res)=>{
-    
     const {emailId,newPassword}=req.body
-const checkemail=await ModelAlumini.findOne({emailId:emailId})
-if(!checkemail)
-    return res.status(400).send("No account found with this email. Please register first")
-//  if(checkemail.toshow===false)
-//     return res.send("email not verified yet")
-// console.log(checkemail)
-const checkpassword= await bcrypt.compare(newPassword,checkemail.newPassword)
-if(!checkpassword)
-    return res.status(400).send("Incorrect password. Please try again.")
+    const checkemail=await ModelAlumini.findOne({emailId:emailId})
+    if(!checkemail)
+        return res.status(400).send("No account found with this email. Please register first")
 
-if(checkemail.toshow===false)
-    return res.send("Your account is pending verification by the admin")
+    const checkpassword= await bcrypt.compare(newPassword,checkemail.newPassword)
+    if(!checkpassword)
+        return res.status(400).send("Incorrect password. Please try again.")
 
-// console.log("alumini login")
-const token =await jwt.sign({_id:checkemail._id},"#raushanaarambh38")
-res.cookie("token",token)
+    if(checkemail.toshow===false)
+        return res.send("Your account is pending verification by the admin")
 
-const finalemail=await ModelAlumini.findOne({emailId:emailId}).select("fullName role collegeName batch photourl age company gender emailId about branch")
+    const token = await jwt.sign(
+        {_id:checkemail._id},
+        "#raushanaarambh38",
+        { expiresIn: "2d" }
+    )
 
+    res.cookie("token",token,{
+        maxAge: 2 * 24 * 60 * 60 * 1000
+    })
 
+    const finalemail=await ModelAlumini.findOne({emailId:emailId})
+        .select("fullName role collegeName batch photourl age company gender emailId about branch")
 
-return res.send(finalemail)
-
+    return res.send(finalemail)
 })
-
 
 AuthRouter.post("/loginadmin",async (req,res)=>{
     const {emailId,newPassword}=req.body
-    // console.log(emailId)
-const checkemail=await ModelAdmin.findOne({emailId:emailId})
-// console.log(checkemail)
-if(!checkemail)
-    return res.status(400).send("Email not Found Please Ask Admin")
-// console.log(checkemail)
-const checkpassword= await bcrypt.compare(newPassword,checkemail.newPassword)
-if(!checkpassword)
-    return res.status(400).send("Password Not Match")
-const token =await jwt.sign({_id:checkemail._id},"#raushanaarambh38")
-res.cookie("token",token)
-const finalemail=await ModelAdmin.findOne({emailId:emailId}).select("fullName role  photourl age  gender  branch emailId")
+    const checkemail=await ModelAdmin.findOne({emailId:emailId})
+    if(!checkemail)
+        return res.status(400).send("Email not Found Please Ask Admin")
 
-return res.send(finalemail)
+    const checkpassword= await bcrypt.compare(newPassword,checkemail.newPassword)
+    if(!checkpassword)
+        return res.status(400).send("Password Not Match")
 
+    const token = await jwt.sign(
+        {_id:checkemail._id},
+        "#raushanaarambh38",
+        { expiresIn: "2d" }
+    )
+
+    res.cookie("token",token,{
+        maxAge: 2 * 24 * 60 * 60 * 1000
+    })
+
+    const finalemail=await ModelAdmin.findOne({emailId:emailId})
+        .select("fullName role photourl age gender branch emailId")
+
+    return res.send(finalemail)
 })
+
 
 AuthRouter.get("/logout",async (req,res)=>{
     res.cookie("token","",{maxAge:0})

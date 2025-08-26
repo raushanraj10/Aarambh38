@@ -102,4 +102,8 @@
   z-index: 50; /* 👈 always above message */
 }
 
-
+.bg-clip-text {
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent; /* important for Safari/Chrome */
+}

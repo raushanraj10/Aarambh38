@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addalumini, removealumini } from "../../utils/AluminiSlice";
 import { Verifieduser } from "../../utils/EmailSlice";
 import { BASE_URL } from "../../constants/AllUrl";
@@ -12,6 +12,18 @@ import { removestudent } from "../../utils/StudentSlice";
 export default function LoginAlumini() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+
+   
+
+  const Studentdata = useSelector((store) => store.studentdata);
+  const Alumnidata = useSelector((store) => store.aluminidata);
+  useEffect(()=>{
+    if(Studentdata)
+      return navigate("/landingpage")
+    if(Alumnidata)
+      return navigate("/alumnimentees")
+  },[Studentdata,Alumnidata])
 
   useEffect(() => {
     dispatch(removeadmin());

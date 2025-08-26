@@ -78,18 +78,21 @@ export default function EmailVerificationUser() {
 
     setTimeout(() => navigate("/loginselectorpage"), 2500);
   } catch (err) {
-    console.error("Verification error:", err);
+  console.error("Verification error:", err);
 
-    // ✅ Show exact backend error if available
-    const backendMsg =
-      err.response?.data ||
-      err.response?.message ||
-      "Something went wrong. Please try again.";
+  let backendMsg =
+    err.response?.data?.message || // ✅ proper backend message
+    err.message ||                 // axios/network message
+    "Something went wrong. Please try again.";
 
-    setMessage(`🔴 ${backendMsg}`);
-    setMessageType("error");
-    setShowMessage(true);
+  // safety: if backend accidentally sends an object
+  if (typeof backendMsg === "object") {
+    backendMsg = JSON.stringify(backendMsg);
   }
+
+  setMessage(`🔴 ${backendMsg}`);
+  setMessageType("error");
+  setShowMessage(true);}
 
   setLoading(false);
 };

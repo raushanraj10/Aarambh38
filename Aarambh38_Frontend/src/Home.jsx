@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { removeadmin } from "./utils/AdminSlice";
 import { removealumini } from "./utils/AluminiSlice";
@@ -12,6 +12,8 @@ export default function Home() {
         dispatch(removealumini())
         dispatch(removestudent())
   },[])
+  const Studentdata = useSelector((store) => store.studentdata);
+  const Aluminidata = useSelector((store) => store.aluminidata);
   const headings = [
   "Welcome to Aarambh38",
   "Connect Alumni and Students",
@@ -79,34 +81,53 @@ export default function Home() {
         <p className="text-lg text-gray-600 mb-6 max-w-xl mx-auto">
           A modern platform to connect students with successful alumni for mentorship, networking, and career growth.
         </p>
-        <Link
+        {!Studentdata&&!Aluminidata&&<Link
           to="/signupchoice"
           className="inline-block px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
         >
           Join the Network
-        </Link>
+        </Link>}
       </section>
 
-      {/* Why Us Section */}
-      <section className="bg-gray-50 py-12">
-        <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-3xl font-bold text-gray-800 mb-10 text-center">Why Aarambh38?</h2>
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-8">
-            <div className="bg-white p-6 rounded-lg shadow hover:shadow-md transition">
-              <h3 className="text-xl font-semibold text-blue-600 mb-2">Mentorship</h3>
-              <p className="text-gray-600">Get career guidance directly from experienced alumni in your field.</p>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow hover:shadow-md transition">
-              <h3 className="text-xl font-semibold text-green-600 mb-2">Networking</h3>
-              <p className="text-gray-600">Build real professional connections that help you grow beyond college.</p>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow hover:shadow-md transition">
-              <h3 className="text-xl font-semibold text-purple-600 mb-2">Opportunities</h3>
-              <p className="text-gray-600">Discover internships, referrals, and job opportunities from alumni.</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      
+
+
+      
+{/* Key Highlights Section */}
+<section className="bg-gradient-to-r from-blue-50 via-white to-green-50 py-16">
+  <div className="max-w-5xl mx-auto px-4 text-center">
+    <h2 className="text-3xl font-bold text-gray-800 mb-10">Why Our Platform Stands Out</h2>
+    <div className="grid md:grid-cols-3 gap-8">
+      
+      <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition transform hover:-translate-y-2">
+        <div className="text-4xl mb-4 text-blue-500">✔️</div>
+        <h3 className="text-xl font-semibold text-gray-800 mb-2">Verified Alumni Only</h3>
+        <p className="text-gray-600">
+          Receive mentorship exclusively from authenticated alumni, ensuring trustworthy and reliable guidance.
+        </p>
+      </div>
+
+      <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition transform hover:-translate-y-2">
+        <div className="text-4xl mb-4 text-green-500">🛡️</div>
+        <h3 className="text-xl font-semibold text-gray-800 mb-2">Confidential & Flexible Support</h3>
+        <p className="text-gray-600">
+          Alumni can assist students without sharing personal information and help on their own schedule, respecting their free time.
+        </p>
+      </div>
+
+      <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition transform hover:-translate-y-2">
+        <div className="text-4xl mb-4 text-purple-500">🔒</div>
+        <h3 className="text-xl font-semibold text-gray-800 mb-2">Private Conversations</h3>
+        <p className="text-gray-600">
+          All chats and communications are fully private, keeping discussions secure between alumni and students.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
 
       {/* Alumni Showcase Section */}
       <section className="py-16 bg-white">
@@ -131,6 +152,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      
 
       {/* How It Works Section */}
       <section className=" py-16">
@@ -161,12 +184,12 @@ export default function Home() {
     <p className="text-sm text-gray-600 mb-5">
       Connect with mentors, explore opportunities, and grow with Aarambh38.
     </p>
-    <Link
+    {!Studentdata&&!Aluminidata&&<Link
       to="/signupchoice"
       className="inline-block bg-blue-600 text-white text-sm font-medium px-6 py-2 rounded-lg hover:bg-blue-700 transition"
     >
       Create Your Account
-    </Link>
+    </Link>}
   </div>
 </section>
 

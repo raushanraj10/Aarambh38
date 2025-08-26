@@ -32,8 +32,8 @@ export default function SignupPageUser() {
     batch: "",
     age: "",
     gender: "",
-    newPassword: "",
-    confirmPassword: "",
+    newPassword: "123456",
+    confirmPassword: "123456",
     photourl: "",
   });
 
@@ -66,42 +66,49 @@ export default function SignupPageUser() {
   };
 
   const validateFields = () => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const errors = {};
-    Object.entries(formData).forEach(([key, value]) => {
-      if (!value) errors[key] = "This field is required.";
-    });
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const errors = {};
 
-    if (!emailRegex.test(formData.emailId)) {
-      errors.emailId = "📧 Please enter a valid email address.";
-    }
+  Object.entries(formData).forEach(([key, value]) => {
+    if (!value) errors[key] = "This field is required.";
+  });
 
-    if (isNaN(formData.age) || formData.age <= 0) {
-      errors.age = "Enter a valid age.";
-    }
+  if (!emailRegex.test(formData.emailId)) {
+    errors.emailId = "📧 Please enter a valid email address.";
+  }
 
-    if (!/^\d{11}$/.test(formData.registration)) {
-      errors.registration = "Registration number must be exactly 11 digits.";
-    }
+  if (
+  isNaN(formData.age) || 
+  formData.age <= 15 || 
+  !Number.isInteger(Number(formData.age))
+) {
+  errors.age = "Age must be a whole number greater than 15.";
+}
 
-    if (!/^\d{4}$/.test(formData.batch)) {
-      errors.batch = "Batch must be exactly 4 digits (e.g., 2025).";
-    }
 
-    if (!formData.photourl) {
-      errors.photourl = "Please upload your photo.";
-    }
+  if (!/^\d{11}$/.test(formData.registration)) {
+    errors.registration = "Registration number must be exactly 11 digits.";
+  }
 
-    if (formData.newPassword.length < 6) {
-      errors.newPassword = "Password must be at least 6 characters.";
-    }
+  if (!/^\d{4}$/.test(formData.batch)) {
+    errors.batch = "Batch must be exactly 4 digits (e.g., 2025).";
+  }
 
-    if (formData.newPassword !== formData.confirmPassword) {
-      errors.confirmPassword = "Passwords do not match.";
-    }
+  if (!formData.photourl) {
+    errors.photourl = "Please upload your photo.";
+  }
 
-    return errors;
-  };
+  if (formData.newPassword.length < 6) {
+    errors.newPassword = "Password must be at least 6 characters.";
+  }
+
+  if (formData.newPassword !== formData.confirmPassword) {
+    errors.confirmPassword = "Passwords do not match.";
+  }
+
+  return errors;
+};
+
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -121,6 +128,7 @@ export default function SignupPageUser() {
     const errors = validateFields();
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
+      
       setPopupMessage("❌ Please fix the errors.");
       return;
     }
@@ -141,10 +149,13 @@ export default function SignupPageUser() {
         });
       }, 1000);
     } catch (err) {
-      console.error("Email verification error:", err);
-      setPopupMessage("⚠️ Failed to send verification email.");
-      setLoading(false);
-    }
+  console.error("Email verification error:", err);
+  console.log("hdfjdfasdfkashdk")
+  const errorMessage = err.response?.data?.message || "⚠️ Failed to send verification email.";
+  setPopupMessage(errorMessage);
+  setLoading(false);
+}
+
   };
 
   if (loading) return <Shimmer />;

@@ -143,43 +143,59 @@ ProfileRouter.get("/getmessageswith/:targetuserId", UserAuth, async (req, res) =
 
 
 
-ProfileRouter.get("/getstudentprofile",UserAuth,async(req,res)=>{
-  try{
-  const fromuserId = req.decode;
-  const finaldata=await ModelUser.findOne({_id:fromuserId._id}).select("fullName emailId branch collegeName batch photourl age gender")
-  if(!finaldata)
-    res.status(400).send("First Login")
-  res.send(finaldata)
-}
-  catch(err){res.send(err.message)}
-  
-})
+ProfileRouter.get("/getstudentprofile", UserAuth, async (req, res) => {
+  try {
+    const fromuserId = req.decode;
+    const finaldata = await ModelUser.findOne({ _id: fromuserId._id }).select(
+      "fullName emailId branch collegeName batch photourl age gender"
+    );
 
-ProfileRouter.get("/getalumniprofile",UserAuth,async(req,res)=>{
-  try{
-  const fromuserId = req.decode;
-  const finaldata=await ModelAlumini.findOne({_id:fromuserId._id}).select("fullName emailId role collegeName batch photourl age company gender about branch toshow")
-  if(!finaldata)
-    res.status(400).send("First Login")
-  if(toshow===false)
-    return res.send("No such alumni")
-  res.send(finaldata)
-}
-  catch(err){res.send(err.message)}
-  
-})
+    if (!finaldata) {
+      return res.status(400).send("First Login"); // ✅ return added
+    }
 
-ProfileRouter.get("/getadminprofile",UserAuth,async(req,res)=>{
-  try{
-  const fromuserId = req.decode;
-  const finaldata=await ModelAdmin.findOne({_id:fromuserId._id}).select("fullName emailId role collegeName batch photourl age company gender about branch")
-  if(!finaldata)
-    res.status(400).send("First Login")
-  res.send(finaldata)
-}
-  catch(err){res.send(err.message)}
-  
-})
+    return res.send(finaldata); // ✅ return added
+  } catch (err) {
+    return res.status(500).send(err.message); // ✅ also status(500)
+  }
+});
+
+ProfileRouter.get("/getalumniprofile", UserAuth, async (req, res) => {
+  try {
+    const fromuserId = req.decode;
+    const finaldata = await ModelAlumini.findOne({ _id: fromuserId._id }).select(
+      "fullName emailId role collegeName batch photourl age company gender about branch toshow"
+    );
+
+    if (!finaldata) {
+      return res.status(400).send("First Login"); // ✅ return
+    }
+
+    if (finaldata.toshow === false) {
+      return res.status(404).send("No such alumni"); // ✅ return
+    }
+
+    return res.send(finaldata); // ✅ return
+  } catch (err) {
+    return res.status(500).send(err.message);
+  }
+});
+ProfileRouter.get("/getadminprofile", UserAuth, async (req, res) => {
+  try {
+    const fromuserId = req.decode;
+    const finaldata = await ModelAdmin.findOne({ _id: fromuserId._id }).select(
+      "fullName emailId role collegeName batch photourl age company gender about branch"
+    );
+
+    if (!finaldata) {
+      return res.status(400).send("First Login"); // ✅ return
+    }
+
+    return res.send(finaldata); // ✅ return
+  } catch (err) {
+    return res.status(500).send(err.message);
+  }
+});
 
 ProfileRouter.post("/sendrequestbymail",UserAuth,async (req,res)=>{
   const {alumniId,fromuserId,message}=req.body

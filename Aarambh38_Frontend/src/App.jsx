@@ -1,82 +1,262 @@
-import SignupPageUser from "./SignupPageUser"
- import { BrowserRouter,Routes,Route, RouterProvider } from "react-router-dom"
- import Body from "./Body"
-import Navbar from "./Navbar"
-import Home from "./Home"
-import Login from "./components/LoginAllRole/LoginUser"
-import SignupChoice from "./SignupChoice"
-import appStore from "./utils/appStore"
-import { Provider } from 'react-redux'
-import LandingPage from "./LandingPage"
-import SignupPageAlumini from "./SignupPageAlumini"
-import EmailVerificationUser from "./EmailverifictionUser"
-import EmailVerificationAlumini from "./EmailVerificationAlumini"
-import LoginSelectorPage from "./LoginSelectorPage"
-import LoginUser from "./components/LoginAllRole/LoginUser"
-import LoginAdmin from "./components/LoginAllRole/LoginAdmin"
-import LoginAlumini from "./components/LoginAllRole/LoginAlumini"
-import Shimmer from "./Shimmer"
-import EditProfileAlumni from "./EditProfileAlumni"
-import EditProfileUser from "./EditProfileUser"
-import EmailVerificationAdmin from "./EmailVerificationAdmin"
-import SignupPageAdmin from "./SignupPageAdmin"
-import EditProfileAdmin from "./EditProfileAdmin"
-import MyMentors from "./MyMentors"
-import AlumniMentees from "./AlumniMentees"
-import AlumniReceivedRequest from "./AlumniRecievedRequest"
-import AlumniBlocked from "./AlumniBlocked"
-import Chat from "./components/Chat"
-import About from "./About"
-import AlumniProfilePage from "./AlumniProfilePage"
-import AdminAlumniList from "./components/Admin/AdminAlumniList"
-import StudentList from "./components/Admin/StudentList"
-import AdminAlumniRequests from "./components/Admin/AdminAlumniRequests"
-import ChatHelpPage from "./components/ChatHelp"
-
-
+import SignupPageUser from "./SignupPageUser";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Body from "./Body";
+import Home from "./Home";
+import SignupChoice from "./SignupChoice";
+import appStore from "./utils/appStore";
+import { Provider } from "react-redux";
+import LandingPage from "./LandingPage";
+import SignupPageAlumini from "./SignupPageAlumini";
+import EmailVerificationUser from "./EmailverifictionUser";
+import EmailVerificationAlumini from "./EmailVerificationAlumini";
+import LoginSelectorPage from "./LoginSelectorPage";
+import LoginUser from "./components/LoginAllRole/LoginUser";
+import LoginAdmin from "./components/LoginAllRole/LoginAdmin";
+import LoginAlumini from "./components/LoginAllRole/LoginAlumini";
+import Shimmer from "./Shimmer";
+import EditProfileAlumni from "./EditProfileAlumni";
+import EditProfileUser from "./EditProfileUser";
+import EmailVerificationAdmin from "./EmailVerificationAdmin";
+import SignupPageAdmin from "./SignupPageAdmin";
+import EditProfileAdmin from "./EditProfileAdmin";
+import MyMentors from "./MyMentors";
+import AlumniMentees from "./AlumniMentees";
+import AlumniReceivedRequest from "./AlumniRecievedRequest";
+import AlumniBlocked from "./AlumniBlocked";
+import Chat from "./components/Chat";
+import About from "./About";
+import AlumniProfilePage from "./AlumniProfilePage";
+import AdminAlumniList from "./components/Admin/AdminAlumniList";
+import StudentList from "./components/Admin/StudentList";
+import AdminAlumniRequests from "./components/Admin/AdminAlumniRequests";
+import ChatHelpPage from "./components/ChatHelp";
+import ProtectedRoute from "./components/ProtectedRoute";
+import PublicRoute from "./components/PublicRoute";
 
 function App() {
- 
-
   return (
     <Provider store={appStore}>
-     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Body />}>
-        <Route path="/" element={<Home/>}/>
-        <Route path="/loginuser" element={<LoginUser/>}/>
-        <Route path="/loginadmin" element={<LoginAdmin/>}/>
-        <Route path="/loginalumini" element={<LoginAlumini/>}/>
-        <Route path="/loginselectorpage" element={<LoginSelectorPage/>}/>
-        <Route path="/shimmer" element={<Shimmer/>}/>
-        <Route path="/mymentors" element={<MyMentors/>}/>
-        <Route path="/alumnimentees" element={<AlumniMentees/>}/>
-        <Route path="/alumniblocked" element={<AlumniBlocked/>}/>
-        <Route path="/alumnirecievedrequest" element={<AlumniReceivedRequest/>}/>
-        <Route path="/landingpage" element={<LandingPage/>}/>
-        <Route path="/editprofilealumni" element={<EditProfileAlumni/>}/>
-        <Route path="/editprofileuser" element={<EditProfileUser/>}/>
-        <Route path="/editprofileadmin" element={<EditProfileAdmin/>}/>
-        <Route path="/signupchoice" element={<SignupChoice/>} />
-        <Route path="/emailverificationuser" element={<EmailVerificationUser/>} />
-        <Route path="/emailverificationalumini" element={<EmailVerificationAlumini/>} />
-        <Route path="/emailverificationadmin" element={<EmailVerificationAdmin/>} />
-          <Route path="/signupuser" element={<SignupPageUser />} />
-           <Route path="/signupalumini" element={<SignupPageAlumini/>} />
-           <Route path="/signupadmin" element={<SignupPageAdmin/>} />
-           <Route path="/chat/:touserId" element={<Chat/>} />
-           <Route path="/alumni/:id" element={<AlumniProfilePage/>} />
-          <Route path="/getalumnilist" element={<AdminAlumniList/>} />
-          <Route path="/getstudentlist" element={<StudentList/>} />
-          <Route path="/recivedrequestfromalumni" element={<AdminAlumniRequests/>} />
-           <Route path="/about" element={<About/>} />
-           <Route path="/chathelp" element={<ChatHelpPage/>} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Body />}>
+            {/* Public routes (restricted when logged in) */}
+            {/* <Route path="/" element={<Home />} /> */}
+            <Route
+              path="/"
+              element={
+                <PublicRoute>
+                  <Home />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/loginuser"
+              element={
+                <PublicRoute>
+                  <LoginUser />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/loginadmin"
+              element={
+                <PublicRoute>
+                  <LoginAdmin />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/loginalumini"
+              element={
+                <PublicRoute>
+                  <LoginAlumini />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/loginselectorpage"
+              element={
+                <PublicRoute>
+                  <LoginSelectorPage />
+                </PublicRoute>
+              }
+            />
+            <Route path="/shimmer" element={<Shimmer />} />
+            <Route
+              path="/signupchoice"
+              element={
+                <PublicRoute>
+                  <SignupChoice />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/emailverificationuser"
+              element={
+                <PublicRoute>
+                  <EmailVerificationUser />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/emailverificationalumini"
+              element={
+                <PublicRoute>
+                  <EmailVerificationAlumini />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/emailverificationadmin"
+              element={
+                <PublicRoute>
+                  <EmailVerificationAdmin />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/signupuser"
+              element={
+                <PublicRoute>
+                  <SignupPageUser />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/signupalumini"
+              element={
+                <PublicRoute>
+                  <SignupPageAlumini />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/signupadmin"
+              element={
+                <PublicRoute>
+                  <SignupPageAdmin />
+                </PublicRoute>
+              }
+            />
+            <Route path="/about" element={<About />} />
+            <Route path="/chathelp" element={<ChatHelpPage />} />
+
+            {/* Student-only */}
+            <Route
+              path="/mymentors"
+              element={
+                <ProtectedRoute role="student">
+                  <MyMentors />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/landingpage"
+              element={
+                <ProtectedRoute role="student">
+                  <LandingPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/editprofileuser"
+              element={
+                <ProtectedRoute role="student">
+                  <EditProfileUser />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Alumni-only */}
+            <Route
+              path="/alumnimentees"
+              element={
+                <ProtectedRoute role="alumni">
+                  <AlumniMentees />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/alumniblocked"
+              element={
+                <ProtectedRoute role="alumni">
+                  <AlumniBlocked />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/alumnirecievedrequest"
+              element={
+                <ProtectedRoute role="alumni">
+                  <AlumniReceivedRequest />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/editprofilealumni"
+              element={
+                <ProtectedRoute role="alumni">
+                  <EditProfileAlumni />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Admin-only */}
+            <Route
+              path="/editprofileadmin"
+              element={
+                <ProtectedRoute role="admin">
+                  <EditProfileAdmin />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/getalumnilist"
+              element={
+                <ProtectedRoute role="admin">
+                  <AdminAlumniList />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/getstudentlist"
+              element={
+                <ProtectedRoute role="admin">
+                  <StudentList />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/recivedrequestfromalumni"
+              element={
+                <ProtectedRoute role="admin">
+                  <AdminAlumniRequests />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Both Student + Alumni */}
+            <Route
+              path="/chat/:touserId"
+              element={
+                <ProtectedRoute role="both">
+                  <Chat />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/alumni/:id"
+              element={
+                <ProtectedRoute role="both">
+                  <AlumniProfilePage />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
+        </Routes>
+      </BrowserRouter>
     </Provider>
-  
-  )
+  );
 }
 
-export default App
+export default App;

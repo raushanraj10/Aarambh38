@@ -74,7 +74,8 @@ const isUnread = (userId) => {
   if (!readedList || readedList.length === 0) {
     return false; // nothing unread
   }
-  if(selectedUser?._id===userId) return false
+  if(selectedUser?._id===userId)
+     return false
   return readedList.includes(userId.toString()); // true if this user is unread
 };
 
@@ -86,28 +87,45 @@ useEffect(() => {
 
   const fetchReadedList = async () => {
     try {
+      let combinedList = [];
+
       if (StudentData) {
-        const res = await axios.get(`${BASE_URL}/studentreaded`, { withCredentials: true });
-        setReadedList(res.data);
+        const resStudent = await axios.get(`${BASE_URL}/studentreaded`, {
+          withCredentials: true,
+          headers: { "Cache-Control": "no-store" } // disable caching
+        });
+        combinedList = [...combinedList, ...resStudent.data];
       }
+
       if (AlumniData) {
-        const res = await axios.get(`${BASE_URL}/alumnireaded`, { withCredentials: true });
-        setReadedList(res.data);
+        const resAlumni = await axios.get(`${BASE_URL}/alumnireaded`, {
+          withCredentials: true,
+          headers: { "Cache-Control": "no-store" } // disable caching
+        });
+        combinedList = [...combinedList, ...resAlumni.data];
       }
+
+      // Remove duplicates
+      combinedList = [...new Set(combinedList)];
+
+      setReadedList(combinedList);
+
     } catch (error) {
       console.error("Error fetching readed list:", error);
     }
   };
 
-   fetchReadedList();
+  fetchReadedList();
 
-  // create interval that always calls fresh function
-  const interval = setInterval(() => {
-    fetchReadedList();
-  }, 5000);
+  // Poll every 3 seconds
+  const interval = setInterval(fetchReadedList, 2000);
 
   return () => clearInterval(interval);
-}, [StudentData, AlumniData,selectedUser]);
+}, [StudentData, AlumniData]);
+
+
+
+
 
 
 
@@ -286,22 +304,23 @@ useEffect(() => {
     fetchMessages(user._id);
     setSidebarOpen(false);
 
+    // console.log(user._id); // ✅ use passed user directly
+
     if (StudentData) {
-  await axios.get(`${BASE_URL}/studentreadedoff/${user._id}`, { withCredentials: true });
-}
+      await axios.get(`${BASE_URL}/studentreadedoff/${user._id}`, { withCredentials: true });
+    }
 
-if (Aluminidata) {
-  await axios.get(`${BASE_URL}/alumnireadedoff/${user._id}`, { withCredentials: true });
-}
+    if (AlumniData) {
+      await axios.get(`${BASE_URL}/alumnireadedoff/${user._id}`, { withCredentials: true });
+    }
 
-
-    // Optionally update state immediately so unread dot disappears
-    setReadedList((prev) => prev.filter((id) => id !== user._id));
-
+    // Remove from local state so green blink disappears instantly
+    setReadedList((prev) => prev.filter((id) => id !== user._id.toString()));
   } catch (error) {
     console.error("Error marking messages as read:", error);
   }
 };
+
 
 
   // const handleSend = () => {
@@ -783,16 +802,6 @@ const handleRetry = async (pending) => {
 )}
 
 
-
-
-
-
-
-
-
-
-
-
   <div className="z-10 flex items-center gap-3">
     {selectedUser && (
       <img
@@ -977,9 +986,8 @@ const handleRetry = async (pending) => {
 
 
         {/* Messages */}
-        <div className="flex-1 p-4 overflow-y-auto space-y-6 z-10 min-w-0 
-                break-words whitespace-normal 
-                text-base sm:text-lg md:text-xl font-semibold">
+        <div className="flex-1 p-4 space-y-6 z-10 min-w-0 break-words whitespace-normal text-base sm:text-lg md:text-xl font-semibold
+                min-h-[665px] max-h-[400px] overflow-y-auto">
 
           {selectedUser ? (
             messageLoading ? (
@@ -1411,132 +1419,116 @@ const handleRetry = async (pending) => {
           </div>
         )}
         {/* Input */}
-        <div className="p-4 border-t bg-white flex flex-col gap-2 z-10">
-          {/* Image preview before sending */}
-          {imagePreview && (
-            <div className="relative w-40 h-40 mb-2">
-              <img
-                src={imagePreview}
-                alt="preview"
-                className="object-cover w-full h-full rounded"
-              />
-              <button
-                className="absolute top-1 right-1 bg-gray-800 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-gray-700"
-                onClick={() => {
-                  setImagePreview(null);
-                  setImageFile(null);
-                }}
-                title="Remove image"
-              >
-                ×
-              </button>
-            </div>
-          )}
+        <div className="p-4 bg-white border-t flex flex-col gap-2 z-10">
+  {/* Image preview */}
+  {imagePreview && (
+    <div className="relative w-40 h-40 mb-2">
+      <img
+        src={imagePreview}
+        alt="preview"
+        className="object-cover w-full h-full rounded"
+      />
+      <button
+        className="absolute top-1 right-1 bg-gray-800 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-gray-700"
+        onClick={() => {
+          setImagePreview(null);
+          setImageFile(null);
+        }}
+        title="Remove image"
+      >
+        ×
+      </button>
+    </div>
+  )}
 
-          {documentPreview && (
-  <div className="flex items-center bg-gray-100 border border-gray-300 rounded-md px-3 py-1 mt-2 max-w-xs">
-    <span className="flex-1 text-gray-700 truncate">{documentPreview}</span>
-    <button
-      onClick={() => {
-        setDocumentFile(null);
-        setDocumentPreview(null);
-        setOriginalName("");
+  {/* Document preview */}
+  {documentPreview && (
+    <div className="flex items-center bg-gray-100 border border-gray-300 rounded-md px-3 py-1 mt-2 max-w-xs">
+      <span className="flex-1 text-gray-700 truncate">{documentPreview}</span>
+      <button
+        onClick={() => {
+          setDocumentFile(null);
+          setDocumentPreview(null);
+          setOriginalName("");
+        }}
+        className="ml-3 text-red-500 hover:text-red-700 font-bold focus:outline-none"
+        aria-label="Remove document"
+        title="Remove document"
+      >
+        ×
+      </button>
+    </div>
+  )}
+
+  {/* Input + Attachments + Send */}
+  <div className="flex gap-2">
+    <input
+      type="text"
+      value={input}
+      onChange={(e) => setInput(e.target.value)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          handleSend();
+        }
       }}
-      className="ml-3 text-red-500 hover:text-red-700 font-bold focus:outline-none"
-      aria-label="Remove document"
-      title="Remove document"
-    >
-      ×
-    </button>
-  </div>
-)}
-
-
-
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  handleSend();
-                }
-              }}
-              placeholder="Type your message..."
-              className="flex-1 px-4 py-2 border rounded-full focus:outline-none"
-              disabled={!selectedUser}
-            />
-            {/* File input for image upload */}
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => setShowAttachmentOptions((prev) => !prev)}
-                disabled={!selectedUser}
-                className={`px-3 py-2 bg-gray-200 rounded-full cursor-pointer flex items-center justify-center ${
-                  !selectedUser ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-                title="Attach"
-              >
-                <Paperclip className="w-5 h-5" />
-              </button>
-              {showAttachmentOptions && (
-  <div ref={attachmentMenuRef} className="absolute bottom-full mb-2 left-0 bg-white border shadow rounded z-50 w-32">
-    <button
-      onClick={() => {
-        fileInputRef.current?.click();
-        setShowAttachmentOptions(false);
-      }}
-      className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-100 text-sm"
-    >
-      <Camera className="w-4 h-4" />
-      Image
-    </button>
-    <button
-      onClick={() => {
-        docInputRef.current?.click();
-        setShowAttachmentOptions(false);
-      }}
-      className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-100 text-sm"
-    >
-      <FileText className="w-4 h-4" />
-      Document
-    </button>
-  </div>
-)}
-
-              {/* Hidden file input */}
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handleImageChange}
-              />
-              <input
-                ref={docInputRef}
-                type="file"
-                accept=".pdf,.doc,.docx"
-                className="hidden"
-                onChange={handleDocumentChange}
-              />
-
-            </div>
-            <button
-  onClick={handleSend}
-  disabled={!selectedUser || sending}
-  className={`px-4 py-2 rounded-full text-white ${
-    selectedUser && !sending
-      ? "bg-gradient-to-r from-blue-600 to-green-600"
-      : "bg-gray-400 cursor-not-allowed"
-  }`}
->
-  {sending ? "Sending..." : "Send"}
-</button>
-
-          </div>
+      placeholder="Type your message..."
+      className="flex-1 px-4 py-2 border rounded-full focus:outline-none bg-white"
+      disabled={!selectedUser}
+    />
+    {/* Attachments */}
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => setShowAttachmentOptions((prev) => !prev)}
+        disabled={!selectedUser}
+        className={`px-3 py-2 bg-gray-200 rounded-full flex items-center justify-center ${
+          !selectedUser ? "opacity-50 cursor-not-allowed" : ""
+        }`}
+        title="Attach"
+      >
+        <Paperclip className="w-5 h-5" />
+      </button>
+      {showAttachmentOptions && (
+        <div ref={attachmentMenuRef} className="absolute bottom-full mb-2 left-0 bg-white border shadow rounded z-50 w-32">
+          <button
+            onClick={() => {
+              fileInputRef.current?.click();
+              setShowAttachmentOptions(false);
+            }}
+            className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-100 text-sm"
+          >
+            <Camera className="w-4 h-4" />
+            Image
+          </button>
+          <button
+            onClick={() => {
+              docInputRef.current?.click();
+              setShowAttachmentOptions(false);
+            }}
+            className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-100 text-sm"
+          >
+            <FileText className="w-4 h-4" />
+            Document
+          </button>
         </div>
+      )}
+      <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
+      <input ref={docInputRef} type="file" accept=".pdf,.doc,.docx" className="hidden" onChange={handleDocumentChange} />
+    </div>
+
+    <button
+      onClick={handleSend}
+      disabled={!selectedUser || sending}
+      className={`px-4 py-2 rounded-full text-white ${
+        selectedUser && !sending ? "bg-gradient-to-r from-blue-600 to-green-600" : "bg-gray-400 cursor-not-allowed"
+      }`}
+    >
+      {sending ? "Sending..." : "Send"}
+    </button>
+  </div>
+</div>
+<div className="w-full bg-white h-20"></div> 
       </div>
       {previewImg && (
         <div
