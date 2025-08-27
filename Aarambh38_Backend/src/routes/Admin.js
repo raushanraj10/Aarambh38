@@ -7,7 +7,7 @@ const SendEmailToUserByAdmin = require("../utils/SendEmailToUserByAdmin");
 const AlumniAcceptanceEmail = require("../utils/AlumniAcceptanceEmail");
 
 const AdminRouter=express.Router()
-const alumniselectdatalist="_id fullName  gender collegeName emailId branch role company batch age photourl about mobileNumber registration createdAt"
+const alumniselectdatalist="_id fullName gate gender collegeName emailId branch role company batch age photourl about mobileNumber registration createdAt"
 const studentdatalist="_id fullName gender collegeName emailId branch batch age photourl mobileNumber registration createdAt"
 
 

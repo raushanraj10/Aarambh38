@@ -15,7 +15,7 @@ const ProfileRouter=express.Router()
 
 
 ProfileRouter.get("/getlistalumni",UserAuth,  async (req,res)=>{
-    const list=await ModelAlumini.find({toshow:true}).select("fullName role collegeName batch photourl age company gender about branch")
+    const list=await ModelAlumini.find({toshow:true}).select("fullName gate role collegeName batch photourl age company gender about branch")
     // console.log(list)
     // if(toshow===false)
     //   return res.send("No such alumni")
@@ -83,7 +83,7 @@ ProfileRouter.post("/editalumni", UserAuth, async (req, res) => {
 
     await data.save();
 
-    const updatedData = await ModelAlumini.findOne({ _id: decode }).select("fullName emailId role collegeName batch photourl age company gender about branch")
+    const updatedData = await ModelAlumini.findOne({ _id: decode }).select("fullName emailId role collegeName batch photourl age company gender about gate branch")
     res.send(updatedData);
   } catch (err) {
     console.error(err);
@@ -164,7 +164,7 @@ ProfileRouter.get("/getalumniprofile", UserAuth, async (req, res) => {
   try {
     const fromuserId = req.decode;
     const finaldata = await ModelAlumini.findOne({ _id: fromuserId._id }).select(
-      "fullName emailId role collegeName batch photourl age company gender about branch toshow"
+      "fullName emailId role gate collegeName batch photourl age company gender about branch toshow"
     );
 
     if (!finaldata) {
@@ -184,7 +184,7 @@ ProfileRouter.get("/getadminprofile", UserAuth, async (req, res) => {
   try {
     const fromuserId = req.decode;
     const finaldata = await ModelAdmin.findOne({ _id: fromuserId._id }).select(
-      "fullName emailId role collegeName batch photourl age company gender about branch"
+      "fullName emailId role collegeName batch photourl age company gender about branch gate"
     );
 
     if (!finaldata) {

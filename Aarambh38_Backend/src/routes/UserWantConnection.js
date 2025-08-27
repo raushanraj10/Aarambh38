@@ -82,7 +82,7 @@ UserRouter.get("/mymentors", UserAuth, async (req, res) => {
       listoftouserIddetails.map(async (ele) => {
         return await ModelAlumini.findOne(
           { _id: ele },
-          "_id fullName photourl role company batch collegeName gender branch about"
+          "_id fullName photourl role company batch collegeName gender branch about gate"
         );
       })
     );

@@ -74,7 +74,7 @@ const handleSubmit = async (e) => {
       },
       { withCredentials: true }
     );
-    console.log(gate)
+    // console.log(gate)
     // ✅ Success message from backend
     setMessage(`✅ ${res.data.message || "Signup successful!"}`);
     setMessageType("success");

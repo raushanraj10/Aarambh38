@@ -124,12 +124,17 @@ const AdminAlumniRequests = () => {
           </div>
         )}
         <div>
-          <h2 className="text-lg font-semibold">{alum.fullName}</h2>
-          <p className="text-sm text-gray-500">{alum.emailId}</p>
-          <p className="text-sm text-gray-500">
-            {alum.role} @ {alum.company}
-          </p>
-        </div>
+  <h2 className="text-lg font-semibold">{alum.fullName}</h2>
+  <p className="text-sm text-gray-500">{alum.emailId}</p>
+  <p className="text-sm text-gray-500">
+    {alum.role} @ {alum.company}
+  </p>
+
+  {alum.gate === "Qualified" && (
+    <p className="text-xs font-medium text-green-600">🎯 GATE Qualified</p>
+  )}
+</div>
+
       </div>
 
       {/* Right: Request date/time */}

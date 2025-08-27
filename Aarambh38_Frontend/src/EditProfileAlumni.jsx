@@ -19,6 +19,7 @@ const EditProfileAlumni = () => {
     about: "",
     gender: "",
     photourl: "",
+    gate:""
   });
 
   const [loading, setLoading] = useState(false);
@@ -39,6 +40,8 @@ const EditProfileAlumni = () => {
         about: alumniData.about || "",
         gender: alumniData.gender || "",
         photourl: alumniData.photourl || "",
+        gate:alumniData?.gate||""
+
       });
     }
   }, [alumniData]);
@@ -113,6 +116,16 @@ const EditProfileAlumni = () => {
             placeholder="Email"
             type="email"
           />
+         {alumniData?.gate === "Qualified" && (
+  <input
+    name="gate"
+    value=" GATE Qualified"
+    disabled
+    className="w-full border border-gray-300 rounded-lg px-4 py-2 
+               bg-gray-100 text-green-600 font-medium cursor-not-allowed"
+  />
+)}
+
           <input
             name="collegeName"
             value={formData.collegeName}
@@ -188,8 +201,14 @@ const EditProfileAlumni = () => {
               onClick={() => setShowImageModal(true)}
             />
             <p className="text-lg font-bold">{formData.fullName || "Full Name"}</p>
-            <p className="text-sm text-gray-600">{formData.role || "Your Role"}</p>
             <p className="text-sm text-gray-600">{formData.company || "Company"}</p>
+            <p className="text-sm text-gray-600">{formData.role || "Your Role"}</p>
+           {alumniData?.gate === "Qualified" && (
+  <p className="text-sm text-green-600 font-medium">🎯 GATE Qualified</p>
+)}
+
+
+            
             <p className="text-sm text-gray-600">{formData.collegeName || "College Name"}</p>
             <p className="text-sm text-gray-600">{formData.gender || "Gender"}</p>
             <p className="text-sm text-gray-500 px-2">{formData.about || "About..."}</p>

@@ -31,7 +31,8 @@ export default function Home() {
   "Plan Your Future with Alumni Who've Been There",
   "Make Smarter Choices with Real-World Insights",
   "Alumni Can Privately Help Students Without Sharing Personal Info",
-   "Only Verified Alumni Are Shown in the Student Dashboard"
+   "Only Verified Alumni Are Shown in the Student Dashboard",
+   "Get Guidance from GATE Qualified Alumni for Your Preparation"
 ]
 
 
@@ -95,10 +96,14 @@ export default function Home() {
       
 {/* Key Highlights Section */}
 <section className="bg-gradient-to-r from-blue-50 via-white to-green-50 py-16">
-  <div className="max-w-5xl mx-auto px-4 text-center">
-    <h2 className="text-3xl font-bold text-gray-800 mb-10">Why Our Platform Stands Out</h2>
-    <div className="grid md:grid-cols-3 gap-8">
+  <div className="max-w-6xl mx-auto px-4 text-center">
+    <h2 className="text-3xl font-bold text-gray-800 mb-12">
+      Why Our Platform Stands Out
+    </h2>
+    
+    <div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-8">
       
+      {/* Card 1 */}
       <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition transform hover:-translate-y-2">
         <div className="text-4xl mb-4 text-blue-500">✔️</div>
         <h3 className="text-xl font-semibold text-gray-800 mb-2">Verified Alumni Only</h3>
@@ -107,6 +112,7 @@ export default function Home() {
         </p>
       </div>
 
+      {/* Card 2 */}
       <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition transform hover:-translate-y-2">
         <div className="text-4xl mb-4 text-green-500">🛡️</div>
         <h3 className="text-xl font-semibold text-gray-800 mb-2">Confidential & Flexible Support</h3>
@@ -115,6 +121,16 @@ export default function Home() {
         </p>
       </div>
 
+      {/* Card 3 */}
+      <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition transform hover:-translate-y-2">
+        <div className="text-4xl mb-4 text-indigo-500">🎯</div>
+        <h3 className="text-xl font-semibold text-gray-800 mb-2">Guidance from GATE Qualified Alumni</h3>
+        <p className="text-gray-600">
+          Learn directly from alumni who have cracked GATE, gain preparation tips, and understand how it shaped their career paths.
+        </p>
+      </div>
+
+      {/* Card 4 */}
       <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition transform hover:-translate-y-2">
         <div className="text-4xl mb-4 text-purple-500">🔒</div>
         <h3 className="text-xl font-semibold text-gray-800 mb-2">Private Conversations</h3>

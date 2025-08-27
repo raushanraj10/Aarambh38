@@ -150,7 +150,7 @@ export default function SignupPageUser() {
       }, 1000);
     } catch (err) {
   console.error("Email verification error:", err);
-  console.log("hdfjdfasdfkashdk")
+ 
   const errorMessage = err.response?.data?.message || "⚠️ Failed to send verification email.";
   setPopupMessage(errorMessage);
   setLoading(false);

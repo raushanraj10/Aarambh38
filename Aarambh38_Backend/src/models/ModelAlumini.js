@@ -84,8 +84,8 @@ const AluminiSchema=new mongoose.Schema({
     },
     gate:{
         type:String,
-        enum:["Qualified","Select"],
-        default:"Select"
+        enum:["Qualified",""],
+        default:""
     }
 },{timestamps:true})
 

@@ -131,8 +131,10 @@ const [deleteModal, setDeleteModal] = useState({ show: false, id: null });
                       <p className="font-semibold">{alum.fullName}</p>
                       <p className="text-sm text-gray-500">{alum.emailId}</p>
                       <p className="text-sm text-gray-600">
-                        {alum.company} • {alum.role}
-                      </p>
+  {alum.company} • {alum.role}
+  {alum.gate === "Qualified" && " • 🎯 GATE Qualified"}
+</p>
+
                     </div>
                   </div>
                   
