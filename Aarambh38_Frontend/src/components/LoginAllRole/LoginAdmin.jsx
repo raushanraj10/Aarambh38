@@ -46,13 +46,17 @@ export default function LoginAdmin() {
       setMessage("✅ Login successful. Please wait while we redirect you to your dashboard…");
       setMessageType("success");
       setShowMessage(true);
-      dispatch(Verifieduser());
-      dispatch(removealumini());
-      dispatch(removestudent());
-      dispatch(addadmin(res.data));
+      // dispatch(Verifieduser());
+      // dispatch(removealumini());
+      // dispatch(removestudent());
+      // dispatch(addadmin(res.data));
 
       setTimeout(() => {
-        return navigate("/recivedrequestfromalumni");
+        dispatch(Verifieduser());
+        dispatch(removealumini());
+        dispatch(removestudent());
+        dispatch(addadmin(res.data));
+        navigate("/recivedrequestfromalumni");
       }, 2000);
     } catch (err) {
       const msg =

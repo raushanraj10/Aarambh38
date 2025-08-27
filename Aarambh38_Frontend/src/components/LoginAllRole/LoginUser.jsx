@@ -42,16 +42,24 @@ export default function LoginUser() {
         { withCredentials: true }
       );
 
-      dispatch(Verifieduser());
-      dispatch(addstudent(res.data));
-
       setMessage("Welcome back! Student");
       setMessageType("success");
       setShowMessage(true);
+      // dispatch(Verifieduser());
+      // dispatch(addstudent(res.data));
+
+      // setTimeout(() => {
+      //   navigate("/landingpage");
+      // }, 2000);
 
       setTimeout(() => {
+        setShowMessage(false);
+
+        dispatch(Verifieduser());
+        dispatch(addstudent(res.data));
+
         navigate("/landingpage");
-      }, 2000);
+      }, 1000);
     } catch (err) {
       const message =
         err.response?.data?.message || "Invalid email or password.";

@@ -54,16 +54,18 @@ export default function LoginAlumini() {
         { withCredentials: true }
       );
 
-      dispatch(addalumini(res.data));
-      dispatch(Verifieduser());
+      // dispatch(addalumini(res.data));
+      // dispatch(Verifieduser());
 
       setMessage("A warm welcome back to our aarambh38 family.");
       setMessageType("success");
       setShowMessage(true);
 
       setTimeout(() => {
+        dispatch(addalumini(res.data));
+        dispatch(Verifieduser());
         navigate("/alumnimentees");
-      }, 2000);
+      }, 1000);
     } catch (err) {
       const msg =
         err.response?.data ||
