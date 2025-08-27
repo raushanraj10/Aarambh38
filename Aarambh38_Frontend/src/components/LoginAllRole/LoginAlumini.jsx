@@ -88,7 +88,7 @@ export default function LoginAlumini() {
     <div className="relative min-h-screen bg-gradient-to-br from-blue-50 to-cyan-100 flex items-center justify-center px-4 py-12">
       {/* Fixed Message */}
       {showMessage && (
-        <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50">
+        <div className="absolute top-6 left-1/2 transform -translate-x-1/2 z-50">
           <div
             className={`
               px-6 py-3 rounded-xl shadow-xl text-sm font-medium text-center max-w-sm w-fit animate-fade-in-down
