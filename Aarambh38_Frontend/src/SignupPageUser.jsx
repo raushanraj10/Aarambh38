@@ -32,8 +32,8 @@ export default function SignupPageUser() {
     batch: "",
     age: "",
     gender: "",
-    newPassword: "123456",
-    confirmPassword: "123456",
+    newPassword: "",
+    confirmPassword: "",
     photourl: "",
   });
 

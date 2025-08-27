@@ -118,13 +118,39 @@ useEffect(() => {
   fetchReadedList();
 
   // Poll every 3 seconds
-  const interval = setInterval(fetchReadedList, 2000);
+  const interval = setInterval(fetchReadedList, 4000);
 
   return () => clearInterval(interval);
 }, [StudentData, AlumniData]);
 
 
 
+useEffect(() => {
+  if (!selectedUser) return;
+
+  const updatorreadedlist = async () => {
+    try {
+      if (StudentData) {
+        await axios.get(`${BASE_URL}/studentreadedoff/${selectedUser._id}`, { withCredentials: true });
+      }
+
+      if (AlumniData) {
+        await axios.get(`${BASE_URL}/alumnireadedoff/${selectedUser._id}`, { withCredentials: true });
+      }
+    } catch (error) {
+      console.error("Failed to update read list:", error);
+    }
+  };
+
+  // Call immediately
+  updatorreadedlist();
+
+  // Poll every 2 seconds
+  const interval = setInterval(updatorreadedlist, 2000);
+
+  // Cleanup interval on unmount or when selectedUser changes
+  return () => clearInterval(interval);
+}, [selectedUser, StudentData, AlumniData]);
 
 
 

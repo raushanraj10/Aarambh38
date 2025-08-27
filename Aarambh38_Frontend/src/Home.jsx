@@ -129,6 +129,86 @@ export default function Home() {
 
 
 
+{/* Why Us Section */}
+<section className="bg-gradient-to-b from-gray-50 to-white py-16">
+  <div className="max-w-6xl mx-auto px-4">
+    {/* Section Heading */}
+    <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-12 text-center">
+      Why Aarambh38?
+    </h2>
+
+    {/* Cards Grid */}
+    <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-8">
+      {/* Mentorship Card */}
+      <div className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition transform hover:-translate-y-1 duration-300 text-center space-y-4">
+        <svg
+          className="w-10 h-10 mx-auto text-blue-600"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 14l9-5-9-5-9 5 9 5z"
+          />
+        </svg>
+        <h3 className="text-xl font-semibold text-blue-600">Mentorship</h3>
+        <p className="text-gray-600">
+          Get career guidance directly from experienced alumni in your field.
+        </p>
+      </div>
+
+      {/* Networking Card */}
+      <div className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition transform hover:-translate-y-1 duration-300 text-center space-y-4">
+        <svg
+          className="w-10 h-10 mx-auto text-green-600"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M17 20h5v-5M2 7a5 5 0 0110 0v0a5 5 0 01-10 0zM7 14v6h6v-6H7z"
+          />
+        </svg>
+        <h3 className="text-xl font-semibold text-green-600">Networking</h3>
+        <p className="text-gray-600">
+          Build real professional connections that help you grow beyond college.
+        </p>
+      </div>
+
+      {/* Opportunities Card */}
+      <div className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition transform hover:-translate-y-1 duration-300 text-center space-y-4">
+        <svg
+          className="w-10 h-10 mx-auto text-purple-600"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M9 19V6h13M9 6l-4 4m0 0l4 4m-4-4h12"
+          />
+        </svg>
+        <h3 className="text-xl font-semibold text-purple-600">Opportunities</h3>
+        <p className="text-gray-600">
+          Discover internships, referrals, and job opportunities from alumni.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
       {/* Alumni Showcase Section */}
       <section className="py-16 bg-white">
         <div className="max-w-6xl mx-auto px-4">
