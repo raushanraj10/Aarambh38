@@ -81,7 +81,7 @@ export default function LoginAdmin() {
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100 flex items-center justify-center px-4 py-12 relative">
       {/* Toast Message */}
       {showMessage && (
-        <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50">
+        <div className="absolute top-6 left-1/2 transform -translate-x-1/2 z-50">
           <div
             className={`px-6 py-3 rounded-xl shadow-lg text-sm font-medium text-center transition duration-300
             ${messageType === "success"
