@@ -170,9 +170,9 @@ AuthRouter.post("/signupalumini", async (req, res) => {
     const requiredFields = [
       "fullName", "gender", "emailId", "newPassword", "confirmPassword",
       "registration", "batch", "collegeName", "company", "role",
-      "photourl", "about", "branch"
+      "photourl", "about", "branch","gate"
     ];
-
+      console.log(req.body.gate)
     const missingFields = requiredFields.filter(field => !(field in data));
     if (missingFields.length > 0) {
       return res.status(400).json({

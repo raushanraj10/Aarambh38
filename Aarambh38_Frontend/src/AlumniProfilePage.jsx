@@ -149,17 +149,26 @@ if(loading) return <Shimmer/>
           <h2 className="text-2xl font-bold text-blue-700">{alumni.fullName}</h2>
 
           <div className="mt-6 w-full max-w-md mx-auto bg-white border border-gray-200 rounded-2xl shadow-md p-5 text-center space-y-2">
-            <div className="text-2xl font-extrabold text-green-700 tracking-wide uppercase">
-              {capitalizeEachWord(alumni.company)}
-            </div>
-            <p className="text-base text-gray-700 font-medium">
-              {capitalizeEachWord(alumni.role)}{" "}
-              <span className="text-gray-500">at</span>{" "}
-              <span className="font-semibold text-gray-800">
-                {capitalizeEachWord(alumni.company)}
-              </span>
-            </p>
-          </div>
+  <div className="text-2xl font-extrabold text-green-700 tracking-wide uppercase">
+    {capitalizeEachWord(alumni.company)}
+  </div>
+
+  <p className="text-base text-gray-700 font-medium">
+    {capitalizeEachWord(alumni.role)}{" "}
+    <span className="text-gray-500">at</span>{" "}
+    <span className="font-semibold text-gray-800">
+      {capitalizeEachWord(alumni.company)}
+    </span>
+  </p>
+
+  {/* ✅ Show GATE qualification if available */}
+  {alumni.gate === "Qualified" && (
+    <p className="text-sm font-semibold text-green-600">
+      🎯 GATE Qualified
+    </p>
+  )}
+</div>
+
         </div>
 
         <div className="mt-6 space-y-2 text-gray-800 text-sm">

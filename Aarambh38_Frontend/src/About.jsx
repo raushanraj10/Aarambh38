@@ -7,7 +7,7 @@ const About = () => {
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-600 to-green-600 text-white py-12 px-6 text-center">
         <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-2">
-          About <span className="text-white bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-green-200">Aarambh38</span>
+          About Aarambh38
         </h1>
         <p className="text-lg md:text-xl max-w-3xl mx-auto">
           A modern mentorship and alumni-student connection platform designed for clarity, career growth, and collaboration.
@@ -139,18 +139,35 @@ const About = () => {
 </div>
 
 
+<div className="md:col-span-1 flex justify-center">
+  <div className="sticky top-24 bg-white border rounded-xl shadow-md p-4 flex flex-col items-center text-center hover:shadow-lg transition-shadow duration-300 w-52">
+    <img
+      src="https://media.istockphoto.com/id/1455786460/vector/the-person-giving-the-lecture-speech-silhouette-icon-vector.jpg?s=612x612&w=0&k=20&c=FXJxAXD0XsfnLGQE5ssBnwZ3NbrsgyUXspbx_FkaQds="
+      alt="Faculty"
+      className="w-16 h-16 rounded-full object-cover border-2 border-blue-500"
+    />
+    <h3 className="mt-3 text-base font-semibold text-gray-800">Prof. ABCD</h3>
+    <p className="text-xs text-gray-500">Faculty, BCE Patna</p>
+    <p className="mt-2 text-gray-600 text-xs leading-relaxed">
+      Guiding Aarambh38 as part of the mentorship & alumni-student initiative.
+    </p>
+  </div>
+</div>
+
+    
+
       </div>
 
       {/* Creator Credits */}
       <div className="bg-gray-100 py-10 text-center">
   <p className="text-md text-gray-700 transition-opacity duration-1000 opacity-80 hover:opacity-100">
     Designed & Developed by{" "}
-    {/* <span className="font-semibold text-blue-600 hover:text-blue-700 transition-colors duration-300">
+    <span className="font-semibold text-blue-600 hover:text-blue-700 transition-colors duration-300">
       Raushan Raj, Shikha Kumari
-    </span>{" "} */}
-    {/* <span className="text-gray-500 font-medium">&nbsp;from&nbsp;</span> */}
+    </span>{" "} 
+     <span className="text-gray-500 font-medium">&nbsp;from&nbsp;</span>
     <span className="font-semibold text-green-600 hover:text-green-700 transition-colors duration-300">
-      BCE Patna Student
+      BCE Patna Students
     </span>
   </p>
 </div>
@@ -160,3 +177,6 @@ const About = () => {
 };
 
 export default About;
+
+
+

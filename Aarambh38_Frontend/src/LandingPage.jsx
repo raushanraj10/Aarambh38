@@ -189,6 +189,9 @@ const handleSendRequest = async () => {
                     <p className="text-base text-gray-800 font-medium">
                       <span className="font-semibold text-blue-800">🧑‍💼 Role:</span> {capitalizeEachWord(alumni.role)}
                     </p>
+                    {alumni?.gate === "Qualified" && (
+                   <p><span className="font-semibold">🎯 GATE:</span> Qualified</p>
+                    )}
                   </div>
                 </Link>
 

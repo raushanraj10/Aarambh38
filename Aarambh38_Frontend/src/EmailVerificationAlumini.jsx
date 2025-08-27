@@ -50,6 +50,7 @@ const handleSubmit = async (e) => {
       batch,
       photourl,
       about,
+      gate,
     } = verifydata;
 
     const res = await axios.post(
@@ -69,10 +70,11 @@ const handleSubmit = async (e) => {
         company,
         role,
         code,
+        gate,
       },
       { withCredentials: true }
     );
-
+    console.log(gate)
     // ✅ Success message from backend
     setMessage(`✅ ${res.data.message || "Signup successful!"}`);
     setMessageType("success");
