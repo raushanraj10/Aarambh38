@@ -207,7 +207,7 @@ const About = () => {
     </span>{" "} 
      <span className="text-gray-500 font-medium">&nbsp;from&nbsp;</span>
     <span className="font-semibold text-green-600 hover:text-green-700 transition-colors duration-300">
-      BCE Patna Students
+      BCE Patna
     </span>
   </p>
 </div>

@@ -119,7 +119,7 @@ const validateFields = () => {
   if (loading) return <Shimmer />;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center p-6 relative">
+    <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-yellow-100 flex items-center justify-center p-6 relative">
       {formError && (
         <div className="absolute top-5 bg-red-100 border border-red-300 text-red-700 px-6 py-2 rounded shadow z-10">
           {formError}

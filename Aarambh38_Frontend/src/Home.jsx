@@ -103,6 +103,27 @@ export default function Home() {
     
     <div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-8">
       
+      
+
+      <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition transform hover:-translate-y-2">
+        <div className="text-4xl mb-4 text-green-500">🎓</div>
+        <h3 className="text-xl font-semibold text-gray-800 mb-2">Direct Access to Placed Alumni</h3>
+        <p className="text-gray-600">
+          Get real guidance on placements, resumes, and referrals directly from those who’ve already succeeded.
+        </p>
+      </div>
+
+
+      {/* Card 3 */}
+      <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition transform hover:-translate-y-2">
+        <div className="text-4xl mb-4 text-indigo-500">🎯</div>
+        <h3 className="text-xl font-semibold text-gray-800 mb-2">Guidance from GATE Qualified Alumni</h3>
+        <p className="text-gray-600">
+          Learn directly from alumni who have cracked GATE, gain preparation tips, and understand how it shaped their career paths.
+        </p>
+      </div>
+
+
       {/* Card 1 */}
       <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition transform hover:-translate-y-2">
         <div className="text-4xl mb-4 text-blue-500">✔️</div>
@@ -112,21 +133,24 @@ export default function Home() {
         </p>
       </div>
 
+      <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition transform hover:-translate-y-2">
+        <div className="text-4xl mb-4 text-indigo-500">🌐</div>
+        <h3 className="text-xl font-semibold text-gray-800 mb-2">
+        One Platform for All 38 Colleges
+        </h3>
+        <p className="text-gray-600">
+          Bringing together 38 State Engineering Colleges on one trusted platform for guidance, collaboration, and opportunities.
+        </p>
+      </div>
+
+
+
       {/* Card 2 */}
       <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition transform hover:-translate-y-2">
         <div className="text-4xl mb-4 text-green-500">🛡️</div>
         <h3 className="text-xl font-semibold text-gray-800 mb-2">Confidential & Flexible Support</h3>
         <p className="text-gray-600">
           Alumni can assist students without sharing personal information and help on their own schedule, respecting their free time.
-        </p>
-      </div>
-
-      {/* Card 3 */}
-      <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition transform hover:-translate-y-2">
-        <div className="text-4xl mb-4 text-indigo-500">🎯</div>
-        <h3 className="text-xl font-semibold text-gray-800 mb-2">Guidance from GATE Qualified Alumni</h3>
-        <p className="text-gray-600">
-          Learn directly from alumni who have cracked GATE, gain preparation tips, and understand how it shaped their career paths.
         </p>
       </div>
 
@@ -142,8 +166,6 @@ export default function Home() {
     </div>
   </div>
 </section>
-
-
 
 {/* Why Us Section */}
 <section className="bg-gradient-to-b from-gray-50 to-white py-16">
@@ -223,6 +245,10 @@ export default function Home() {
     </div>
   </div>
 </section>
+
+
+
+
 
 
       {/* Alumni Showcase Section */}

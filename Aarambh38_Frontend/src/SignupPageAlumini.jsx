@@ -168,7 +168,7 @@ const validateFields = () => {
   if (loading) return <Shimmer />;
 
   return (
-    <div className="min-h-screen bg-[#eaf3fb] flex items-center justify-center px-4 py-12 relative">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-100 flex items-center justify-center px-4 py-12 relative">
       {popupMessage && (
         <div className="absolute top-5 bg-blue-100 border border-blue-300 text-blue-800 px-6 py-2 rounded shadow-md">
           {popupMessage}

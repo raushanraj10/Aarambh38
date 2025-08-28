@@ -48,6 +48,19 @@ export default function SignupChoice() {
 
         {/* Signup Options */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+
+        <Link
+            to="/signupadmin"
+            className="flex flex-col items-center bg-white hover:bg-yellow-50 border border-yellow-200 rounded-2xl p-6 shadow-md hover:shadow-xl transition-all duration-300"
+          >
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+              alt="Admin"
+              className="w-20 h-20 mb-4 object-contain"
+            />
+            <p className="text-lg font-semibold text-yellow-600">Sign Up as Admin</p>
+          </Link>
+
           <Link
             to="/signupalumini"
             className="flex flex-col items-center bg-white hover:bg-blue-50 border border-blue-200 rounded-2xl p-6 shadow-md hover:shadow-xl transition-all duration-300"
@@ -72,17 +85,7 @@ export default function SignupChoice() {
             <p className="text-lg font-semibold text-green-700">Sign Up as Student</p>
           </Link>
 
-          <Link
-            to="/signupadmin"
-            className="flex flex-col items-center bg-white hover:bg-yellow-50 border border-yellow-200 rounded-2xl p-6 shadow-md hover:shadow-xl transition-all duration-300"
-          >
-            <img
-              src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
-              alt="Admin"
-              className="w-20 h-20 mb-4 object-contain"
-            />
-            <p className="text-lg font-semibold text-yellow-600">Sign Up as Admin</p>
-          </Link>
+          
         </div>
 
         <p className="text-sm text-gray-600">
