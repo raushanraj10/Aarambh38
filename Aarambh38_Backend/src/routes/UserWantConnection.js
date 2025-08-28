@@ -70,26 +70,35 @@ UserRouter.get("/mymentors", UserAuth, async (req, res) => {
   try {
     const fromuserId = req.decode._id;
 
+    // Step 1: Find all accepted connections from this user
     const connections = await ModelUserSendConnection.find({
       fromuserId: fromuserId,
       status: "accepted"
     }).select("touserId");
-    //  console.log(connections)
+
+    // Step 2: Extract the list of touserIds
     const listoftouserIddetails = connections.map(conn => conn.touserId);
-    //  console.log(listoftouserIddetails)
-    // Use Promise.all to resolve all async calls
-    const finaldata = await Promise.all(
-      listoftouserIddetails.map(async (ele) => {
-        return await ModelAlumini.findOne(
-          { _id: ele },
-          "_id fullName photourl role company batch collegeName gender branch about gate"
-        );
-      })
+
+    if (!listoftouserIddetails || listoftouserIddetails.length === 0) {
+      return res.status(404).send({ message: "No mentors found" });
+    }
+
+    // Step 3: Fetch all alumni in one query instead of looping with Promise.all
+    const finaldata = await ModelAlumini.find(
+      { _id: { $in: listoftouserIddetails } },
+      "_id fullName role company batch collegeName gender branch about gate photourl"
     );
-    if(!finaldata)
-      return;
+
+    // Step 4: Handle case where no valid alumni are found
+    if (!finaldata || finaldata.length === 0) {
+      return res.status(404).send({ message: "No mentors found" });
+    }
+
+    // Step 5: Send the valid mentor data
     res.send(finaldata);
+
   } catch (err) {
+    console.error("Error in /mymentors:", err);
     res.status(500).send({ error: err.message });
   }
 });

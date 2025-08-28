@@ -28,10 +28,6 @@ const EmailAlumniRequest = async (alumnidata) => {
               The following alumni has submitted their registration details:
             </p>
 
-            <div style="margin: 20px 0; text-align: center;">
-              <img src="${photourl}" alt="Profile Photo" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 2px solid #4A90E2;" />
-            </div>
-
             <table style="width: 100%; font-size: 15px; color: #333; border-collapse: collapse;">
               <tbody>
                 <tr><td style="padding: 8px;"><strong>Full Name:</strong></td><td style="padding: 8px;">${fullName}</td></tr>

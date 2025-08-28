@@ -16,7 +16,12 @@ const OtpAdminSchema = new mongoose.Schema({
   fullName:{
     type:String,
     require:true
-  }
+  },
+   createdAt: {
+    type: Date,
+    default: Date.now,
+    expires: 600, // ⏳ auto-delete after 600 seconds (10 minutes)
+  },
 });
 
 const ModelOtpAdmin = mongoose.model("ModelOtpAdmin", OtpAdminSchema);

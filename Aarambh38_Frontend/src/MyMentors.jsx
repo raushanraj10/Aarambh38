@@ -49,9 +49,9 @@ export default function MyMentors() {
         <p className="text-center text-gray-500">No mentors assigned yet.</p>
       ) : (
         <div className="flex flex-col gap-6 items-center">
-          {mentors.map((mentor) => (
+          {mentors.map((mentor,index) => (
             <div
-              key={mentor?._id}
+              key={mentor?._id||index}
               onClick={() => handleProfileClick(mentor._id)}
               className="w-full max-w-4xl bg-white rounded-2xl shadow-md border p-6 flex flex-col sm:flex-row gap-6 cursor-pointer transition-transform duration-200 hover:shadow-xl hover:-translate-y-1"
             >

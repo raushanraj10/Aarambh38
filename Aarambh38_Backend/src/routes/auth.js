@@ -10,7 +10,8 @@ const UserAuth=require("./middleware/UserAuth");
 const ModelAdmin = require("../models/ModelAdmin");
 const EmailAlumniRequest = require("../utils/EmailAlumniRequest");
 const ModelOtp = require("../models/ModelOtp");
-const ModelOtpAdmin=require("../models/ModelOtpAdmin")
+const ModelOtpAdmin=require("../models/ModelOtpAdmin");
+const SendEmailForAdmin = require("../utils/SendEmailForAdmin");
 
 const AuthRouter=express.Router()
 
@@ -31,13 +32,14 @@ AuthRouter.post("/sendemailadmin",async (req,res)=>{
     try{
     const code = Math.floor(Math.random() * 900000) + 100000;
     // const emailId="aarambh38fromstart@gmail.com"
-     const {emailId,fullName}=req.body
+     const {emailId,age,fullName,gender,photourl}=req.body
     
     const tempdata=ModelOtpAdmin({emailId:emailId,code:code,fullName:fullName})
     await tempdata.save();
     // console.log(code)
-    const email="aarambh38fromstart@gmail.com"
-    await SendEmail(email,code)
+    // const email="aarambh38fromstart@gmail.com"
+    // console.log(photourl)
+    await SendEmailForAdmin({emailId,age,fullName,gender,photourl,code})
     res.send("Email Sent")
 }
     catch(err){res.send(err.message)}
@@ -255,7 +257,8 @@ const CheckFirst2=await ModelOtpAdmin.findOne({emailId:emailId})
         return res.status(400).send("May email already exist or again try")
     if (Number(CheckFirst2.code) !== Number(admincode))
     return res.status(400).send("Wrong OTP2");
-    
+    await ModelOtpAdmin.deleteMany({emailId:emailId})
+     await ModelOtp.deleteMany({emailId:emailId})
     const requiredFields=["fullName","gender","emailId","newPassword","confirmPassword","age","photourl"]
     
      const allFieldsPresent = requiredFields.every(field => field in data);

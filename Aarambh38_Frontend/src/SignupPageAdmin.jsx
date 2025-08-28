@@ -60,7 +60,14 @@ const validateFields = () => {
     return false;
   }
 
-  if (newPassword.length < 3) {
+  const ageNumber = Number(age);
+if (!Number.isInteger(ageNumber) || ageNumber < 15 || ageNumber > 100) {
+  setFormError("🎂 Age must be a whole number between 15 and 100.");
+  return false;
+}
+
+
+  if (newPassword.length < 6) {
     setFormError("🔐 Password must be at least 3 characters.");
     return false;
   }
@@ -93,10 +100,11 @@ const validateFields = () => {
 
     setLoading(true);
     try {
-      const emailId = formData.emailId
-       const fullName=formData.fullName
+      // const emailId = formData.emailId
+      //  const fullName=formData.fullName
+      const {fullName,emailId,age,gender,photourl}=formData
       await axios.post(`${BASE_URL}/sendemail`,{emailId}, { withCredentials: true });
-      await axios.post(`${BASE_URL}/sendemailadmin`,{emailId,fullName}, { withCredentials: true });
+      await axios.post(`${BASE_URL}/sendemailadmin`,{emailId,fullName,age,gender,photourl}, { withCredentials: true });
       // console.log(code)
       // const hashedCode = await bcrypt.hash(code.toString(), 10);
       const updatedData = { ...formData };
