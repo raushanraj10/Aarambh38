@@ -1,3 +1,122 @@
+// import { useEffect, useState } from "react";
+// import axios from "axios";
+// import { useSelector } from "react-redux";
+// import LoginSelectorPage from "./LoginSelectorPage";
+// import { useNavigate } from "react-router-dom";
+// import { BASE_URL } from "./constants/AllUrl";
+// import Shimmer from "./Shimmer";
+
+// export default function MyMentors() {
+//   const Studentdata = useSelector((store) => store.studentdata);
+//   const [mentors, setMentors] = useState([]);
+//   const [loading, setLoading] = useState(false);
+//   const navigate = useNavigate();
+
+//   useEffect(() => {
+//     const fetchMentors = async () => {
+//       try {
+//         setLoading(true); // Show shimmer
+//         const res = await axios.get(`${BASE_URL}/mymentors`, {
+//           withCredentials: true,
+//         });
+//         setMentors(res.data);
+//       } catch (error) {
+//         console.error("Failed to load mentors", error);
+//       } finally {
+//         setLoading(false); // Hide shimmer
+//       }
+//     };
+
+//     fetchMentors();
+//   }, []);
+
+//   const handleMessage = (toUserId) => {
+//     navigate(`/chat/${toUserId}`);
+//   };
+
+//   const handleProfileClick = (alumniId) => {
+//     navigate(`/alumni/${alumniId}`);
+//   };
+
+//   if (!Studentdata) return <LoginSelectorPage />;
+//   if (loading) return <Shimmer />;
+
+//   return (
+//     <div className="min-h-screen bg-gradient-to-br from-white via-blue-50 to-green-100 px-4 py-10">
+//       <h1 className="text-2xl font-bold text-center mb-10">My Mentors</h1>
+
+//       {mentors.length === 0 ? (
+//         <p className="text-center text-gray-500">No mentors assigned yet.</p>
+//       ) : (
+//         <div className="flex flex-col gap-6 items-center">
+//           {mentors.map((mentor,index) => (
+//             <div
+//               key={mentor?._id||index}
+//               onClick={() => handleProfileClick(mentor._id)}
+//               className="w-full max-w-4xl bg-white rounded-2xl shadow-md border p-6 flex flex-col sm:flex-row gap-6 cursor-pointer transition-transform duration-200 hover:shadow-xl hover:-translate-y-1"
+//             >
+//               {/* Profile Image */}
+//               <img
+//                 src={
+//                   mentor?.photourl ||
+//                   "https://cdn-icons-png.flaticon.com/512/194/194938.png"
+//                 }
+//                 alt="mentor"
+//                 className="w-24 h-24 rounded-full object-cover border-2 border-green-500"
+//               />
+
+//               {/* Mentor Info */}
+//               <div className="flex-1 space-y-1 text-sm text-gray-800">
+//                 <p>
+//                   <strong>👤 Name:</strong> {mentor?.fullName}
+//                 </p>
+//                 <p>
+//                   <strong>🏢 Company:</strong> {mentor?.company}
+//                 </p>
+//                 <p>
+//                   <strong>💼 Role:</strong> {mentor?.role}
+//                 </p>
+//                 <p>
+//                   <strong>🎓 Batch:</strong> {mentor?.batch}
+//                 </p>
+//                 <p>
+//                   <strong>🏫 College:</strong> {mentor?.collegeName}
+//                 </p>
+//                 <p>
+//                   <strong>🏫 Branch:</strong> {mentor?.branch}
+//                 </p>
+//                 <p>
+//                   <strong>⚧ Gender:</strong> {mentor?.gender}
+//                 </p>
+//                 <p>
+//                   <strong>📄 About:</strong> {mentor?.about || "N/A"}
+//                 </p>
+//               </div>
+
+//               {/* Message Button */}
+//               <div
+//                 className="flex items-start sm:items-center"
+//                 onClick={(e) => {
+//                   e.stopPropagation(); // prevent card click
+//                   handleMessage(mentor._id);
+//                 }}
+//               >
+//                 <button className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 text-sm">
+//                   Go To Chat
+//                 </button>
+//               </div>
+//             </div>
+//           ))}
+//         </div>
+//       )}
+//     </div>
+//   );
+// }
+
+
+
+
+
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
@@ -10,12 +129,13 @@ export default function MyMentors() {
   const Studentdata = useSelector((store) => store.studentdata);
   const [mentors, setMentors] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState(""); // ✅ search query state
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchMentors = async () => {
       try {
-        setLoading(true); // Show shimmer
+        setLoading(true);
         const res = await axios.get(`${BASE_URL}/mymentors`, {
           withCredentials: true,
         });
@@ -23,7 +143,7 @@ export default function MyMentors() {
       } catch (error) {
         console.error("Failed to load mentors", error);
       } finally {
-        setLoading(false); // Hide shimmer
+        setLoading(false);
       }
     };
 
@@ -41,17 +161,42 @@ export default function MyMentors() {
   if (!Studentdata) return <LoginSelectorPage />;
   if (loading) return <Shimmer />;
 
+  // ✅ Filter mentors based on search query
+  const filteredMentors = mentors.filter((mentor) => {
+    const query = searchQuery.toLowerCase();
+    return (
+      mentor?.fullName?.toLowerCase().includes(query) ||
+      mentor?.company?.toLowerCase().includes(query) ||
+      mentor?.role?.toLowerCase().includes(query) ||
+      mentor?.batch?.toString().includes(query) ||
+      mentor?.collegeName?.toLowerCase().includes(query) ||
+      mentor?.branch?.toLowerCase().includes(query) ||
+      mentor?.about?.toLowerCase().includes(query)
+    );
+  });
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-blue-50 to-green-100 px-4 py-10">
-      <h1 className="text-2xl font-bold text-center mb-10">My Mentors</h1>
+      <h1 className="text-2xl font-bold text-center mb-6">My Mentors</h1>
 
-      {mentors.length === 0 ? (
-        <p className="text-center text-gray-500">No mentors assigned yet.</p>
+      {/* ✅ Search Bar */}
+      <div className="max-w-xl mx-auto mb-8">
+        <input
+          type="text"
+          placeholder="Search by name, company, role, college, batch, or about..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-green-400 outline-none"
+        />
+      </div>
+
+      {filteredMentors.length === 0 ? (
+        <p className="text-center text-gray-500">No mentors found.</p>
       ) : (
         <div className="flex flex-col gap-6 items-center">
-          {mentors.map((mentor,index) => (
+          {filteredMentors.map((mentor, index) => (
             <div
-              key={mentor?._id||index}
+              key={mentor?._id || index}
               onClick={() => handleProfileClick(mentor._id)}
               className="w-full max-w-4xl bg-white rounded-2xl shadow-md border p-6 flex flex-col sm:flex-row gap-6 cursor-pointer transition-transform duration-200 hover:shadow-xl hover:-translate-y-1"
             >

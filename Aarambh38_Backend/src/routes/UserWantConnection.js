@@ -7,6 +7,8 @@ const Requestonlineemail = require("../utils/RequestOnlineEmail");
 const ModelUser = require("../models/ModelUser");
 const ModelMessage = require("../models/ModelMessage");
 const mongoose = require("mongoose");
+const SendAcceptanceEmail = require("../utils/SendAcceptanceEmail");
+const SendRejectanceEmail = require("../utils/SendRejectanceEmail");
 
 
 const UserRouter=express.Router()
@@ -171,10 +173,25 @@ UserRouter.post("/alumni/:status/:fromuserId",UserAuth,async (req,res)=>{
   if(!checking)
     return res.status(400).send("Connection not found or already handled")
 
+
+      const dataOfAlumni=await ModelAlumini.findOne({_id:touserId})
+      const studentemailId=await ModelUser.findOne({_id:fromuserId})
+      const emailId=studentemailId.emailId 
+      
+      
   if(status==="rejected")
     {await ModelUserSendConnection.deleteOne({fromuserId:fromuserId,touserId:touserId,status:"sended"})
-     return res.send("Request "+status)}
+      const {fullName,collegeName,company,role,batch}=dataOfAlumni
+     await SendRejectanceEmail({fullName,collegeName,company,role,batch,emailId})
+    return res.send("Request "+status)
+    }
 
+     if(status==="accepted")
+     {
+      
+      const {fullName,collegeName,company,role,batch}=dataOfAlumni
+      await SendAcceptanceEmail({fullName,collegeName,company,role,batch,emailId})
+     }
   checking.status=status
   //  const realdata=ModelUserSendConnection(checking)
   //  console.log(checking)
