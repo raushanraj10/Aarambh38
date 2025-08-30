@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Eye, EyeOff } from "lucide-react";
-// import bcrypt from "bcryptjs";
 import { useDispatch } from "react-redux";
 import { pendinguser } from "./utils/EmailSlice";
 import { useNavigate } from "react-router-dom";
@@ -10,6 +9,7 @@ import { BASE_URL } from "./constants/AllUrl";
 import { removestudent } from "./utils/StudentSlice";
 import { removeadmin } from "./utils/AdminSlice";
 import { removealumini } from "./utils/AluminiSlice";
+import CollegeList from "./constants/CollegeList";
 
 export default function SignupPageAdmin() {
   const dispatch = useDispatch();
@@ -30,56 +30,71 @@ export default function SignupPageAdmin() {
   const [formData, setFormData] = useState({
     fullName: "",
     emailId: "",
-    age: "",
     gender: "",
+    collegeName: "", // ✅ changed from college → collegeName
+    mobileNumber: "",
     newPassword: "",
     confirmPassword: "",
     photourl: "",
     code: "",
   });
 
-  // const code = Math.floor(Math.random() * 900000) + 100000;
-
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setFormError("");
   };
 
-const validateFields = () => {
-  const { fullName, emailId, age, gender, newPassword, confirmPassword, photourl } = formData;
+  const validateFields = () => {
+    const {
+      fullName,
+      emailId,
+      gender,
+      collegeName,
+      mobileNumber,
+      newPassword,
+      confirmPassword,
+      photourl,
+    } = formData;
 
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const mobileRegex = /^[6-9]\d{9}$/;
 
-  if (!fullName || !emailId || !age || !gender || !newPassword || !confirmPassword || !photourl) {
-    setFormError("⚠️ All fields are required.");
-    return false;
-  }
+    if (
+      !fullName ||
+      !emailId ||
+      !gender ||
+      !collegeName ||
+      !mobileNumber ||
+      !newPassword ||
+      !confirmPassword ||
+      !photourl
+    ) {
+      setFormError("⚠️ All fields are required.");
+      return false;
+    }
 
-  if (!emailRegex.test(emailId)) {
-    setFormError("📧 Please enter a valid email address.");
-    return false;
-  }
+    if (!emailRegex.test(emailId)) {
+      setFormError("📧 Please enter a valid email address.");
+      return false;
+    }
 
-  const ageNumber = Number(age);
-if (!Number.isInteger(ageNumber) || ageNumber < 15 || ageNumber > 100) {
-  setFormError("🎂 Age must be a whole number between 15 and 100.");
-  return false;
-}
+    if (!mobileRegex.test(mobileNumber)) {
+      setFormError("📱 Please enter a valid 10-digit Indian mobile number.");
+      return false;
+    }
 
+    if (newPassword.length < 6) {
+      setFormError("🔐 Password must be at least 6 characters.");
+      return false;
+    }
 
-  if (newPassword.length < 6) {
-    setFormError("🔐 Password must be at least 3 characters.");
-    return false;
-  }
+    if (newPassword !== confirmPassword) {
+      setFormError("🔒 Password and Confirm Password do not match.");
+      return false;
+    }
 
-  if (newPassword !== confirmPassword) {
-    setFormError("🔒 Password and Confirm Password do not match.");
-    return false;
-  }
-
-  return true;
-};
-
+    return true;
+  };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -100,13 +115,21 @@ if (!Number.isInteger(ageNumber) || ageNumber < 15 || ageNumber > 100) {
 
     setLoading(true);
     try {
-      // const emailId = formData.emailId
-      //  const fullName=formData.fullName
-      const {fullName,emailId,age,gender,photourl}=formData
-      await axios.post(`${BASE_URL}/sendemail`,{emailId}, { withCredentials: true });
-      await axios.post(`${BASE_URL}/sendemailadmin`,{emailId,fullName,age,gender,photourl}, { withCredentials: true });
-      // console.log(code)
-      // const hashedCode = await bcrypt.hash(code.toString(), 10);
+      const { fullName, emailId, gender, collegeName, mobileNumber, photourl } =
+        formData;
+
+      await axios.post(
+        `${BASE_URL}/sendemail`,
+        { emailId },
+        { withCredentials: true }
+      );
+
+      await axios.post(
+        `${BASE_URL}/sendemailadmin`,
+        { emailId, fullName, gender, collegeName, mobileNumber, photourl },
+        { withCredentials: true }
+      );
+
       const updatedData = { ...formData };
 
       dispatch(pendinguser(updatedData));
@@ -114,7 +137,9 @@ if (!Number.isInteger(ageNumber) || ageNumber < 15 || ageNumber > 100) {
       setTimeout(() => {
         setLoading(false);
         navigate("/emailverificationadmin", {
-          state: { message: "📩 OTP Verification - Please ask Admin for OTP." },
+          state: {
+            message: "📩 OTP Verification - Please ask Admin for OTP.",
+          },
         });
       }, 1000);
     } catch (err) {
@@ -135,7 +160,9 @@ if (!Number.isInteger(ageNumber) || ageNumber < 15 || ageNumber > 100) {
       )}
 
       <div className="bg-white shadow-2xl rounded-2xl p-8 w-full max-w-md">
-        <h2 className="text-3xl font-bold text-center text-blue-800 mb-2">Welcome, Admin!</h2>
+        <h2 className="text-3xl font-bold text-center text-blue-800 mb-2">
+          Welcome, Admin!
+        </h2>
         <p className="text-center text-sm text-gray-600 mb-1">
           Join the leadership at{" "}
           <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600">
@@ -149,7 +176,9 @@ if (!Number.isInteger(ageNumber) || ageNumber < 15 || ageNumber > 100) {
         <form className="space-y-5">
           {/* Full Name */}
           <div>
-            <label className="text-sm font-medium text-gray-700">Full Name</label>
+            <label className="text-sm font-medium text-gray-700">
+              Full Name
+            </label>
             <input
               type="text"
               name="fullName"
@@ -173,19 +202,6 @@ if (!Number.isInteger(ageNumber) || ageNumber < 15 || ageNumber > 100) {
             />
           </div>
 
-          {/* Age */}
-          <div>
-            <label className="text-sm font-medium text-gray-700">Age</label>
-            <input
-              type="number"
-              name="age"
-              value={formData.age}
-              onChange={handleChange}
-              className="w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-
           {/* Gender */}
           <div>
             <label className="text-sm font-medium text-gray-700">Gender</label>
@@ -203,9 +219,48 @@ if (!Number.isInteger(ageNumber) || ageNumber < 15 || ageNumber > 100) {
             </select>
           </div>
 
+          {/* College */}
+          <div>
+            <label className="text-sm font-medium text-gray-700">College</label>
+            <select
+              name="collegeName" // ✅ updated
+              value={formData.collegeName} // ✅ updated
+              onChange={handleChange}
+              className="w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            >
+              <option value="">Select College</option>
+              {CollegeList.map((college, idx) => (
+                <option key={idx} value={college}>
+                  {college}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Mobile */}
+          <div>
+            <label className="text-sm font-medium text-gray-700">
+              Mobile Number
+            </label>
+            <input
+              type="tel"
+              name="mobileNumber"
+              value={formData.mobileNumber}
+              onChange={handleChange}
+              maxLength={10}
+              pattern="[6-9]{1}[0-9]{9}"
+              className="w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter 10-digit mobile number"
+              required
+            />
+          </div>
+
           {/* Password */}
           <div className="relative">
-            <label className="text-sm font-medium text-gray-700">Password</label>
+            <label className="text-sm font-medium text-gray-700">
+              Password
+            </label>
             <input
               type={showPassword ? "text" : "password"}
               name="newPassword"
@@ -224,7 +279,9 @@ if (!Number.isInteger(ageNumber) || ageNumber < 15 || ageNumber > 100) {
 
           {/* Confirm Password */}
           <div>
-            <label className="text-sm font-medium text-gray-700">Confirm Password</label>
+            <label className="text-sm font-medium text-gray-700">
+              Confirm Password
+            </label>
             <input
               type="password"
               name="confirmPassword"
@@ -236,33 +293,28 @@ if (!Number.isInteger(ageNumber) || ageNumber < 15 || ageNumber > 100) {
           </div>
 
           {/* Photo URL */}
-          
-<div>
-  <label className="text-sm font-medium text-gray-700">Photo URL</label>
+          <div>
+            <label className="text-sm font-medium text-gray-700">Photo</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-white"
+            />
 
-  <input
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-white"
-          />
-
-  {/* Live Image Preview */}
-  {formData.photourl && (
-  <div className="mt-3 flex justify-center">
-    <img
-      src={formData.photourl}
-      alt="Preview"
-      className="w-28 h-28 object-cover rounded-full border shadow cursor-pointer"
-      onClick={() => setShowModal(true)}
-      onError={(e) => (e.target.style.display = "none")}
-    />
-  </div>
-)}
-
-
-</div>
-
+            {/* Live Image Preview */}
+            {formData.photourl && (
+              <div className="mt-3 flex justify-center">
+                <img
+                  src={formData.photourl}
+                  alt="Preview"
+                  className="w-28 h-28 object-cover rounded-full border shadow cursor-pointer"
+                  onClick={() => setShowModal(true)}
+                  onError={(e) => (e.target.style.display = "none")}
+                />
+              </div>
+            )}
+          </div>
 
           {/* Submit */}
           <button
@@ -281,24 +333,25 @@ if (!Number.isInteger(ageNumber) || ageNumber < 15 || ageNumber > 100) {
           </a>
         </p>
       </div>
-      {showModal && (
-  <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-    <div className="relative bg-white rounded-lg shadow-lg p-4">
-      <button
-        className="absolute top-2 right-2 text-gray-600 hover:text-black"
-        onClick={() => setShowModal(false)}
-      >
-        ✖
-      </button>
-      <img
-        src={formData.photourl}
-        alt="Full Preview"
-        className="max-w-[90vw] max-h-[80vh] rounded-lg"
-      />
-    </div>
-  </div>
-)}
 
+      {/* Full Image Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+          <div className="relative bg-white rounded-lg shadow-lg p-4">
+            <button
+              className="absolute top-2 right-2 text-gray-600 hover:text-black"
+              onClick={() => setShowModal(false)}
+            >
+              ✖
+            </button>
+            <img
+              src={formData.photourl}
+              alt="Full Preview"
+              className="max-w-[90vw] max-h-[80vh] rounded-lg"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

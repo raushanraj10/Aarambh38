@@ -58,6 +58,11 @@ const UserSchema=new mongoose.Schema({
     },
     mobileNumber:{
         type:Number
+    },
+    reach:{
+        type:Boolean,
+        default:false,
+        require:true
     }
 },{timestamps:true})
 

@@ -12,6 +12,7 @@ const EmailAlumniRequest = require("../utils/EmailAlumniRequest");
 const ModelOtp = require("../models/ModelOtp");
 const ModelOtpAdmin=require("../models/ModelOtpAdmin");
 const SendEmailForAdmin = require("../utils/SendEmailForAdmin");
+const governmentEngineeringColleges = require("../constants/CollegeList38");
 
 const AuthRouter=express.Router()
 
@@ -259,7 +260,7 @@ const CheckFirst2=await ModelOtpAdmin.findOne({emailId:emailId})
     return res.status(400).send("Wrong OTP2");
     await ModelOtpAdmin.deleteMany({emailId:emailId})
      await ModelOtp.deleteMany({emailId:emailId})
-    const requiredFields=["fullName","gender","emailId","newPassword","confirmPassword","age","photourl"]
+    const requiredFields=["fullName","gender","emailId","newPassword","confirmPassword","photourl" ,"collegeName","mobileNumber"]
     
      const allFieldsPresent = requiredFields.every(field => field in data);
 
@@ -279,7 +280,9 @@ const CheckFirst2=await ModelOtpAdmin.findOne({emailId:emailId})
     const checkemailid3=await ModelAdmin.findOne({emailId:req.body.emailId})
     if(checkemailid3)
         return res.status(400).send("Email already exist")
-
+     if(!governmentEngineeringColleges.includes(req.body.collegeName))
+       { 
+        return res.status(400).send("College not valid")}
     if(req.body.newPassword!==req.body.confirmPassword)
         return res.status(400).send("Password not match")
 
@@ -311,7 +314,9 @@ AuthRouter.post("/loginuser",async (req,res)=>{
     const checkpassword= await bcrypt.compare(newPassword,checkemail.newPassword)
     if(!checkpassword)
         return res.status(400).send("Password Not Match")
-
+   
+    if(checkemail.reach===false)
+      return res.status(400).send("Waiting for admin response")
     const token = await jwt.sign(
         {_id:checkemail._id},
         "#raushanaarambh38",
@@ -378,7 +383,7 @@ AuthRouter.post("/loginadmin",async (req,res)=>{
     })
 
     const finalemail=await ModelAdmin.findOne({emailId:emailId})
-        .select("fullName role photourl age gender branch emailId")
+        .select("fullName role photourl age gender branch emailId collegeName")
 
     return res.send(finalemail)
 })

@@ -8,7 +8,7 @@ const PublicRoute = ({ children }) => {
 
   if (student) return <Navigate to="/landingpage" replace />;
   if (alumni) return <Navigate to="/alumnimentees" replace />;
-  if (admin) return <Navigate to="/getstudentlist" replace />;
+  if (admin) return <Navigate to="/recivedrequestfromalumni" replace />;
 
   return children; // if not logged in, allow access
 };

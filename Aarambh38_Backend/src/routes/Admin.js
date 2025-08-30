@@ -45,7 +45,12 @@ AdminRouter.delete("/deletestudent/:fromuserId",UserAuth, async (req,res)=>{
     // if(Admindata.emailId==="aarambh38fromstart@gmail.com" || Admindata.emailId==="kumarraushanraj10@gamil.com")
     if(!Admindata)
         return res.status(400).send("Not Available Data")
-    const StudentList=await ModelUser.deleteOne({_id:fromuserId})
+    const Studentdata=await ModelUser.findOne({_id:fromuserId})
+
+    if(Studentdata.collegeName!==Admindata.collegeName)
+        return res.status(400).send("Illegal Action college must be same")
+
+    await ModelUser.deleteOne({_id:fromuserId})
     res.send("Successfully Deleted")}
     catch(err){res.send(err.message)}
     
@@ -61,7 +66,11 @@ AdminRouter.delete("/deletealumni/:touserId", UserAuth,async (req,res)=>{
     // if(Admindata.emailId==="aarambh38fromstart@gmail.com" || Admindata.emailId==="kumarraushanraj10@gamil.com")
     if(!Admindata)
         return res.status(400).send("Not Available Data")
-    const Alumnidata=await ModelAlumini.deleteOne({_id:touserId})
+    const AlumniData= await ModelAlumini.findOne({_id:touserId})
+    if(AlumniData.collegeName!==Admindata.collegeName)
+     return res.status(400).send("Illegal Action college must be same")
+
+    await ModelAlumini.deleteOne({_id:touserId})
     res.send("Successfully Deleted")}
     catch(err){res.send(err.message)}
     
@@ -71,8 +80,20 @@ AdminRouter.delete("/deletealumni/:touserId", UserAuth,async (req,res)=>{
 AdminRouter.post("/sendemailtouser", UserAuth, async (req, res) => {
   const { to, subject, message } = req.body;
   try {
-    // Use nodemailer or SendGrid etc.
-    // console.log(message)
+    // console.log(to)
+     const AdminId = req.decode;
+const Admindata = await ModelAdmin.findOne({ _id: AdminId });
+const AlumniData = await ModelAlumini.findOne({ emailId: to });
+const Studentdata = await ModelUser.findOne({ emailId: to });
+
+if (
+  (AlumniData && AlumniData.collegeName !== Admindata.collegeName) ||
+  (Studentdata && Studentdata.collegeName !== Admindata.collegeName)
+) {
+  return res.status(400).send("Illegal Action: College must be same");
+}
+
+
     await SendEmailToUserByAdmin({ to, subject,  message });
     res.status(200).send("Email sent successfully");
   } catch (err) {
@@ -100,17 +121,20 @@ AdminRouter.post("/alumnirequest/:id/:action",UserAuth, async (req,res)=>{
     const AdminId = req.decode;
     const Admindata=await ModelAdmin.findOne({_id:AdminId}) 
     const {id,action}=req.params
+
     // console.log(action)
     const checkaction=["Approved","Reject"]
     if(!checkaction.includes(action))
         return res.status(400).send("Illegal Action")
-    
+    const alumnidata=await ModelAlumini.findOne({_id:id})
+    if(Admindata.collegeName!==alumnidata.collegeName)
+        return res.status(400).send("Illegal Action college must be same")
     if(action==="Reject")
     {
         await ModelAlumini.deleteOne({_id:id})
         return res.send("Request Action Taken Successfull")
     }
-    const alumnidata=await ModelAlumini.findOne({_id:id})
+   
     alumnidata.toshow=true
     await alumnidata.save();
     const {emailId,fullName}=alumnidata

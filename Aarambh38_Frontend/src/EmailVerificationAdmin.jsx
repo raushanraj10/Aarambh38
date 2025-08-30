@@ -50,10 +50,11 @@ export default function EmailVerificationAdmin() {
         fullName,
         gender,
         emailId,
-        age,
         newPassword,
         confirmPassword,
         photourl,
+        mobileNumber,
+        collegeName,
       } = verifydata;
 
       await axios.post(
@@ -62,10 +63,11 @@ export default function EmailVerificationAdmin() {
           fullName,
           gender,
           emailId,
-          age,
           newPassword,
           confirmPassword,
           photourl,
+          mobileNumber,
+          collegeName,
           code: emailCode,
           admincode: adminCode,
         },

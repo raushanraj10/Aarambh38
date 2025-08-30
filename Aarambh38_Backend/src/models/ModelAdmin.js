@@ -22,11 +22,15 @@ const AdminSchema=new mongoose.Schema({
         require:true,
         minLength:6,
     },
-    age:{
-        type:Number,
-        require:true,
-        // minLength:4,
+    collegeName:{
+     type:String,
+     reqiured:true
     },
+    // age:{
+    //     type:Number,
+    //     require:true,
+    //     // minLength:4,
+    // },
     mobileNumber:{
         type:Number
     },
