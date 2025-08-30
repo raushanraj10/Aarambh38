@@ -84,7 +84,9 @@ export default function Navbar() {
         ]
       : [
           { to: "/getstudentlist", label: "Students" },
-          { to: "/recivedrequestfromalumni", label: "Received Requests" },
+          { to: "/recivedrequestfromalumni", label: "Alumni's Requests" },
+          { to: "#", label: "Student's Request" },
+           { to: "#", label: "Add Alumni" }
         ];
 
     const logoutButton = (
