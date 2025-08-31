@@ -468,7 +468,7 @@ AuthRouter.post("/loginadmin",async (req,res)=>{
     })
 
     const finalemail=await ModelAdmin.findOne({emailId:emailId})
-        .select("fullName role photourl age gender branch emailId collegeName")
+        .select("fullName role photourl age gender branch emailId collegeName mobileNumber")
 
     return res.send(finalemail)
 })

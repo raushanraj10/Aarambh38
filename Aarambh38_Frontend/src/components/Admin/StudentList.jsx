@@ -497,16 +497,14 @@ useEffect(() => {
     <div className="min-h-screen bg-gray-100 p-6">
       <div className="max-w-5xl mx-auto">
         <div className="relative text-center mb-10">
-          <h2 className="text-2xl font-extrabold text-gray-800 relative inline-block px-6 py-2">
-            <span className="bg-gradient-to-r from-indigo-600 via-blue-600 to-cyan-500 text-transparent bg-clip-text drop-shadow-lg">
-              {admin?.collegeName}
-            </span>
-            <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-1 bg-gradient-to-r from-indigo-500 to-cyan-400 rounded-full"></span>
-          </h2>
-        </div>
-        <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600 text-center mb-6">
-          Student Management Panel
-        </h1>
+  <h2 className="text-2xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600 relative inline-block px-6 py-2">
+    {admin?.collegeName}
+    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-1 bg-gradient-to-r from-blue-700 to-green-600 rounded-full"></span>
+  </h2>
+</div>
+       <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-cyan-500 text-center mb-6">
+  Student Management Panel
+</h1>
 
         <div className="mb-6">
           <input
@@ -519,161 +517,164 @@ useEffect(() => {
         </div>
 
         {/* College wise dropdowns */}
-        <div className="space-y-4">
-          {sortedColleges.map((college) => {
-           const students = groupedByCollege[college].filter((s) => {
-  const query = search.toLowerCase();
-  return (
-    s?.fullName?.toLowerCase().includes(query) ||
-    s?.batch?.toString().toLowerCase().includes(query) ||
-    s.registration?.toString().toLowerCase().includes(query)
+       <div className="space-y-4">
+  {sortedColleges.map((college) => {
+    const students = groupedByCollege[college].filter((s) => {
+      const query = search.toLowerCase();
+      return (
+        s?.fullName?.toLowerCase().includes(query) ||
+        s?.batch?.toString().toLowerCase().includes(query) ||
+        s.registration?.toString().toLowerCase().includes(query)
+      );
+    });
 
-  );
-});
+    if (students.length === 0) return null;
 
-
-            if (students.length === 0) return null;
-
-            return (
-              <div key={college} className="bg-white shadow rounded-lg">
-                {/* College header */}
-                <div
-  onClick={() => toggleExpandCollege(college)}
-  className="flex items-center justify-between px-6 py-3 cursor-pointer rounded-t-lg
+    return (
+      <div key={college} className="bg-white shadow rounded-lg">
+        {/* College header */}
+        <div
+          onClick={() => toggleExpandCollege(college)}
+          className="flex items-center justify-between px-6 py-3 cursor-pointer rounded-t-lg
              bg-gradient-to-r from-purple-500 via-pink-500 to-yellow-500
              hover:from-purple-700 hover:via-pink-700 hover:to-yellow-700
              transition-all duration-300"
->
-  <h2 className="font-bold text-lg text-white drop-shadow-sm capitalize">
-    {college}
-  </h2>
-  <div
-    className={`text-white transform transition-transform duration-300 ${
-      expandedCollege === college ? "rotate-180" : ""
-    }`}
-  >
-    {expandedCollege === college ? <ChevronUp /> : <ChevronDown />}
-  </div>
-</div>
+        >
+          <h2 className="font-bold text-lg text-white drop-shadow-sm capitalize">
+            {college}
+          </h2>
 
-                {/* Students list inside college */}
-                {expandedCollege === college && (
-                  <div className="divide-y">
-                    {students.map((alum) => (
-                      <div
-                        key={alum._id}
-                        className="py-4 transition-all duration-200 hover:bg-gray-50"
-                      >
-                        <div
-                          onClick={() => toggleExpandStudent(alum._id)}
-                          className="flex items-center justify-between px-6 cursor-pointer"
-                        >
-                          <div className="flex items-center gap-4">
-                            {alum.photourl ? (
-                              <img
-                                src={alum.photourl}
-                                className="w-12 h-12 rounded-full object-cover shadow cursor-pointer"
-                                alt={alum.fullName}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setSelectedImage(alum.photourl);
-                                }}
-                              />
-                            ) : (
-                              <div className="w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center text-lg font-bold shadow">
-                                {alum.fullName?.[0]?.toUpperCase() || "?"}
-                              </div>
-                            )}
-                            <div>
-                              <p className="font-semibold">{alum.fullName}</p>
-                              <p className="text-sm text-gray-500">
-                                {alum.emailId}
-                              </p>
-                            </div>
-                          </div>
-                          {expandedId === alum._id ? (
-                            <ChevronUp className="text-gray-500" />
-                          ) : (
-                            <ChevronDown className="text-gray-500" />
-                          )}
-                        </div>
+          {/* Right side: student count + arrow */}
+          <div className="flex items-center gap-4 text-white">
+            <span className="text-sm font-medium bg-white/20 px-3 py-1 rounded-full">
+              {students.length} {students.length === 1 ? "Student" : "Students"}
+            </span>
+            <div
+              className={`transform transition-transform duration-300 ${
+                expandedCollege === college ? "rotate-180" : ""
+              }`}
+            >
+              {expandedCollege === college ? <ChevronUp /> : <ChevronDown />}
+            </div>
+          </div>
+        </div>
 
-                        {expandedId === alum._id && (
-                          <div className="bg-gray-50 px-6 mt-4 text-sm text-gray-700">
-                            <div className="flex justify-between items-center">
-                              <div className="space-y-1">
-                                <p>
-                                  <strong>Gender:</strong> {alum.gender}
-                                </p>
-                                <p>
-                                  <strong>Branch:</strong> {alum.branch}
-                                </p>
-                                <p>
-                                  <strong>Batch:</strong> {alum.batch}
-                                </p>
-                                <p>
-                                  <strong>Age:</strong> {alum.age}
-                                </p>
-                                <p>
-                                  <strong>Mobile:</strong> {alum.mobileNumber}
-                                </p>
-                                <p>
-                                  <strong>Registration:</strong>{" "}
-                                  {alum.registration}
-                                </p>
-                              </div>
-                              <p className="text-xs text-gray-400 ml-4 self-center">
-                                <strong>Added On:</strong>{" "}
-                                {moment(alum.createdAt).format(
-                                  "DD MMM YYYY, h:mm A"
-                                )}
-                              </p>
-                            </div>
-
-                            {/* Show buttons only if same college */}
-                            {admin?.collegeName === alum.collegeName && (
-                              <div className="flex gap-4 pt-4">
-                                <button
-                                  onClick={() =>
-                                    !actionLoading &&
-                                    setDeleteModal({ show: true, id: alum._id })
-                                  }
-                                  disabled={actionLoading}
-                                  className={`flex items-center gap-2 px-4 py-2 text-white rounded-md 
-                                    ${
-                                      actionLoading
-                                        ? "bg-red-400 cursor-not-allowed"
-                                        : "bg-red-600 hover:bg-red-700"
-                                    }`}
-                                >
-                                  <Trash2 size={16} /> Delete
-                                </button>
-                                <button
-                                  onClick={() =>
-                                    !actionLoading && openEmailModal(alum.emailId)
-                                  }
-                                  disabled={actionLoading}
-                                  className={`flex items-center gap-2 px-4 py-2 text-white rounded-md 
-                                    ${
-                                      actionLoading
-                                        ? "bg-blue-400 cursor-not-allowed"
-                                        : "bg-blue-600 hover:bg-blue-700"
-                                    }`}
-                                >
-                                  <Mail size={16} /> Send Email
-                                </button>
-                              </div>
-                            )}
-                          </div>
-                        )}
+        {/* Students list inside college */}
+        {expandedCollege === college && (
+          <div className="divide-y">
+            {students.map((alum) => (
+              <div
+                key={alum._id}
+                className="py-4 transition-all duration-200 hover:bg-gray-50"
+              >
+                <div
+                  onClick={() => toggleExpandStudent(alum._id)}
+                  className="flex items-center justify-between px-6 cursor-pointer"
+                >
+                  <div className="flex items-center gap-4">
+                    {alum.photourl ? (
+                      <img
+                        src={alum.photourl}
+                        className="w-12 h-12 rounded-full object-cover shadow cursor-pointer"
+                        alt={alum.fullName}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedImage(alum.photourl);
+                        }}
+                      />
+                    ) : (
+                      <div className="w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center text-lg font-bold shadow">
+                        {alum.fullName?.[0]?.toUpperCase() || "?"}
                       </div>
-                    ))}
+                    )}
+                    <div>
+                      <p className="font-semibold">{alum.fullName}</p>
+                      <p className="text-sm text-gray-500">{alum.registration}</p>
+                      <p className="text-sm text-gray-500">{alum.emailId}</p>
+                      
+                    </div>
+                  </div>
+                  {expandedId === alum._id ? (
+                    <ChevronUp className="text-gray-500" />
+                  ) : (
+                    <ChevronDown className="text-gray-500" />
+                  )}
+                </div>
+
+                {expandedId === alum._id && (
+                  <div className="bg-gray-50 px-6 mt-4 text-sm text-gray-700">
+                    <div className="flex justify-between items-center">
+                      <div className="space-y-1">
+                        <p>
+                          <strong>Gender:</strong> {alum.gender}
+                        </p>
+                        <p>
+                          <strong>Branch:</strong> {alum.branch}
+                        </p>
+                        <p>
+                          <strong>Batch:</strong> {alum.batch}
+                        </p>
+                        <p>
+                          <strong>Age:</strong> {alum.age}
+                        </p>
+                        <p>
+                          <strong>Mobile:</strong> {alum.mobileNumber}
+                        </p>
+                        {/* <p>
+                          <strong>Registration:</strong> {alum.registration}
+                        </p> */}
+                      </div>
+                      <p className="text-xs text-gray-400 ml-4 self-center">
+                        <strong>Added On:</strong>{" "}
+                        {moment(alum.createdAt).format("DD MMM YYYY, h:mm A")}
+                      </p>
+                    </div>
+
+                    {/* Show buttons only if same college */}
+                    {admin?.collegeName === alum.collegeName && (
+                      <div className="flex gap-4 pt-4">
+                        <button
+                          onClick={() =>
+                            !actionLoading &&
+                            setDeleteModal({ show: true, id: alum._id })
+                          }
+                          disabled={actionLoading}
+                          className={`flex items-center gap-2 px-4 py-2 text-white rounded-md 
+                            ${
+                              actionLoading
+                                ? "bg-red-400 cursor-not-allowed"
+                                : "bg-red-600 hover:bg-red-700"
+                            }`}
+                        >
+                          <Trash2 size={16} /> Delete
+                        </button>
+                        <button
+                          onClick={() =>
+                            !actionLoading && openEmailModal(alum.emailId)
+                          }
+                          disabled={actionLoading}
+                          className={`flex items-center gap-2 px-4 py-2 text-white rounded-md 
+                            ${
+                              actionLoading
+                                ? "bg-blue-400 cursor-not-allowed"
+                                : "bg-blue-600 hover:bg-blue-700"
+                            }`}
+                        >
+                          <Mail size={16} /> Send Email
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
-            );
-          })}
-        </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  })}
+</div>
+
       </div>
 
       {/* 📩 Email Modal */}

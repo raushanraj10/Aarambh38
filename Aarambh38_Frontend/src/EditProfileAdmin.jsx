@@ -17,6 +17,7 @@ const EditProfileAdmin = () => {
     age: "",
     gender: "",
     photourl: "",
+    mobileNumber: "",
   });
 
   const [message, setMessage] = useState("");
@@ -35,6 +36,7 @@ const EditProfileAdmin = () => {
         gender: AdminData.gender || "",
         age: AdminData.age || "",
         photourl: AdminData.photourl || "https://via.placeholder.com/100",
+        mobileNumber: AdminData?.mobileNumber || "",
       });
     }
   }, [AdminData]);
@@ -62,13 +64,13 @@ const EditProfileAdmin = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { fullName, age, gender, photourl } = formData;
+    const { fullName, age, gender, photourl, mobileNumber } = formData;
 
     setIsLoading(true);
     try {
       const res = await axios.post(
         `${BASE_URL}/editadmin`,
-        { fullName, age, gender, photourl },
+        { fullName, age, gender, photourl, mobileNumber },
         { withCredentials: true }
       );
 
@@ -106,6 +108,36 @@ const EditProfileAdmin = () => {
             placeholder="Email"
             type="email"
           />
+
+          {/* College Name (Disabled) */}
+          <input
+            name="collegeName"
+            value={formData.collegeName}
+            disabled
+            className="w-full border rounded px-3 py-2 bg-gray-100 cursor-not-allowed"
+            placeholder="College Name"
+          />
+
+          {/* Mobile Number (Enabled) */}
+         <input
+  name="mobileNumber"
+  value={formData.mobileNumber}
+  onChange={(e) => {
+    const value = e.target.value;
+    // Allow only digits, max 10, starting with 6-9
+    if (/^[6-9]\d{0,9}$/.test(value) || value === "") {
+      setFormData((prev) => ({ ...prev, mobileNumber: value }));
+    }
+  }}
+  className="w-full border rounded px-3 py-2"
+  placeholder="Mobile Number"
+  type="tel"
+  maxLength={10}
+  pattern="[6-9][0-9]{9}"
+  required
+/>
+
+
           <select
             name="gender"
             value={formData.gender}
@@ -159,8 +191,10 @@ const EditProfileAdmin = () => {
             />
             <p className="text-lg font-bold">{formData.fullName || "Full Name"}</p>
             <p className="text-xs text-gray-400 mt-2">{formData.emailId || "Email Address"}</p>
+            <p className="text-sm text-gray-500">{formData.mobileNumber || "Mobile Number"}</p>
             <p className="text-sm text-gray-500">{formData.age || "Age"}</p>
             <p className="text-sm text-gray-500 mt-3 px-4">{formData.gender || "Gender"}</p>
+            <p className="text-sm text-gray-400 mt-1">{formData.collegeName || "College"}</p>
           </div>
         )}
       </div>

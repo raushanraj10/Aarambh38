@@ -95,7 +95,7 @@ ProfileRouter.post("/editalumni", UserAuth, async (req, res) => {
 
 ProfileRouter.post("/editadmin", UserAuth, async (req, res) => {
   try {
-    const { fullName, gender, age, photourl } = req.body;
+    const { fullName, gender, age, photourl,mobileNumber } = req.body;
     const decode = req.decode;
 
     const data = await ModelAdmin.findOne({ _id: decode });
@@ -105,6 +105,7 @@ ProfileRouter.post("/editadmin", UserAuth, async (req, res) => {
     data.fullName = fullName;
     data.gender = gender;
     data.age = age;
+    data.mobileNumber=mobileNumber
 
     // Optional photo upload
     if (photourl) {
@@ -114,7 +115,7 @@ ProfileRouter.post("/editadmin", UserAuth, async (req, res) => {
 
     await data.save();
 
-    const updatedData = await ModelAdmin.findOne({ _id: decode }).select("fullName age emailId gender photourl emailId");
+    const updatedData = await ModelAdmin.findOne({ _id: decode }).select("fullName age emailId gender photourl emailId mobileNumber");
     res.send(updatedData);
   } catch (err) {
     console.error(err);
@@ -184,7 +185,7 @@ ProfileRouter.get("/getadminprofile", UserAuth, async (req, res) => {
   try {
     const fromuserId = req.decode;
     const finaldata = await ModelAdmin.findOne({ _id: fromuserId._id }).select(
-      "fullName emailId role collegeName batch photourl age company gender about branch gate"
+      "fullName emailId  collegeName  photourl age gender mobileNumber"
     );
 
     if (!finaldata) {
