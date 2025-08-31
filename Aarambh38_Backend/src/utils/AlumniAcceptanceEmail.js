@@ -5,22 +5,24 @@ const AlumniAcceptanceEmail = async ({ emailId, fullName }) => {
     const info = await transporter.sendMail({
       from: '"Aarambh38 Team" <aarambh38fromstart@gmail.com>',
       to: emailId,
-      subject: "Welcome to Aarambh38 – You're Now a Verified Alumni Mentor!",
-      text: `Dear ${fullName},\n\nCongratulations! Your alumni profile has been successfully verified by the Aarambh38 team. You can now guide students and contribute to shaping the future. Login to your dashboard to begin mentoring.\n\nWarm regards,\nThe Aarambh38 Team`,
+      subject: "Welcome to Aarambh38 – Your Alumni Profile is Verified!",
+      text: `Dear ${fullName},\n\nWe are delighted to inform you that your alumni profile has been successfully verified by the Aarambh38 team. You can now mentor students, share experiences, and contribute to shaping the next generation.\n\nWarm regards,\nThe Aarambh38 Team`,
       html: `
         <div style="background-color: #f2f4f8; padding: 40px; font-family: 'Segoe UI', sans-serif;">
           <div style="max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 10px; padding: 30px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
             <div style="text-align: center; margin-bottom: 30px;">
               <h1 style="color: #4A90E2; margin-bottom: 5px;">You're Verified!</h1>
-              <p style="color: #333; font-size: 18px;">Welcome to the Aarambh38 Mentor Community</p>
+              <p style="color: #333; font-size: 18px;">Welcome to the Aarambh38 Alumni Community</p>
             </div>
             <p style="font-size: 16px; color: #333;">Dear <strong>${fullName}</strong>,</p>
             <p style="font-size: 16px; color: #333;">
-              Congratulations! Your profile has been <strong>successfully verified</strong> by the Aarambh38 team. 
-              You are now part of a growing community of dedicated alumni mentors committed to shaping student futures.
+              We are delighted to inform you that your alumni profile has been 
+              <strong>successfully verified</strong> by the Aarambh38 team. 
+              You can now mentor students, share your experiences, and guide them in their career journeys.
             </p>
             <p style="font-size: 16px; color: #333;">
-              As a verified mentor, you can connect with students, provide guidance, share your experience, and make a meaningful impact in their educational and professional journey.
+              Your contribution will empower students, build meaningful connections, 
+              and help create a strong bridge between academia and industry.
             </p>
             
             <p style="font-size: 14px; color: #555;">

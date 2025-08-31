@@ -5,6 +5,8 @@ const ModelAlumini = require("../models/ModelAlumini");
 const ModelUser = require("../models/ModelUser");
 const SendEmailToUserByAdmin = require("../utils/SendEmailToUserByAdmin");
 const AlumniAcceptanceEmail = require("../utils/AlumniAcceptanceEmail");
+const StudentRejectionEmail = require("../utils/StudentRejectionEmail");
+const AlumniRejectionEmail = require("../utils/AlumniRejectionEmail");
 
 const AdminRouter=express.Router()
 const alumniselectdatalist="_id fullName gate gender collegeName emailId branch role company batch age photourl about mobileNumber registration createdAt"
@@ -31,7 +33,7 @@ AdminRouter.get("/getallstudent",UserAuth, async (req,res)=>{
    
     if(!Admindata)
         return res.status(400).send("Not Available Data")
-    const StudentList=await ModelUser.find({}).select(studentdatalist)
+    const StudentList=await ModelUser.find({reach:true}).select(studentdatalist)
     res.send(StudentList)}
     catch(err){res.send(err.message)}
     
@@ -115,6 +117,20 @@ AdminRouter.get("/getallrequestedalumni",UserAuth, async (req,res)=>{
     
 })
 
+
+AdminRouter.get("/getallrequestedstudent",UserAuth, async (req,res)=>{
+    try{
+    const AdminId = req.decode;
+    const Admindata=await ModelAdmin.findOne({_id:AdminId}) 
+    // if(Admindata.emailId==="aarambh38fromstart@gmail.com" || Admindata.emailId==="kumarraushanraj10@gamil.com")
+    if(!Admindata)
+        return res.status(400).send("No Admin Found")
+    const StudentList=await ModelUser.find({reach:false}).select(studentdatalist)
+    res.send(StudentList)}
+    catch(err){res.send(err.message)}
+    
+})
+
 AdminRouter.post("/alumnirequest/:id/:action",UserAuth, async (req,res)=>{
     try{
         // console.log("fhsdufhksf")
@@ -131,8 +147,11 @@ AdminRouter.post("/alumnirequest/:id/:action",UserAuth, async (req,res)=>{
         return res.status(400).send("Illegal Action college must be same")
     if(action==="Reject")
     {
+        const {emailId,fullName}=alumnidata
+        await AlumniRejectionEmail({emailId,fullName})
         await ModelAlumini.deleteOne({_id:id})
         return res.send("Request Action Taken Successfull")
+
     }
    
     alumnidata.toshow=true
@@ -144,6 +163,50 @@ AdminRouter.post("/alumnirequest/:id/:action",UserAuth, async (req,res)=>{
     catch(err){res.send(err.message)}
     
 })
+
+
+
+
+AdminRouter.post("/studentrequest/:id/:action", UserAuth, async (req, res) => {
+  try {
+    const AdminId = req.decode;
+    const adminData = await ModelAdmin.findOne({ _id: AdminId });
+
+    const { id, action } = req.params;
+    const allowedActions = ["Approved", "Reject"];
+    if (!allowedActions.includes(action)) {
+      return res.status(400).send("Illegal Action");
+    }
+
+    const studentData = await ModelUser.findOne({ _id: id });
+    if (!studentData) return res.status(404).send("Student not found");
+
+    if (adminData.collegeName !== studentData.collegeName) {
+      return res.status(400).send("Illegal Action: college must be same");
+    }
+
+    const { emailId, fullName } = studentData;
+
+    if (action === "Reject") {
+    //   console.log("Sending rejection email to:", emailId);
+      await StudentRejectionEmail({ emailId, fullName });
+      await ModelUser.deleteOne({ _id: id });
+      return res.send("Request action taken successfully");
+    }
+
+    // Approve action
+    studentData.reach = true; // or 'toshow' if you prefer
+    await studentData.save();
+    console.log("Sending approval email to:", emailId);
+    await AlumniAcceptanceEmail({ emailId, fullName });
+
+    res.send("Request action taken successfully");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send(err.message);
+  }
+});
+;
 
 
 module.exports=AdminRouter

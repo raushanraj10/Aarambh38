@@ -13,6 +13,7 @@ const ModelOtp = require("../models/ModelOtp");
 const ModelOtpAdmin=require("../models/ModelOtpAdmin");
 const SendEmailForAdmin = require("../utils/SendEmailForAdmin");
 const governmentEngineeringColleges = require("../constants/CollegeList38");
+const { finished } = require("nodemailer/lib/xoauth2");
 
 const AuthRouter=express.Router()
 
@@ -237,6 +238,90 @@ AuthRouter.post("/signupalumini", async (req, res) => {
 
 
 
+
+AuthRouter.post("/alumniaddbyadmin",UserAuth, async (req, res) => {
+  try {
+    const data = req.body;
+    const { fullName,
+    emailId,
+    collegeName,
+    registration,
+    batch,
+    company,
+    role,
+    gender,
+    branch,
+    newPassword,
+    confirmPassword,
+    gate,
+    about,
+    photourl } = req.body;
+
+
+    const requiredFields = [
+      "fullName", "gender", "emailId", "newPassword", "confirmPassword",
+      "registration", "batch", "collegeName", "company", "role",
+      "photourl", "about", "branch","gate"
+    ];
+      // console.log(req.body.gate)
+    const missingFields = requiredFields.filter(field => !(field in data));
+    if (missingFields.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: `Missing fields: ${missingFields.join(", ")}`,
+      });
+    }
+
+    // ✅ Extra validation hook
+    const data1 = validateBodyData(req, res);
+    if (data1) return;
+
+    // ✅ Check duplicate email across collections
+    const checkUser =
+      (await ModelUser.findOne({ emailId })) ||
+      (await ModelAlumini.findOne({ emailId })) ||
+      (await ModelAdmin.findOne({ emailId }));
+
+    if (checkUser) {
+      return res.status(400).json({
+        success: false,
+        message: "Email already exists. Please use another email.",
+      });
+    }
+
+    // ✅ Password match
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Passwords do not match.",
+      });
+    }
+
+    // ✅ Password hashing
+    data.newPassword = await bcrypt.hash(newPassword, 10);
+    data.confirmPassword = await bcrypt.hash(confirmPassword, 10);
+     
+    // ✅ Save alumni
+    const finalData = new ModelAlumini(data);
+    finalData.toshow=true
+    await finalData.save();
+    console.log(finalData)
+    // ✅ Email notification
+    // EmailAlumniRequest(req.body);
+
+    return res.status(201).json({
+      success: true,
+      message: "Signup successful!",
+    });
+
+  } catch (err) {
+    console.error("Signup error:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error. Please try again later.",
+    });
+  }
+});
 
 
 

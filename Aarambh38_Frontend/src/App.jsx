@@ -32,6 +32,8 @@ import AdminAlumniRequests from "./components/Admin/AdminAlumniRequests";
 import ChatHelpPage from "./components/ChatHelp";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
+import AddAlumniAdmin from "./AddAlumniAdmin";
+import AdminStudentRequests from "./components/Admin/AdminStudentRequests";
 
 function App() {
   return (
@@ -231,6 +233,23 @@ function App() {
               element={
                 <ProtectedRoute role="admin">
                   <AdminAlumniRequests />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/addalumniadmin"
+              element={
+                <ProtectedRoute role="admin">
+                  <AddAlumniAdmin/>
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/recivedrequestfromstudent"
+              element={
+                <ProtectedRoute role="admin">
+                  <AdminStudentRequests/>
                 </ProtectedRoute>
               }
             />
