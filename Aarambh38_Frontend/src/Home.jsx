@@ -21,15 +21,10 @@ export default function Home() {
   "Build Your Professional Network",
   "Easily Ask for Referrals from Alumni",
   "Explore Alumni Career Journeys",
-  "Get Personalized Guidance Anytime",
   "Stay Motivated with Real Success Stories",
   "Unlock Opportunities Through Connections",
-  "Learn, Connect, and Level Up Together",
   "Ask Which Path is Right for Your Career Goal",
-  "Get Clarity on Your Dream Career from Alumni",
-  "Understand What It Takes to Achieve Your Aim",
   "Plan Your Future with Alumni Who've Been There",
-  "Make Smarter Choices with Real-World Insights",
   "Alumni Can Privately Help Students Without Sharing Personal Info",
    "Only Verified Alumni Are Shown in the Student Dashboard",
    "Get Guidance from GATE Qualified Alumni for Your Preparation"
@@ -76,19 +71,21 @@ export default function Home() {
     <div className="bg-white">
       {/* Hero Section */}
       <section className="max-w-7xl mx-auto px-4 py-16 text-center">
-        <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-500 to-green-500 transition-all duration-700 ease-in-out mb-4">
-          {headings[index]}
-        </h1>
-        <p className="text-lg text-gray-600 mb-6 max-w-xl mx-auto">
-          A modern platform to connect students with successful alumni for mentorship, networking, and career growth.
-        </p>
-        {!Studentdata&&!Aluminidata&&<Link
-          to="/signupchoice"
-          className="inline-block px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
-        >
-          Join the Network
-        </Link>}
-      </section>
+  <h1 className="pb-2 text-4xl sm:text-5xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-500 to-green-500 transition-all duration-700 ease-in-out mb-4 leading-tight">
+    {headings[index]}
+  </h1>
+  <p className="text-lg text-gray-600 mb-4 max-w-xl mx-auto">
+    A modern platform to connect students with successful alumni for mentorship, networking, and career growth.
+  </p>
+  {!Studentdata && !Aluminidata && (
+    <Link
+      to="/signupchoice"
+      className="inline-block px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
+    >
+      Join the Network
+    </Link>
+  )}
+</section>
 
       
 

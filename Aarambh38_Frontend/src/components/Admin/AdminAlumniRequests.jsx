@@ -461,7 +461,7 @@ const [popupType, setPopupType] = useState("success"); // "success" | "error"
                   <p><strong>College:</strong> {alum.collegeName}</p>
                   <p><strong>Branch:</strong> {alum.branch}</p>
                   <p><strong>Batch:</strong> {alum.batch}</p>
-                  <p><strong>Age:</strong> {alum.age}</p>
+                  {/* <p><strong>Age:</strong> {alum.age}</p> */}
                   <p><strong>Mobile:</strong> {alum.mobileNumber}</p>
                   <p><strong>About:</strong> {alum.about}</p>
                   <p><strong>Registration No.:</strong> {alum.registration}</p>

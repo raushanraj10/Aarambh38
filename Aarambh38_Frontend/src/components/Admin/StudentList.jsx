@@ -620,12 +620,13 @@ useEffect(() => {
                         <p>
                           <strong>Age:</strong> {alum.age}
                         </p>
-                        {/* <p>
-                          <strong>Mobile:</strong> {alum.mobileNumber}
-                        </p> */}
-                        {/* <p>
+                        <p>
                           <strong>Registration:</strong> {alum.registration}
-                        </p> */}
+                        </p>
+                        <p>
+                          <strong>Mobile:</strong> {alum.mobileNumber}
+                        </p>
+                        
                       </div>
                       <p className="text-xs text-gray-400 ml-4 self-center">
                         <strong>Added On:</strong>{" "}
