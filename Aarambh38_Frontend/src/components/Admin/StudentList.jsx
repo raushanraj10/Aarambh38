@@ -511,7 +511,7 @@ useEffect(() => {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by Name, Batch, or Registration No..."
+            placeholder="Search by Name, Batch, Branch, College Name or Registration No..."
             className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
         </div>
@@ -524,6 +524,8 @@ useEffect(() => {
       return (
         s?.fullName?.toLowerCase().includes(query) ||
         s?.batch?.toString().toLowerCase().includes(query) ||
+        s?.branch?.toString().toLowerCase().includes(query) ||
+        s?.collegeName?.toString().toLowerCase().includes(query) ||
         s.registration?.toString().toLowerCase().includes(query)
       );
     });
@@ -589,7 +591,8 @@ useEffect(() => {
                     )}
                     <div>
                       <p className="font-semibold">{alum.fullName}</p>
-                      <p className="text-sm text-gray-500">{alum.registration}</p>
+                      
+                      <p className="text-sm text-gray-500">{alum.branch}</p>
                       <p className="text-sm text-gray-500">{alum.emailId}</p>
                       
                     </div>
@@ -617,9 +620,9 @@ useEffect(() => {
                         <p>
                           <strong>Age:</strong> {alum.age}
                         </p>
-                        <p>
+                        {/* <p>
                           <strong>Mobile:</strong> {alum.mobileNumber}
-                        </p>
+                        </p> */}
                         {/* <p>
                           <strong>Registration:</strong> {alum.registration}
                         </p> */}

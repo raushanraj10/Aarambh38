@@ -470,7 +470,9 @@ const AdminAlumniList = () => {
     const q = search.toLowerCase();
     return (
       a?.fullName?.toLowerCase().includes(q) ||
-      a?.batch?.toString().toLowerCase().includes(q) ||
+      a?.company?.toString().toLowerCase().includes(q) ||
+      a?.role?.toString().toLowerCase().includes(q) ||
+      a?.collegeName?.toString().toLowerCase().includes(q) ||
       a?.registration?.toString().toLowerCase().includes(q)
     );
   });
@@ -484,9 +486,11 @@ const AdminAlumniList = () => {
 
   // 📌 Order: Admin college first
   const orderedColleges = [
-    ...(admin?.collegeName ? [admin.collegeName] : []),
-    ...Object.keys(groupedByCollege).filter((c) => c !== admin?.collegeName),
-  ];
+  ...(admin?.collegeName && groupedByCollege[admin.collegeName]
+    ? [admin.collegeName]
+    : []),
+  ...Object.keys(groupedByCollege).filter((c) => c !== admin?.collegeName),
+];
 
   if (loading) return <Shimmer />;
 
@@ -510,7 +514,7 @@ const AdminAlumniList = () => {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by Name, Batch, or Registration No..."
+            placeholder="Search by Name, Company, Role, College or Registration No..."
             className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
         </div>
