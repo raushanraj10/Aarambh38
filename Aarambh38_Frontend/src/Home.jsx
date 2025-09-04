@@ -15,7 +15,7 @@ export default function Home() {
   const Studentdata = useSelector((store) => store.studentdata);
   const Aluminidata = useSelector((store) => store.aluminidata);
   const headings = [
-  "Welcome to Aarambh38",
+  "Welcome to संyukt38",
   "Connect Alumni and Students",
   "Grow Together with Mentorship",
   "Build Your Professional Network",
@@ -169,7 +169,7 @@ export default function Home() {
   <div className="max-w-6xl mx-auto px-4">
     {/* Section Heading */}
     <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-12 text-center">
-      Why Aarambh38?
+      Why संyukt38?
     </h2>
 
     {/* Cards Grid */}
@@ -301,7 +301,7 @@ export default function Home() {
       Ready to Start Your Journey?
     </h2>
     <p className="text-sm text-gray-600 mb-5">
-      Connect with mentors, explore opportunities, and grow with Aarambh38.
+      Connect with mentors, explore opportunities, and grow with संyukt38.
     </p>
     {!Studentdata&&!Aluminidata&&<Link
       to="/signupchoice"

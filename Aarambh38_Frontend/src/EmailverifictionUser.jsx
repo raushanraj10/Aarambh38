@@ -72,7 +72,7 @@ export default function EmailVerificationUser() {
       { withCredentials: true }
     );
 
-    setMessage("✅ Verification successful! Welcome to Aarambh38 🎉");
+    setMessage("✅ Verification successful! Welcome to संyukt38 🎉");
     setMessageType("success");
     setShowMessage(true);
 
@@ -160,11 +160,11 @@ export default function EmailVerificationUser() {
           </button>
         </form>
 
-        {/* Aarambh38 Promo */}
+        {/* संyukt38 Promo */}
         <div className="mt-8 bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-xl p-4 text-sm text-green-800 text-center shadow-inner">
           🎓{" "}
           <strong className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600 tracking-tight">
-            Aarambh38
+            संyukt38
           </strong>{" "}
           is your space to grow, connect, and shine. <br />
           <span className="text-blue-600 font-semibold">

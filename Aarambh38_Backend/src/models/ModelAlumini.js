@@ -38,7 +38,10 @@ const AluminiSchema=new mongoose.Schema({
         default:"Google"
     },
 
-
+ linkedinshow:{
+        type:String,
+        default:""
+    },
     batch:{
         type:Number,
         // require:true,

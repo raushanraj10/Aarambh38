@@ -166,7 +166,7 @@ export default function SignupPageAdmin() {
         <p className="text-center text-sm text-gray-600 mb-1">
           Join the leadership at{" "}
           <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600">
-            Aarambh38
+            संyukt38
           </span>
         </p>
         <p className="text-xs text-center text-gray-400 mb-6">

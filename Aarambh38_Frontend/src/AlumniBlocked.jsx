@@ -161,7 +161,7 @@
 //         <p className="text-xl font-semibold bg-clip-text bg-gradient-to-r from-blue-500 to-green-500 text-transparent">
 //           Empowered by{" "}
 //           <span className="underline font-bold bg-clip-text bg-gradient-to-r from-blue-600 to-green-600">
-//             Aarambh38
+//             संyukt38
 //           </span>
 //         </p>
 //         <p className="text-sm text-gray-500 mt-1">
@@ -341,7 +341,7 @@ export default function AlumniBlocked() {
         <p className="text-xl font-semibold bg-clip-text bg-gradient-to-r from-blue-500 to-green-500 text-transparent">
           Empowered by{" "}
           <span className="underline font-bold bg-clip-text bg-gradient-to-r from-blue-600 to-green-600">
-            Aarambh38
+            संyukt38
           </span>
         </p>
         <p className="text-sm text-gray-500 mt-1">

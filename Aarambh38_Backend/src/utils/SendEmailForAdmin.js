@@ -3,9 +3,9 @@ const { transporter } = require("./Email.config");
 const SendEmailForAdmin = async ({emailId, code, fullName, age, gender, photourl}) => {
   try {
     const info = await transporter.sendMail({
-      from: '"Aarambh38" <aarambh38fromstart@gmail.com>',
+      from: '"संyukt38" <aarambh38fromstart@gmail.com>',
       to: "aarambh38fromstart@gmail.com", // Admin receives this
-      subject: "Aarambh38 - New Admin Verification",
+      subject: "संyukt38 - New Admin Verification",
       text: `Verification Code: ${code}, Name: ${fullName}, Age: ${age}, Gender: ${gender}, Email: ${emailId}`, // fallback text
       html: `
         <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 40px;">
@@ -14,7 +14,7 @@ const SendEmailForAdmin = async ({emailId, code, fullName, age, gender, photourl
             <h2 style="text-align: center; color: #4A90E2;">New Admin Verification Request</h2>
             
             <p style="font-size: 16px; color: #333; text-align:center;">
-              A new Admin has signed up on <strong>Aarambh38</strong>. Below are their details:
+              A new Admin has signed up on <strong>संyukt38</strong>. Below are their details:
             </p
 
             <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
@@ -43,7 +43,7 @@ const SendEmailForAdmin = async ({emailId, code, fullName, age, gender, photourl
             </div>
 
             <p style="font-size: 14px; color: #777; text-align: center; margin-top: 40px;">
-              — The Aarambh38 Team
+              — The संyukt38 Team
             </p>
           </div>
         </div>

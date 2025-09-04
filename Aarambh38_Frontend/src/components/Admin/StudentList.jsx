@@ -438,7 +438,7 @@ const StudentList = () => {
 
   const openEmailModal = (email) => {
     setSelectedEmail(email);
-    setEmailSubject("Aarambh38 Student Message");
+    setEmailSubject("संyukt38 Student Message");
     setEmailMessage("");
     setIsModalOpen(true);
   };

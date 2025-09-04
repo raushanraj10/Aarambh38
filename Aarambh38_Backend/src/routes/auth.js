@@ -174,7 +174,7 @@ AuthRouter.post("/signupalumini", async (req, res) => {
     const requiredFields = [
       "fullName", "gender", "emailId", "newPassword", "confirmPassword",
       "registration", "batch", "collegeName", "company", "role",
-      "photourl", "about", "branch","gate"
+      "photourl", "about", "branch","gate","linkedinshow"
     ];
       // console.log(req.body.gate)
     const missingFields = requiredFields.filter(field => !(field in data));
@@ -442,7 +442,7 @@ AuthRouter.post("/loginalumini",async (req,res)=>{
     })
 
     const finalemail=await ModelAlumini.findOne({emailId:emailId})
-        .select("fullName role collegeName batch photourl age company gender gate emailId about branch")
+        .select("fullName role collegeName batch photourl age company gender gate emailId about branch linkedinshow")
 
     return res.send(finalemail)
 })

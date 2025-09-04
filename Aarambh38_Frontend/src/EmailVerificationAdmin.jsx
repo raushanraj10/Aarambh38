@@ -108,7 +108,7 @@ export default function EmailVerificationAdmin() {
           </h2>
           <p className="text-gray-700 text-sm">
             You're almost part of the{" "}
-            <span className="text-blue-600 font-semibold">Aarambh38</span>{" "}
+            <span className="text-blue-600 font-semibold">संyukt38</span>{" "}
             leadership. Enter the codes sent to your email and admin passkey to
             continue.
           </p>

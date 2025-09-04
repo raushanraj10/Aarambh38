@@ -176,6 +176,11 @@ if(loading) return <Shimmer/>
           <p><strong>📅 Batch:</strong> {alumni.batch}</p>
           <p><strong>📅 Branch:</strong> {alumni.branch}</p>
           <p><strong>⚧ Gender:</strong> {alumni.gender}</p>
+           {alumni?.linkedinshow && (
+  <p className="text-blue-600 break-all">
+    {alumni.linkedinshow}
+  </p>
+)}
 
           <div className="mt-6 bg-gray-50 border-l-4 border-blue-400 p-4 rounded-md shadow-sm">
             <h3 className="text-lg font-semibold text-blue-700 flex items-center gap-2">

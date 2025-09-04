@@ -14,16 +14,16 @@ const SendAcceptanceEmail = async ({
     const roleUpper = role ? role.toUpperCase() : "";
 
     const info = await transporter.sendMail({
-      from: '"Aarambh38" <aarambh38fromstart@gmail.com>',
+      from: '"संyukt38" <aarambh38fromstart@gmail.com>',
       to: emailId,
       subject: "🎉 Your Connection Request Has Been Accepted!",
-      text: `Good news! ${fullName} from ${collegeName} (Batch ${batch}), currently working at ${companyUpper} as ${roleUpper}, has accepted your connection request on Aarambh38.`,
+      text: `Good news! ${fullName} from ${collegeName} (Batch ${batch}), currently working at ${companyUpper} as ${roleUpper}, has accepted your connection request on संyukt38.`,
       html: `
       <div style="background-color:#f4f6f8; padding: 40px 0; font-family: Arial, sans-serif;">
         <div style="max-width:600px; margin:auto; background:#ffffff; padding:30px 40px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
           
           <h2 style="color:#2c3e50; text-align:center; margin-bottom:20px;">
-            🎉 Connection Accepted on <span style="color:#3498db;">Aarambh38</span>
+            🎉 Connection Accepted on <span style="color:#3498db;">संyukt38</span>
           </h2>
 
           <p style="font-size:16px; color:#444; line-height:1.6;">
@@ -45,7 +45,7 @@ const SendAcceptanceEmail = async ({
           </div>
 
           <p style="text-align:center; font-size:13px; color:#999; margin-top:40px;">
-            — The Aarambh38 Team
+            — The संyukt38 Team
           </p>
         </div>
       </div>

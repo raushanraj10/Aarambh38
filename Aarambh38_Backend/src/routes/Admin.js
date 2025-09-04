@@ -9,7 +9,7 @@ const StudentRejectionEmail = require("../utils/StudentRejectionEmail");
 const AlumniRejectionEmail = require("../utils/AlumniRejectionEmail");
 
 const AdminRouter=express.Router()
-const alumniselectdatalist="_id fullName gate gender collegeName emailId branch role company batch age photourl about mobileNumber registration createdAt"
+const alumniselectdatalist="_id fullName linkedinshow gate gender collegeName emailId branch role company batch age photourl about mobileNumber registration createdAt"
 const studentdatalist="_id fullName gender collegeName emailId branch batch age photourl mobileNumber registration createdAt"
 
 
@@ -44,7 +44,7 @@ AdminRouter.delete("/deletestudent/:fromuserId",UserAuth, async (req,res)=>{
     const AdminId = req.decode;
     const Admindata=await ModelAdmin.findOne({_id:AdminId}) 
     const {fromuserId}=req.params
-    // if(Admindata.emailId==="aarambh38fromstart@gmail.com" || Admindata.emailId==="kumarraushanraj10@gamil.com")
+    
     if(!Admindata)
         return res.status(400).send("Not Available Data")
     const Studentdata=await ModelUser.findOne({_id:fromuserId})
@@ -65,7 +65,7 @@ AdminRouter.delete("/deletealumni/:touserId", UserAuth,async (req,res)=>{
     const Admindata=await ModelAdmin.findOne({_id:AdminId}) 
     const {touserId}=req.params
     // console.log(touserId)
-    // if(Admindata.emailId==="aarambh38fromstart@gmail.com" || Admindata.emailId==="kumarraushanraj10@gamil.com")
+    
     if(!Admindata)
         return res.status(400).send("Not Available Data")
     const AlumniData= await ModelAlumini.findOne({_id:touserId})
@@ -108,7 +108,7 @@ AdminRouter.get("/getallrequestedalumni",UserAuth, async (req,res)=>{
     try{
     const AdminId = req.decode;
     const Admindata=await ModelAdmin.findOne({_id:AdminId}) 
-    // if(Admindata.emailId==="aarambh38fromstart@gmail.com" || Admindata.emailId==="kumarraushanraj10@gamil.com")
+   
     if(!Admindata)
         return res.status(400).send("No Admin Found")
     const AlumniList=await ModelAlumini.find({toshow:false}).select(alumniselectdatalist)
@@ -122,7 +122,7 @@ AdminRouter.get("/getallrequestedstudent",UserAuth, async (req,res)=>{
     try{
     const AdminId = req.decode;
     const Admindata=await ModelAdmin.findOne({_id:AdminId}) 
-    // if(Admindata.emailId==="aarambh38fromstart@gmail.com" || Admindata.emailId==="kumarraushanraj10@gamil.com")
+   
     if(!Admindata)
         return res.status(400).send("No Admin Found")
     const StudentList=await ModelUser.find({reach:false}).select(studentdatalist)

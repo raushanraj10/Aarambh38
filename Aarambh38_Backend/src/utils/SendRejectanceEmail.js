@@ -14,10 +14,10 @@ const SendRejectanceEmail = async ({
     const roleUpper = role ? role.toUpperCase() : "";
 
     const info = await transporter.sendMail({
-      from: '"Aarambh38" <aarambh38fromstart@gmail.com>',
+      from: '"संyukt38" <aarambh38fromstart@gmail.com>',
       to: emailId,
       subject: "🙏 Update on Your Connection Request",
-      text: `Hello! Unfortunately, ${fullName} from ${collegeName} (Batch ${batch}), currently at ${companyUpper} as ${roleUpper}, was unable to accept your connection request at this time. But don’t lose heart — many more alumni are here to guide and support you. Keep connecting, your right mentor is waiting for you on Aarambh38 🚀`,
+      text: `Hello! Unfortunately, ${fullName} from ${collegeName} (Batch ${batch}), currently at ${companyUpper} as ${roleUpper}, was unable to accept your connection request at this time. But don’t lose heart — many more alumni are here to guide and support you. Keep connecting, your right mentor is waiting for you on संyukt38 🚀`,
       html: `
       <div style="background-color:#f9f9fb; padding: 40px 0; font-family: Arial, sans-serif;">
         <div style="max-width:600px; margin:auto; background:#ffffff; padding:30px 40px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
@@ -35,7 +35,7 @@ const SendRejectanceEmail = async ({
 
           <p style="font-size:15px; color:#555; margin-top:20px;">
             But don’t lose heart 💙. Every “No” is just a step closer to finding the right mentor.  
-            Many alumni on Aarambh38 are here to share their knowledge and experiences with you.  
+            Many alumni on संyukt38 are here to share their knowledge and experiences with you.  
             Keep reaching out — your perfect guide is waiting! 🚀
           </p>
 
@@ -47,7 +47,7 @@ const SendRejectanceEmail = async ({
           </div>
 
           <p style="text-align:center; font-size:13px; color:#999; margin-top:40px;">
-            — The Aarambh38 Team
+            — The संyukt38 Team
           </p>
         </div>
       </div>

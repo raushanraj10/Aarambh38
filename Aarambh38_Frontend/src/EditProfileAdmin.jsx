@@ -176,7 +176,7 @@ const EditProfileAdmin = () => {
         {isLoading ? (
           <div className="w-full flex flex-col items-center justify-center text-center animate-pulse">
             <h1 className="text-4xl font-extrabold bg-gradient-to-r from-blue-600 to-green-600 bg-[length:300%_100%] bg-clip-text text-transparent animate-shimmer tracking-wide mb-2">
-              Aarambh38
+              संyukt38
             </h1>
             <p className="text-gray-500 text-base">Stay motivated and please wait...</p>
           </div>

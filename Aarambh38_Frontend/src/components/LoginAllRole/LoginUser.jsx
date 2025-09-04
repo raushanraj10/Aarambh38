@@ -113,7 +113,7 @@ export default function LoginUser() {
         <p className="text-md text-center text-gray-600 mb-6">
           Login to{" "}
           <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600 tracking-tight">
-            Aarambh38
+            संyukt38
           </span>{" "}
           as Student
         </p>

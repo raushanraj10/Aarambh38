@@ -3,7 +3,7 @@ const { transporter } = require("./Email.config");
 const SendEmail = async ({ emailId, data, message }) => {
   try {
     const info = await transporter.sendMail({
-      from: '"Aarambh38" <aarambh38fromstart@gmail.com>',
+      from: '"संyukt38" <aarambh38fromstart@gmail.com>',
       to: emailId,
       subject: "New Connection Request from a Student",
       text: `${data.fullName} from ${data.collegeName}, ${data.branch} wants to connect with you.\n\nMessage:\n${message}`,
@@ -12,7 +12,7 @@ const SendEmail = async ({ emailId, data, message }) => {
         <div style="max-width:600px; margin:auto; background:#ffffff; padding:30px 40px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
           
           <h2 style="color:#2c3e50; text-align:center; margin-bottom:20px;">
-            🤝 Connection Request on <span style="color:#3498db;">Aarambh38</span>
+            🤝 Connection Request on <span style="color:#3498db;">संyukt38</span>
           </h2>
 
           <p style="font-size:16px; color:#444; line-height:1.6;">
@@ -26,7 +26,7 @@ const SendEmail = async ({ emailId, data, message }) => {
           </div>
 
           <p style="font-size:15px; color:#555;">
-            Please log in to your <strong>Aarambh38</strong> alumni dashboard to respond to this request.
+            Please log in to your <strong>संyukt38</strong> alumni dashboard to respond to this request.
           </p>
 
           <div style="text-align:center; margin-top:30px;">
@@ -36,7 +36,7 @@ const SendEmail = async ({ emailId, data, message }) => {
           </div>
 
           <p style="text-align:center; font-size:13px; color:#999; margin-top:40px;">
-            — The Aarambh38 Team
+            — The संyukt38 Team
           </p>
         </div>
       </div>

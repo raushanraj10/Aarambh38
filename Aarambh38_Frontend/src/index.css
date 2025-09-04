@@ -42,7 +42,7 @@
 
 /* --- Watermark fade-out (optional) --- */
 .fade-highlight::after {
-  content: "Aarambh38";
+  content: "संyukt38";
   position: absolute;
   top: 50%;
   left: 50%;
@@ -106,4 +106,8 @@
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent; /* important for Safari/Chrome */
+}
+@font-face {
+  font-family: "Samarkan";
+  src: url("./assets/fonts/Samarkan.ttf") format("truetype");
 }

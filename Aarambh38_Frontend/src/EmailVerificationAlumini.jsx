@@ -51,6 +51,7 @@ const handleSubmit = async (e) => {
       photourl,
       about,
       gate,
+      linkedinshow
     } = verifydata;
 
     const res = await axios.post(
@@ -71,6 +72,7 @@ const handleSubmit = async (e) => {
         role,
         code,
         gate,
+        linkedinshow,
       },
       { withCredentials: true }
     );
@@ -162,11 +164,11 @@ const handleSubmit = async (e) => {
           </button>
         </form>
 
-        {/* Aarambh38 Promo Box */}
+        {/* संyukt38 Promo Box */}
         <div className="mt-8 bg-yellow-50 border border-yellow-200 rounded-xl p-4 text-sm text-yellow-800 text-center shadow-inner">
           🌟{" "}
           <strong className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600 tracking-tight">
-            Aarambh38
+            संyukt38
           </strong>{" "}
           connects alumni and students to build a culture of inspiration, growth, and giving back.
           <br />

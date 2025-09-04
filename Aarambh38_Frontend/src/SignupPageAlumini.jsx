@@ -49,8 +49,8 @@ export default function SignupPageAlumini() {
     confirmPassword: "",
     gate:"",
     about: "",
-    photourl:
-      "",
+    photourl:"",
+      linkedinshow:""
   });
 
   useEffect(() => {
@@ -84,11 +84,25 @@ const validateFields = () => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   // Required check for all fields except "code"
-  Object.entries(formData).forEach(([key, value]) => {
-  if (!value && key !== "code" && key !== "gate") {
+ Object.entries(formData).forEach(([key, value]) => {
+  if (
+    !value &&
+    key !== "code" &&
+    key !== "gate" &&
+    key !== "linkedinshow" // ✅ optional
+  ) {
     errors[key] = "This field is required.";
   }
+
+  // Extra check: LinkedIn must be a valid URL if filled
+  if (key === "linkedinshow" && value) {
+    const urlPattern = /^(https?:\/\/)?(www\.)?linkedin\.com\/.*$/i;
+    if (!urlPattern.test(value)) {
+      errors[key] = "Please enter a valid LinkedIn profile URL.";
+    }
+  }
 });
+
 
 
   // Email validation
@@ -179,7 +193,7 @@ const validateFields = () => {
         <h2 className="text-3xl font-bold text-center text-stone-800 mb-2">
           Welcome to{" "}
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600">
-            Aarambh38
+            संyukt38
           </span>
         </h2>
         <p className="text-center text-gray-600 text-sm mb-6">
@@ -188,110 +202,43 @@ const validateFields = () => {
         </p>
 
    <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
-  {[
-    "fullName",
-    "emailId",
-    "registration",
-    "batch",
-    "company",
-    "role",
-    "photourl",
-  ].map((field) => (
-    <div
-      key={field}
-      className={`col-span-1 ${
-        field === "photourl" ? "md:col-span-2 order-last" : ""
+  {/* Full Name */}
+  <div className="col-span-1">
+    <label className="block text-sm font-medium text-gray-700 mb-1">
+      Full Name
+    </label>
+    <input
+      type="text"
+      name="fullName"
+      value={formData.fullName}
+      onChange={handleChange}
+      className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${
+        formErrors.fullName
+          ? "border-red-500 ring-2 ring-red-300"
+          : "border-gray-300 focus:ring-2 focus:ring-blue-500"
       }`}
-    >
-      <label className="block text-sm font-medium text-gray-700 mb-1">
-        {field
-          .replace(/([A-Z])/g, " $1")
-          .replace("Id", " ID")
-          .replace(/\b\w/g, (c) => c.toUpperCase())}
-      </label>
+      required
+    />
+  </div>
 
-      {/* Registration Number (only 11 digits) */}
-     {field === "registration" ? (
-  // Registration Number (must be exactly 11 digits)
-  <input
-    type="text"
-    name="registration"
-    value={formData.registration}
-    onChange={(e) => {
-      let onlyNums = e.target.value.replace(/[^0-9]/g, ""); // allow only numbers
-      if (onlyNums.length > 11) onlyNums = onlyNums.slice(0, 11); // restrict to 11
-      handleChange({ target: { name: "registration", value: onlyNums } });
-    }}
-    className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${
-      formErrors.registration
-        ? "border-red-500 ring-2 ring-red-300"
-        : "border-gray-300 focus:ring-2 focus:ring-blue-500"
-    }`}
-    required
-    minLength={11}
-    maxLength={11}
-    pattern="\d{11}"
-    placeholder="Enter 11-digit registration no."
-  />
-) : field === "batch" ? (
-  // Batch (must be exactly 4 digits)
-  <input
-    type="text"
-    name="batch"
-    value={formData.batch}
-    onChange={(e) => {
-      let onlyNums = e.target.value.replace(/[^0-9]/g, ""); // allow only numbers
-      if (onlyNums.length > 4) onlyNums = onlyNums.slice(0, 4); // restrict to 4
-      handleChange({ target: { name: "batch", value: onlyNums } });
-    }}
-    className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${
-      formErrors.batch
-        ? "border-red-500 ring-2 ring-red-300"
-        : "border-gray-300 focus:ring-2 focus:ring-blue-500"
-    }`}
-    required
-    minLength={4}
-    maxLength={4}
-    pattern="\d{4}"
-    placeholder="e.g. 2025"
-  />
-)  : field !== "photourl" ? (
-        <input
-          type={field === "emailId" ? "email" : "text"}
-          name={field}
-          value={formData[field]}
-          onChange={handleChange}
-          className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${
-            formErrors[field]
-              ? "border-red-500 ring-2 ring-red-300"
-              : "border-gray-300 focus:ring-2 focus:ring-blue-500"
-          }`}
-          required
-        />
-      ) : (
-        <>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            className="mt-2 w-full border border-gray-300 rounded-lg px-4 py-2 bg-white"
-          />
-
-          {formData.photourl && (
-            <div className="mt-4 flex justify-center">
-              <img
-                src={formData.photourl}
-                alt="Preview"
-                className="h-32 w-32 rounded-full object-cover border border-gray-300 shadow cursor-pointer transition-transform hover:scale-105"
-                onClick={() => setImageModalOpen(true)}
-                onError={(e) => (e.target.style.display = "none")}
-              />
-            </div>
-          )}
-        </>
-      )}
-    </div>
-  ))}
+  {/* Email ID */}
+  <div className="col-span-1">
+    <label className="block text-sm font-medium text-gray-700 mb-1">
+      Email ID
+    </label>
+    <input
+      type="email"
+      name="emailId"
+      value={formData.emailId}
+      onChange={handleChange}
+      className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${
+        formErrors.emailId
+          ? "border-red-500 ring-2 ring-red-300"
+          : "border-gray-300 focus:ring-2 focus:ring-blue-500"
+      }`}
+      required
+    />
+  </div>
 
   {/* College Name */}
   <div className="col-span-1">
@@ -318,30 +265,31 @@ const validateFields = () => {
     )}
   </div>
 
-  {/* Gender */}
+  {/* Batch */}
   <div className="col-span-1">
     <label className="block text-sm font-medium text-gray-700 mb-1">
-      Gender
+      Batch
     </label>
-    <select
-      name="gender"
-      value={formData.gender}
-      onChange={handleChange}
+    <input
+      type="text"
+      name="batch"
+      value={formData.batch}
+      onChange={(e) => {
+        let onlyNums = e.target.value.replace(/[^0-9]/g, "");
+        if (onlyNums.length > 4) onlyNums = onlyNums.slice(0, 4);
+        handleChange({ target: { name: "batch", value: onlyNums } });
+      }}
       className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${
-        formErrors.gender
+        formErrors.batch
           ? "border-red-500 ring-2 ring-red-300"
           : "border-gray-300 focus:ring-2 focus:ring-blue-500"
       }`}
       required
-    >
-      <option value="">Select Gender</option>
-      <option value="Male">Male</option>
-      <option value="Female">Female</option>
-      <option value="Other">Other</option>
-    </select>
-    {formErrors.gender && (
-      <p className="text-xs text-red-500 mt-1">{formErrors.gender}</p>
-    )}
+      minLength={4}
+      maxLength={4}
+      pattern="\d{4}"
+      placeholder="e.g. 2025"
+    />
   </div>
 
   {/* Branch */}
@@ -372,60 +320,199 @@ const validateFields = () => {
     )}
   </div>
 
-{/* GATE Qualification (Optional) */}
-<div className="col-span-1">
+  {/* Registration */}
+  <div className="col-span-1">
+    <label className="block text-sm font-medium text-gray-700 mb-1">
+      Registration
+    </label>
+    <input
+      type="text"
+      name="registration"
+      value={formData.registration}
+      onChange={(e) => {
+        let onlyNums = e.target.value.replace(/[^0-9]/g, "");
+        if (onlyNums.length > 11) onlyNums = onlyNums.slice(0, 11);
+        handleChange({ target: { name: "registration", value: onlyNums } });
+      }}
+      className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${
+        formErrors.registration
+          ? "border-red-500 ring-2 ring-red-300"
+          : "border-gray-300 focus:ring-2 focus:ring-blue-500"
+      }`}
+      required
+      minLength={11}
+      maxLength={11}
+      pattern="\d{11}"
+      placeholder="Enter 11-digit registration no."
+    />
+  </div>
+
+  {/* Gender */}
+  <div className="col-span-1">
+    <label className="block text-sm font-medium text-gray-700 mb-1">
+      Gender
+    </label>
+    <select
+      name="gender"
+      value={formData.gender}
+      onChange={handleChange}
+      className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${
+        formErrors.gender
+          ? "border-red-500 ring-2 ring-red-300"
+          : "border-gray-300 focus:ring-2 focus:ring-blue-500"
+      }`}
+      required
+    >
+      <option value="">Select Gender</option>
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+      <option value="Other">Other</option>
+    </select>
+    {formErrors.gender && (
+      <p className="text-xs text-red-500 mt-1">{formErrors.gender}</p>
+    )}
+  </div>
+
+ 
+{/* LinkedIn Profile (Optional) */}
+<div className="col-span-1 md:col-span-2">
   <label className="block text-sm font-medium text-gray-700 mb-1">
-    GATE Qualification (Optional)
+    LinkedIn Profile (Optional)
   </label>
-  <select
-    name="gate"
-    value={formData.gate}
+  <p className="text-xs text-gray-500 mb-2">
+    ⚠️ Fill this only if you want to share your LinkedIn profile with students.
+  </p>
+  <input
+    type="url"
+    name="linkedinshow"
+    value={formData.linkedinshow}
     onChange={handleChange}
-    className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${
-      formErrors.gate
-        ? "border-red-500 ring-2 ring-red-300"
-        : "border-gray-300 focus:ring-2 focus:ring-blue-500"
-    }`}
-  >
-    <option value="">Select</option>
-    <option value="Qualified">Qualified</option>
-    {/* <option value="Not Qualified">Not Qualified</option> */}
-  </select>
-  {formErrors.gate && (
-    <p className="text-xs text-red-500 mt-1">{formErrors.gate}</p>
+    className={`w-full px-4 py-2 border rounded-lg focus:outline-none 
+      ${formErrors.linkedinshow ? "border-red-500" : "border-gray-300"} 
+      focus:ring-2 focus:ring-blue-500`}
+    placeholder="https://www.linkedin.com/in/your-profile"
+  />
+  {formErrors.linkedinshow && (
+    <p className="text-sm text-red-500 mt-1">{formErrors.linkedinshow}</p>
   )}
 </div>
 
 
+
+  {/* Company */}
+  <div className="col-span-1">
+    <label className="block text-sm font-medium text-gray-700 mb-1">
+     Current Company Name
+    </label>
+    <input
+      type="text"
+      name="company"
+      value={formData.company}
+      onChange={handleChange}
+      className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${
+        formErrors.company
+          ? "border-red-500 ring-2 ring-red-300"
+          : "border-gray-300 focus:ring-2 focus:ring-blue-500"
+      }`}
+      required
+    />
+  </div>
+
+  {/* Role */}
+  <div className="col-span-1">
+    <label className="block text-sm font-medium text-gray-700 mb-1">
+      Role
+    </label>
+    <input
+      type="text"
+      name="role"
+      value={formData.role}
+      onChange={handleChange}
+      className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${
+        formErrors.role
+          ? "border-red-500 ring-2 ring-red-300"
+          : "border-gray-300 focus:ring-2 focus:ring-blue-500"
+      }`}
+      required
+    />
+  </div>
+
+  {/* GATE Qualification */}
+  <div className="col-span-1">
+    <label className="block text-sm font-medium text-gray-700 mb-1">
+      GATE Qualification (Optional)
+    </label>
+    <select
+      name="gate"
+      value={formData.gate}
+      onChange={handleChange}
+      className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${
+        formErrors.gate
+          ? "border-red-500 ring-2 ring-red-300"
+          : "border-gray-300 focus:ring-2 focus:ring-blue-500"
+      }`}
+    >
+      <option value="">Select</option>
+      <option value="Qualified">Qualified</option>
+    </select>
+    {formErrors.gate && (
+      <p className="text-xs text-red-500 mt-1">{formErrors.gate}</p>
+    )}
+  </div>
+
   {/* About */}
- <div className="col-span-1 md:col-span-2">
-  <label className="block text-sm font-medium text-gray-700 mb-1">
-    About
-  </label>
-  <p className="text-xs text-gray-500 mb-1">
-    Please share your journey line by line (Internship, Experience, Achievements, Guidance).
-  </p>
-  <textarea
-    name="about"
-    rows={6}
-    value={formData.about}
-    onChange={handleChange}
-    className={`w-full px-4 py-2 border rounded-lg focus:outline-none resize-none whitespace-pre-line ${
-      formErrors.about
-        ? "border-red-500 ring-2 ring-red-300"
-        : "border-gray-300 focus:ring-2 focus:ring-blue-500"
-    }`}
-    placeholder={`1. Internship: Infosys, Summer 2022 (Frontend Developer)
+  <div className="col-span-1 md:col-span-2">
+    <label className="block text-sm font-medium text-gray-700 mb-1">
+      About
+    </label>
+    <p className="text-xs text-gray-500 mb-1">
+      Please share your journey line by line (Internship, Experience,
+      Achievements, Guidance).
+    </p>
+    <textarea
+      name="about"
+      rows={6}
+      value={formData.about}
+      onChange={handleChange}
+      className={`w-full px-4 py-2 border rounded-lg focus:outline-none resize-none whitespace-pre-line ${
+        formErrors.about
+          ? "border-red-500 ring-2 ring-red-300"
+          : "border-gray-300 focus:ring-2 focus:ring-blue-500"
+      }`}
+      placeholder={`1. Internship: Infosys, Summer 2022 (Frontend Developer)
 2. Full-time Experience: TCS (2022–2024), Google (2024–present)
 3. Achievements: GATE qualified, 5⭐ HackerRank in Problem Solving
 4. Guidance: Happy to help with resume building, DSA, project selection`}
-    required
-  />
-  {formErrors.about && (
-    <p className="text-xs text-red-500 mt-1">{formErrors.about}</p>
-  )}
-</div>
+      required
+    />
+    {formErrors.about && (
+      <p className="text-xs text-red-500 mt-1">{formErrors.about}</p>
+    )}
+  </div>
 
+  {/* Photo Upload */}
+  <div className="col-span-1 md:col-span-2 order-last">
+    <label className="block text-sm font-medium text-gray-700 mb-1">
+      Photo
+    </label>
+    <input
+      type="file"
+      accept="image/*"
+      onChange={handleFileChange}
+      className="mt-2 w-full border border-gray-300 rounded-lg px-4 py-2 bg-white"
+    />
+    {formData.photourl && (
+      <div className="mt-4 flex justify-center">
+        <img
+          src={formData.photourl}
+          alt="Preview"
+          className="h-32 w-32 rounded-full object-cover border border-gray-300 shadow cursor-pointer transition-transform hover:scale-105"
+          onClick={() => setImageModalOpen(true)}
+          onError={(e) => (e.target.style.display = "none")}
+        />
+      </div>
+    )}
+  </div>
 
   {/* Password */}
   <div className="col-span-1 relative">

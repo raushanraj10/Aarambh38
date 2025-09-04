@@ -3,10 +3,10 @@ const { transporter } = require("./Email.config");
 const StudentRejectionEmail = async ({ emailId, fullName }) => {
   try {
     await transporter.sendMail({
-      from: '"Aarambh38 Team" <aarambh38fromstart@gmail.com>',
+      from: '"संyukt38 Team" <aarambh38fromstart@gmail.com>',
       to: emailId,
-      subject: "Aarambh38 Verification Update",
-      text: `Dear ${fullName},\n\nWe regret to inform you that your student profile verification could not be approved at this time. Please review your details and try again or contact our support team for assistance.\n\nBest regards,\nThe Aarambh38 Team`,
+      subject: "संyukt38 Verification Update",
+      text: `Dear ${fullName},\n\nWe regret to inform you that your student profile verification could not be approved at this time. Please review your details and try again or contact our support team for assistance.\n\nBest regards,\nThe संyukt38 Team`,
       html: `
         <div style="background-color: #f2f4f8; padding: 40px; font-family: 'Segoe UI', sans-serif;">
           <div style="max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 10px; padding: 30px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
@@ -27,7 +27,7 @@ const StudentRejectionEmail = async ({ emailId, fullName }) => {
               <a href="mailto:aarambh38fromstart@gmail.com" style="color: #E74C3C;">aarambh38fromstart@gmail.com</a> for any queries.
             </p>
             <p style="font-size: 14px; color: #999; text-align: center; margin-top: 40px;">
-              — The Aarambh38 Team
+              — The संyukt38 Team
             </p>
           </div>
         </div>

@@ -17,7 +17,7 @@ const EmailAlumniRequest = async (alumnidata) => {
     } = alumnidata;
 
     const info = await transporter.sendMail({
-      from: '"Aarambh38" <aarambh38fromstart@gmail.com>',
+      from: '"संyukt38" <aarambh38fromstart@gmail.com>',
       to: "aarambh38fromstart@gmail.com", // send to admin
       subject: "New Alumni Registration Submitted",
       html: `
@@ -48,7 +48,7 @@ const EmailAlumniRequest = async (alumnidata) => {
             </table>
 
             <p style="font-size: 14px; color: #777; margin-top: 30px; text-align: center;">
-              — Aarambh38 System Notification
+              — संyukt38 System Notification
             </p>
           </div>
         </div>

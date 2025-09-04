@@ -3,8 +3,8 @@ const { transporter } = require("./Email.config");
 const SendEmailByUser = async ({ useremail, subject, usermessage }) => {
   try {
     await transporter.sendMail({
-      from: `"Aarambh38 User" <${useremail}>`,
-      to: '"Aarambh38 Admin" <aarambh38fromstart@gmail.com>',
+      from: `"संyukt38 User" <${useremail}>`,
+      to: '"संyukt38 Admin" <aarambh38fromstart@gmail.com>',
       subject,
       text: usermessage,
       html: `
@@ -12,7 +12,7 @@ const SendEmailByUser = async ({ useremail, subject, usermessage }) => {
           <div style="max-width:600px; margin:auto; background:#ffffff; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.1); overflow:hidden;">
             <div style="background:linear-gradient(90deg, #2563EB, #1DB954); padding:20px 30px;">
               <h2 style="margin:0; color:white; font-weight:600; font-size:20px;">
-                📨 New Message from Aarambh38 User
+                📨 New Message from संyukt38 User
               </h2>
             </div>
             <div style="padding:30px;">
@@ -26,7 +26,7 @@ const SendEmailByUser = async ({ useremail, subject, usermessage }) => {
               </div>
             </div>
             <div style="background:#f9fafc; padding:20px 30px; text-align:center; font-size:13px; color:#999;">
-              This message was sent via the <strong>Aarambh38</strong> contact form.
+              This message was sent via the <strong>संyukt38</strong> contact form.
             </div>
           </div>
         </div>

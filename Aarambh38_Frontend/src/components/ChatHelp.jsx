@@ -165,7 +165,7 @@ const ChatHelpPage = () => (
       {/* Header */}
       <header className="mb-10 text-center px-2 sm:px-6">
         <h1 className="text-3xl sm:text-4xl font-extrabold bg-gradient-to-r from-blue-700 to-green-700 bg-clip-text text-transparent mb-2 leading-tight">
-          Aarambh38 Chat Help
+          संyukt38 Chat Help
         </h1>
         <p className="text-base sm:text-lg text-gray-600 max-w-3xl mx-auto">
           Learn how to use the chat features—whether you are a <span className="font-semibold text-blue-700">Student</span> or <span className="font-semibold text-green-700">Alumni</span>.
@@ -220,7 +220,7 @@ const ChatHelpPage = () => (
       {/* Footer */}
       <footer className="mt-16 pt-8 border-t border-gray-200 text-center text-sm sm:text-md text-gray-500 px-2 sm:px-6">
   <span className="font-extrabold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-    Aarambh38
+    संyukt38
   </span> – Secure, seamless conversations for alumni and students.
 </footer>
     </div>

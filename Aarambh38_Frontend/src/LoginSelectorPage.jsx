@@ -24,7 +24,7 @@ export default function LoginSelectorPage() {
     "Get career guidance from experienced professionals.",
     "Unlock exclusive internship and job opportunities.",
     "Empowering students through real alumni stories.",
-    "Your journey starts here — with Aarambh38.",
+    "Your journey starts here — with संyukt38.",
   ];
 
   const [currentAdIndex, setCurrentAdIndex] = useState(0);
@@ -58,10 +58,10 @@ export default function LoginSelectorPage() {
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-6 py-12">
       <div className="w-full max-w-7xl bg-white rounded-3xl shadow-2xl grid grid-cols-1 md:grid-cols-2 overflow-hidden">
         
-        {/* Left Side: Aarambh38 Branding */}
+        {/* Left Side: संyukt38 Branding */}
         <div className="flex flex-col justify-center items-start p-12 space-y-8 bg-gradient-to-br from-indigo-50 via-blue-50 to-green-50">
           <h1 className="text-5xl font-extrabold text-gray-800 leading-snug">
-            Welcome to <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600 tracking-tight">Aarambh38</span>
+            Welcome to <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600 tracking-tight">संyukt38</span>
           </h1>
           <p className="text-xl text-gray-600 min-h-[60px] transition duration-300 ease-in-out">
             {ads[currentAdIndex]}

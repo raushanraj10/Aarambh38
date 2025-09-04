@@ -8,19 +8,19 @@ const Requestonlineemail = async ({ emailId, fullName }) => {
     }
 
     const info = await transporter.sendMail({
-      from: '"Aarambh38" <aarambh38fromstart@gmail.com>',
+      from: '"संyukt38" <aarambh38fromstart@gmail.com>',
       to: emailId,
-      subject: `Chat Request from ${fullName} (Aarambh38 Alumni)`,
+      subject: `Chat Request from ${fullName} (संyukt38 Alumni)`,
       text: `Hello,
 
-${fullName}, an alumnus of Aarambh38, has requested to connect with you online to clear your queries and share guidance.
+${fullName}, an alumnus of संyukt38, has requested to connect with you online to clear your queries and share guidance.
 
 This is a great opportunity to interact directly and get your questions answered.
 
 Click the link below to join the online chat:
-http://aarambh38.com/online
+http://13.60.166.165/
 
-— The Aarambh38 Team
+— The संyukt38 Team
       `,
       html: `
         <div style="font-family: Arial, sans-serif; background-color: #f9fafb; padding: 40px;">
@@ -33,7 +33,7 @@ http://aarambh38.com/online
             </p>
             
             <p style="font-size: 16px; color: #333; line-height: 1.6;">
-              <strong>${fullName}</strong>, an alumnus of <strong>Aarambh38</strong>, has requested to connect with you online 
+              <strong>${fullName}</strong>, an alumnus of <strong>संyukt38</strong>, has requested to connect with you online 
               to help answer your questions and guide you.
             </p>
             
@@ -48,7 +48,7 @@ http://aarambh38.com/online
             </p>
             
             <p style="font-size: 14px; color: #777; text-align: center; margin-top: 40px;">
-              — The Aarambh38 Team
+              — The संyukt38 Team
             </p>
           </div>
         </div>

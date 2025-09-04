@@ -172,7 +172,7 @@ export default function SignupPageUser() {
         <h2 className="text-3xl font-bold text-center text-stone-800 mb-2">
           Welcome to{" "}
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600">
-            Aarambh38
+            संyukt38
           </span>
         </h2>
         <p className="text-center text-gray-600 text-sm mb-6">

@@ -68,7 +68,7 @@ export default function Footer() {
         <p className="text-sm text-gray-500 mb-4 md:mb-0 text-center md:text-left">
           © {new Date().getFullYear()}{" "}
           <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600 tracking-tight">
-            Aarambh38
+            संyukt38
           </span>
           . All rights reserved.
         </p>
@@ -113,7 +113,7 @@ export default function Footer() {
       are allowed to register and access this platform.
     </p>
     <p className="text-sm text-gray-600">
-      Only <span className="font-semibold text-green-600">Aarambh38 verified alumni</span> are shown in the student dashboard, allowing them to provide guidance privately without sharing their personal contact info.
+      Only <span className="font-semibold text-green-600">संyukt38 verified alumni</span> are shown in the student dashboard, allowing them to provide guidance privately without sharing their personal contact info.
     </p>
   </div>
 )}

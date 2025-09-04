@@ -15,7 +15,7 @@ const ProfileRouter=express.Router()
 
 
 ProfileRouter.get("/getlistalumni",UserAuth,  async (req,res)=>{
-    const list=await ModelAlumini.find({toshow:true}).select("fullName gate role collegeName batch photourl age company gender about branch")
+    const list=await ModelAlumini.find({toshow:true}).select("fullName gate linkedinshow role collegeName batch photourl age company gender about branch")
     // console.log(list)
     // if(toshow===false)
     //   return res.send("No such alumni")
@@ -61,7 +61,7 @@ ProfileRouter.post("/edituser", UserAuth, async (req, res) => {
 
 ProfileRouter.post("/editalumni", UserAuth, async (req, res) => {
   try {
-    const { fullName, gender, age, photourl, about, company, role } = req.body;
+    const { fullName, gender, age, photourl, about, company, role,linkedinshow } = req.body;
     const decode = req.decode;
 
     const data = await ModelAlumini.findOne({ _id: decode });
@@ -74,6 +74,7 @@ ProfileRouter.post("/editalumni", UserAuth, async (req, res) => {
     data.company = company;
     data.role = role;
     data.about = about;
+    data.linkedinshow=linkedinshow
 
     // If a new photo is provided, upload and update
     if (photourl) {
@@ -83,7 +84,7 @@ ProfileRouter.post("/editalumni", UserAuth, async (req, res) => {
 
     await data.save();
 
-    const updatedData = await ModelAlumini.findOne({ _id: decode }).select("fullName emailId role collegeName batch photourl age company gender about gate branch")
+    const updatedData = await ModelAlumini.findOne({ _id: decode }).select("fullName linkedinshow emailId role collegeName batch photourl age company gender about gate branch")
     res.send(updatedData);
   } catch (err) {
     console.error(err);
@@ -165,7 +166,7 @@ ProfileRouter.get("/getalumniprofile", UserAuth, async (req, res) => {
   try {
     const fromuserId = req.decode;
     const finaldata = await ModelAlumini.findOne({ _id: fromuserId._id }).select(
-      "fullName emailId role gate collegeName batch photourl age company gender about branch toshow"
+      "fullName emailId role gate collegeName batch photourl age company gender about branch toshow linkedinshow"
     );
 
     if (!finaldata) {

@@ -124,13 +124,26 @@ export default function Navbar() {
   return (
     <nav className="bg-white border-b shadow-md sticky top-0 z-50 transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-        {/* Logo */}
-        <Link
-          to="/"
-          className="text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-green-600"
-        >
-          Aarambh38
-        </Link>
+       {/* Logo */}
+<Link
+  to="/"
+  className="text-3xl font-bold tracking-wide drop-shadow-lg bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-green-600"
+>
+  {/* "San" in Sanskrit with anusvāra */}
+  <span style={{ fontFamily: "Samarkan, Devanagari" }}>
+    सं
+  </span>
+  {/* "yuk" in English */}
+  yukt
+  {/* "38" as is */}
+  38
+</Link>
+
+
+
+
+
+
 
         {/* Right side */}
         <div className="flex items-center space-x-4">

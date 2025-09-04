@@ -409,7 +409,7 @@ const AdminAlumniList = () => {
 
   const openEmailModal = (email) => {
     setSelectedEmail(email);
-    setEmailSubject("Aarambh38 Alumni Message");
+    setEmailSubject("संyukt38 Alumni Message");
     setEmailMessage("");
     setIsModalOpen(true);
   };
@@ -608,6 +608,11 @@ const AdminAlumniList = () => {
                       <p><strong>Mobile:</strong> {alum.mobileNumber}</p>
                       <p><strong>About:</strong> {alum.about}</p>
                       <p><strong>Registration:</strong> {alum.registration}</p>
+                       {alum?.linkedinshow && (
+  <p className="text-blue-600 break-all">
+    {alum.linkedinshow}
+  </p>
+)}
                     </div>
                     <p className="text-xs text-gray-400 text-right">
                       <strong>Added On:</strong>{" "}

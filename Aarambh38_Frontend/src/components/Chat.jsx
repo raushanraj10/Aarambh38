@@ -737,7 +737,7 @@ const handleRetry = async (pending) => {
     <Menu className="cursor-pointer" onClick={() => setSidebarOpen(!sidebarOpen)} />
   </div>
 <div className="absolute inset-0 flex items-center justify-center opacity-10 text-5xl font-extrabold text-white pointer-events-none select-none">
-    Aarambh38
+   संyukt38
   </div>
 
 
@@ -1404,7 +1404,7 @@ const handleRetry = async (pending) => {
           ) : (
             <div className="flex flex-col items-center justify-center h-full text-center text-gray-500">
               <div className="text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600 mb-4">
-                Aarambh38
+                संyukt38
               </div>
               <p className="text-lg">Select a user from the left panel to start chatting.</p>
             </div>

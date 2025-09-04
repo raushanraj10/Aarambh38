@@ -162,7 +162,7 @@ const EditProfileUser = () => {
           {loading ? (
             <div className="text-center">
               <h1 className="text-4xl sm:text-5xl font-extrabold bg-gradient-to-r from-blue-600 to-green-600 bg-[length:300%_100%] bg-clip-text text-transparent animate-shimmer tracking-wide mb-4">
-                Aarambh38
+                संyukt38
               </h1>
               <p className="text-base sm:text-lg text-gray-600 font-medium animate-pulse">
                 Stay motivated and please wait...

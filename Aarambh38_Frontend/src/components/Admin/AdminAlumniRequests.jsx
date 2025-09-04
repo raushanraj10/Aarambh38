@@ -232,11 +232,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { BASE_URL } from "../../constants/AllUrl";
-import { CheckCircle, XCircle, Search, Mail } from "lucide-react";
+import { CheckCircle, XCircle, Search, Mail, Link } from "lucide-react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Shimmer from "../../Shimmer";
 import moment from "moment";
+import { SocialIcon } from 'react-social-icons';
 
 const AdminAlumniRequests = () => {
   const [requests, setRequests] = useState([]);
@@ -465,6 +466,12 @@ const [popupType, setPopupType] = useState("success"); // "success" | "error"
                   <p><strong>Mobile:</strong> {alum.mobileNumber}</p>
                   <p><strong>About:</strong> {alum.about}</p>
                   <p><strong>Registration No.:</strong> {alum.registration}</p>
+               {alum?.linkedinshow && (
+  <p className="text-blue-600 break-all">
+    {alum.linkedinshow}
+  </p>
+)}
+
                 </div>
 
                 {/* Actions */}

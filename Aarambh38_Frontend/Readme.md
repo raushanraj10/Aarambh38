@@ -1,7 +1,116 @@
 color code of Aarambh38=font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600 tracking-tight
 
 
+return (
+      <div className={wrapClass}>
+        {[...baseLinks, ...roleLinks].map((item) => (
+          <Link
+            key={item.to}
+            to={item.to}
+            onClick={closeMenu}
+            className={linkClass}
+          >
+            {item.label}
+          </Link>
+        ))}
+        {logoutButton}
+      </div>
+    );
+  };
 
+  const loggedUser = Studentdata  Alumnidata  Admindata;
+
+  return (
+    <nav className="bg-white border-b shadow-md sticky top-0 z-50 transition-all duration-300">
+      <div className="max-w-7xl mx-auto px-4  flex justify-between items-center">
+        {/* Logo */}
+        <Link
+      to="/"
+      className="flex items-center justify-center bg-transparent"
+      style={{
+        fontSize: "60px", // same as HTML version
+        fontWeight: "bold",
+        background: "linear-gradient(to right, #2563eb, #16a34a)", // blue-600 to green-600
+        WebkitBackgroundClip: "text",
+        WebkitTextFillColor: "transparent",
+        backgroundClip: "text",
+        color: "transparent",
+        display: "inline-block",
+        overflow: "visible",
+        paddingRight: "30px",
+      }}
+    >
+      <span
+        style={{
+          fontFamily: "'Tiro Devanagari Hindi', serif",
+          fontSize: "50px",
+          fontStyle: "italic",
+        }}
+      >
+        सं
+      </span>
+      <span
+        style={{
+          fontFamily: "'Great Vibes', cursive",
+          marginLeft: "-2px",
+        }}
+      >
+        yukt38
+      </span>
+    </Link>
+
+        
+
+        {/* Right side */}
+        <div className="flex items-center space-x-4">
+          {/* Desktop Links */}
+          {renderLinks(false)}
+
+          {/* Profile section (only if logged in) */}
+        {/* Profile section (only if logged in) */}
+{loggedUser && (
+  <Link
+    to={
+      Studentdata
+        ? "/editprofileuser"
+        : Alumnidata
+        ? "/editprofilealumni"
+        : "/editprofileadmin"
+    }
+    className="flex items-center space-x-2"
+    onClick={closeMenu} // closes menu if open
+  >
+    <img
+      src={loggedUser.photourl || "/default-avatar.png"}
+      alt="Profile"
+      className="w-9 h-9 rounded-full border border-gray-300 object-cover hover:scale-105 transition-transform"
+    />
+  </Link>
+)}
+
+
+          {/* Hamburger for mobile */}
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="md:hidden text-gray-700"
+          >
+            <Menu size={28} />
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Dropdown */}
+      <div
+        ref={menuRef}
+        className={`md:hidden overflow-hidden transition-[max-height] duration-300 ease-in-out bg-white px-4 ${
+          menuOpen ? "max-h-96 py-4" : "max-h-0"
+        }`}
+      >
+        {renderLinks(true)}
+      </div>
+    </nav>
+  );
+}
 
 
 import { useState, useEffect, useRef } from "react";

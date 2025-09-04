@@ -57,7 +57,7 @@ export default function LoginAlumini() {
       // dispatch(addalumini(res.data));
       // dispatch(Verifieduser());
 
-      setMessage("A warm welcome back to our aarambh38 family.");
+      setMessage("A warm welcome back to our संyukt38 family.");
       setMessageType("success");
       setShowMessage(true);
 
@@ -111,7 +111,7 @@ export default function LoginAlumini() {
         <p className="text-md text-center text-gray-600 mb-6">
           Login to{" "}
           <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600">
-            Aarambh38
+            संyukt38
           </span>{" "}
           as Alumni
         </p>

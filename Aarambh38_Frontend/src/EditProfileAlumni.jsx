@@ -19,7 +19,9 @@ const EditProfileAlumni = () => {
     about: "",
     gender: "",
     photourl: "",
-    gate:""
+    gate:"",
+    linkedinshow:""
+
   });
 
   const [loading, setLoading] = useState(false);
@@ -40,7 +42,8 @@ const EditProfileAlumni = () => {
         about: alumniData.about || "",
         gender: alumniData.gender || "",
         photourl: alumniData.photourl || "",
-        gate:alumniData?.gate||""
+        gate:alumniData?.gate||"",
+        linkedinshow:alumniData?.linkedinshow||""
 
       });
     }
@@ -69,13 +72,13 @@ const EditProfileAlumni = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { fullName, company, gender, role, about, photourl } = formData;
+    const { fullName, company, gender, role, about, photourl,linkedinshow } = formData;
     setLoading(true);
 
     try {
       const res = await axios.post(
         `${BASE_URL}/editalumni`,
-        { fullName, company, gender, role, about, photourl },
+        { fullName, company, gender, role, about, photourl,linkedinshow },
         { withCredentials: true }
       );
 
@@ -166,12 +169,26 @@ const EditProfileAlumni = () => {
             placeholder="About You"
             rows={3}
           />
+             <input
+  type="url"
+  name="linkedinshow"
+  value={formData.linkedinshow}
+  onChange={handleChange}
+  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+  placeholder="https://www.linkedin.com/in/your-profile"
+  pattern="https?://(www\.)?linkedin\.com/.*"
+  title="Please enter a valid LinkedIn profile URL (e.g., https://www.linkedin.com/in/username)"
+/>
+
           <input
             type="file"
             accept="image/*"
             onChange={handleFileChange}
             className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-white"
           />
+
+     
+
           <button
             type="submit"
             className="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition"
@@ -186,7 +203,7 @@ const EditProfileAlumni = () => {
         {loading ? (
           <div className="min-h-[200px] flex flex-col items-center justify-center text-center px-4">
             <h1 className="text-4xl font-extrabold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent animate-shimmer tracking-wide mb-4">
-              Aarambh38
+              संyukt38
             </h1>
             <p className="text-base text-gray-600 font-medium animate-pulse">
               Stay motivated and please wait...
@@ -213,6 +230,11 @@ const EditProfileAlumni = () => {
             <p className="text-sm text-gray-600">{formData.gender || "Gender"}</p>
             <p className="text-sm text-gray-500 px-2">{formData.about || "About..."}</p>
             <p className="text-xs text-gray-400">{formData.email || "Email Address"}</p>
+            {formData?.linkedinshow && (
+  <p className="text-blue-600 break-all">
+    {formData.linkedinshow}
+  </p>
+)}
           </div>
         )}
       </div>

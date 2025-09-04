@@ -24,7 +24,7 @@ export default function SignupChoice() {
       {/* Main content */}
       <div className="relative z-10 bg-white/80 backdrop-blur-xl border border-gray-200 shadow-2xl rounded-3xl px-10 py-14 w-full max-w-6xl text-center">
         <h1 className="text-4xl md:text-5xl font-extrabold text-indigo-800 mb-4">
-          Join <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600 tracking-tight">Aarambh38</span>
+          Join <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600 tracking-tight">संyukt38</span>
         </h1>
         <p className="text-lg text-gray-700 mb-10">
           Build your future by connecting students, alumni, and mentors in one platform.

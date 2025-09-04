@@ -287,7 +287,7 @@
 //         <p className="text-xl font-semibold bg-clip-text bg-gradient-to-r from-blue-500 to-green-500 text-transparent">
 //           Empowered by{" "}
 //           <span className="underline font-bold bg-clip-text bg-gradient-to-r from-blue-600 to-green-600">
-//             Aarambh38
+//             संyukt38
 //           </span>
 //         </p>
 //         <p className="text-sm text-gray-500 mt-1">
@@ -683,7 +683,7 @@
 //         <p className="text-xl font-semibold bg-clip-text bg-gradient-to-r from-blue-500 to-green-500 text-transparent">
 //           Empowered by{" "}
 //           <span className="underline font-bold bg-clip-text bg-gradient-to-r from-blue-600 to-green-600">
-//             Aarambh38
+//             संyukt38
 //           </span>
 //         </p>
 //         <p className="text-sm text-gray-500 mt-1">
@@ -706,6 +706,9 @@ import { useNavigate, Link } from "react-router-dom";
 import { BASE_URL } from "./constants/AllUrl";
 import Shimmer from "./Shimmer";
 import { GraduationCap } from "lucide-react";
+import { SocialIcon } from 'react-social-icons';
+// at the top of your file
+
 export default function StudentLandingPage() {
   const capitalizeEachWord = (str) =>
     str?.replace(/\b\w/g, (char) => char.toUpperCase()) || "";
@@ -1085,10 +1088,17 @@ function AlumniCard({
 
         <div className="flex-1 space-y-1 text-sm text-gray-800">
           <p><span className="font-semibold">👤 Name:</span> {alumni.fullName}</p>
+          <p><span className="font-semibold">⚧ Gender:</span> {alumni.gender}</p>
           <p><span className="font-semibold">🎓 Batch:</span> {alumni.batch}</p>
           <p><span className="font-semibold">👤 Branch:</span> {alumni.branch}</p>
           <p><span className="font-semibold">🏫 College:</span> {alumni.collegeName}</p>
-          <p><span className="font-semibold">⚧ Gender:</span> {alumni.gender}</p>
+         {alumni?.linkedinshow && (
+        <p className="text-blue-600 break-all">
+         {alumni.linkedinshow}
+        </p>
+         )}
+
+          
           <p className="text-base text-gray-800 font-medium mt-1">
             <span className="font-semibold text-green-700">🏢 Company:</span>{" "}
             {capitalizeEachWord(alumni.company)}
