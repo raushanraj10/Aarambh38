@@ -37,7 +37,7 @@ import AdminStudentRequests from "./components/Admin/AdminStudentRequests";
 import ForgotPasswordOtp from "./ForgotPasswordOtp";
 import ResetPassword from "./ResetPassword";
 import ForgotPasswordOtpAdmin from "./ForgotPasswordOtpAdmin";
-import ForgotPasswordOtpAlumni from "./ForgotPasswordOtpalumni";
+import ForgotPasswordOtpAlumni from "./ForgotPasswordOtpAlumni";
 
 function App() {
   return (
