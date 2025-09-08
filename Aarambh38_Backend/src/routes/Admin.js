@@ -99,7 +99,7 @@ if (
     await SendEmailToUserByAdmin({ to, subject,  message });
     res.status(200).send("Email sent successfully");
   } catch (err) {
-    console.error("Email error:", err);
+    // console.error("Email error:", err);
     res.status(500).send("Email failed");
   }
 });
@@ -197,12 +197,12 @@ AdminRouter.post("/studentrequest/:id/:action", UserAuth, async (req, res) => {
     // Approve action
     studentData.reach = true; // or 'toshow' if you prefer
     await studentData.save();
-    console.log("Sending approval email to:", emailId);
+    // console.log("Sending approval email to:", emailId);
     await AlumniAcceptanceEmail({ emailId, fullName });
 
     res.send("Request action taken successfully");
   } catch (err) {
-    console.error(err);
+    // console.error(err.message);
     res.status(500).send(err.message);
   }
 });

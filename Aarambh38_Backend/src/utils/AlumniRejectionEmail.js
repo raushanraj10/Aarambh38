@@ -3,7 +3,7 @@ const { transporter } = require("./Email.config");
 const AlumniRejectionEmail = async ({ emailId, fullName }) => {
   try {
     await transporter.sendMail({
-      from: '"संyukt38 Team" <aarambh38fromstart@gmail.com>',
+      from: '"संyukt38 Team" <sanyukt38@gmail.com>',
       to: emailId,
       subject: "संyukt38 Alumni Verification Update",
       text: `Dear ${fullName},\n\nWe regret to inform you that your alumni profile verification could not be approved at this time. Please review your details and try again or contact our support team for assistance.\n\nBest regards,\nThe संyukt38 Team`,
@@ -24,7 +24,7 @@ const AlumniRejectionEmail = async ({ emailId, fullName }) => {
             </p>
             <p style="font-size: 14px; color: #555;">
               Contact us at 
-              <a href="mailto:aarambh38fromstart@gmail.com" style="color: #E74C3C;">aarambh38fromstart@gmail.com</a> for any queries.
+              <a href="mailto:sanyukt38@gmail.com" style="color: #E74C3C;">sanyukt38@gmail.com</a> for any queries.
             </p>
             <p style="font-size: 14px; color: #999; text-align: center; margin-top: 40px;">
               — The संyukt38 Team
@@ -36,7 +36,7 @@ const AlumniRejectionEmail = async ({ emailId, fullName }) => {
 
     // console.log("Alumni verification rejection email sent to:", emailId);
   } catch (err) {
-    console.error("Email send failed:", err.message);
+    res.send("Email send failed:", err.message);
   }
 };
 

@@ -117,7 +117,7 @@ const IntializeSocket = (server) => {
         }
         
          catch (error) {
-          console.error("Failed to save message:", error);
+          // console.error("Failed to save message:", error);
           socket.emit("messageError", { error: "Message not saved" });
         }
       }

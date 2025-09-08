@@ -3,7 +3,7 @@ const { transporter } = require("./Email.config");
 const SendEmail = async ({ emailId, data, message }) => {
   try {
     const info = await transporter.sendMail({
-      from: '"संyukt38" <aarambh38fromstart@gmail.com>',
+      from: '"संyukt38" <sanyukt38@gmail.com>',
       to: emailId,
       subject: "New Connection Request from a Student",
       text: `${data.fullName} from ${data.collegeName}, ${data.branch} wants to connect with you.\n\nMessage:\n${message}`,
@@ -45,7 +45,7 @@ const SendEmail = async ({ emailId, data, message }) => {
 
     // console.log("Email sent successfully to", emailId);
   } catch (err) {
-    console.error("Email send failed:", err.message);
+    res.send("Email send failed:", err.message);
   }
 };
 

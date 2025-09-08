@@ -14,7 +14,7 @@ const SendAcceptanceEmail = async ({
     const roleUpper = role ? role.toUpperCase() : "";
 
     const info = await transporter.sendMail({
-      from: '"संyukt38" <aarambh38fromstart@gmail.com>',
+      from: '"संyukt38" <sanyukt38@gmail.com>',
       to: emailId,
       subject: "🎉 Your Connection Request Has Been Accepted!",
       text: `Good news! ${fullName} from ${collegeName} (Batch ${batch}), currently working at ${companyUpper} as ${roleUpper}, has accepted your connection request on संyukt38.`,
@@ -54,7 +54,7 @@ const SendAcceptanceEmail = async ({
 
     // console.log("✅ Acceptance email sent to student:", emailId);
   } catch (err) {
-    console.error("❌ Email send failed:", err.message);
+   res.send("❌ Email send failed:", err.message);
   }
 };
 

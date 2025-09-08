@@ -15,6 +15,11 @@ export default function SignupPageAdmin() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  function isStrongPassword(password) {
+  const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/;
+  return regex.test(password);
+}
+
   useEffect(() => {
     dispatch(removestudent());
     dispatch(removeadmin());
@@ -31,7 +36,7 @@ export default function SignupPageAdmin() {
     fullName: "",
     emailId: "",
     gender: "",
-    collegeName: "", // ✅ changed from college → collegeName
+    collegeName: "Bakhtiyarpur Engineering College (BEC), Bakhtiyarpur", // ✅ changed from college → collegeName
     mobileNumber: "",
     newPassword: "",
     confirmPassword: "",
@@ -83,8 +88,8 @@ export default function SignupPageAdmin() {
       return false;
     }
 
-    if (newPassword.length < 6) {
-      setFormError("🔐 Password must be at least 6 characters.");
+    if (newPassword.length < 8) {
+      setFormError("🔐 Password must be at least 8 characters.");
       return false;
     }
 
@@ -115,7 +120,7 @@ export default function SignupPageAdmin() {
 
     setLoading(true);
     try {
-      const { fullName, emailId, gender, collegeName, mobileNumber, photourl } =
+      const { fullName, emailId, gender, collegeName, mobileNumber } =
         formData;
 
       await axios.post(
@@ -126,7 +131,7 @@ export default function SignupPageAdmin() {
 
       await axios.post(
         `${BASE_URL}/sendemailadmin`,
-        { emailId, fullName, gender, collegeName, mobileNumber, photourl },
+        { emailId, fullName, gender, collegeName, mobileNumber },
         { withCredentials: true }
       );
 
@@ -201,6 +206,27 @@ export default function SignupPageAdmin() {
               required
             />
           </div>
+            {/* College */}
+          <div>
+            <label className="text-sm font-medium text-gray-700">College</label>
+            <select
+              name="collegeName" // ✅ updated
+              value={formData.collegeName} // ✅ updated
+            
+              onChange={handleChange}
+              disabled
+              className="w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            >
+              <option value="">Select College</option>
+              {CollegeList.map((college, idx) => (
+                <option key={idx} value={college}>
+                  {college}
+                </option>
+              ))}
+            </select>
+          </div>
+
 
           {/* Gender */}
           <div>
@@ -219,63 +245,64 @@ export default function SignupPageAdmin() {
             </select>
           </div>
 
-          {/* College */}
-          <div>
-            <label className="text-sm font-medium text-gray-700">College</label>
-            <select
-              name="collegeName" // ✅ updated
-              value={formData.collegeName} // ✅ updated
-              onChange={handleChange}
-              className="w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            >
-              <option value="">Select College</option>
-              {CollegeList.map((college, idx) => (
-                <option key={idx} value={college}>
-                  {college}
-                </option>
-              ))}
-            </select>
-          </div>
+        
+         {/* Mobile */}
+<div>
+  <label className="text-sm font-medium text-gray-700">
+    Mobile Number
+  </label>
+  <input
+    type="tel"
+    name="mobileNumber"
+    value={formData.mobileNumber}
+    onChange={handleChange}
+    onBeforeInput={(e) => {
+      // Prevent input if it's not a number
+      if (!/^[0-9]$/.test(e.data)) {
+        e.preventDefault();
+      }
+    }}
+    maxLength={10}
+    pattern="[6-9]{1}[0-9]{9}"
+    className="w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+    placeholder="Enter 10-digit mobile number"
+    required
+  />
+</div>
 
-          {/* Mobile */}
-          <div>
-            <label className="text-sm font-medium text-gray-700">
-              Mobile Number
-            </label>
-            <input
-              type="tel"
-              name="mobileNumber"
-              value={formData.mobileNumber}
-              onChange={handleChange}
-              maxLength={10}
-              pattern="[6-9]{1}[0-9]{9}"
-              className="w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter 10-digit mobile number"
-              required
-            />
-          </div>
+         {/* Password */}
+<div className="relative">
+  <label className="text-sm font-medium text-gray-700">
+    Password
+  </label>
+  <input
+    type={showPassword ? "text" : "password"}
+    name="newPassword"
+    value={formData.newPassword}
+    onChange={handleChange}
+    className="w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+    placeholder="Enter strong password"
+    required
+  />
+  <div
+    className="absolute right-3 top-9 text-gray-500 cursor-pointer"
+    onClick={() => setShowPassword(!showPassword)}
+  >
+    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+  </div>
 
-          {/* Password */}
-          <div className="relative">
-            <label className="text-sm font-medium text-gray-700">
-              Password
-            </label>
-            <input
-              type={showPassword ? "text" : "password"}
-              name="newPassword"
-              value={formData.newPassword}
-              onChange={handleChange}
-              className="w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-            <div
-              className="absolute right-3 top-9 text-gray-500 cursor-pointer"
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-            </div>
-          </div>
+  {/* Password Strength Message */}
+  {formData.newPassword && (
+    <p className={`mt-1 text-sm ${
+      isStrongPassword(formData.newPassword) ? "text-green-600" : "text-red-600"
+    }`}>
+      {isStrongPassword(formData.newPassword)
+        ? "Strong password"
+        : "Password must be 8+ chars, include uppercase, lowercase, number & symbol"}
+    </p>
+  )}
+</div>
+
 
           {/* Confirm Password */}
           <div>

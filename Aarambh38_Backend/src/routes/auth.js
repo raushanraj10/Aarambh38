@@ -15,37 +15,186 @@ const SendEmailForAdmin = require("../utils/SendEmailForAdmin");
 const governmentEngineeringColleges = require("../constants/CollegeList38");
 const { finished } = require("nodemailer/lib/xoauth2");
 
+
 const AuthRouter=express.Router()
 
 AuthRouter.post("/sendemail",async (req,res)=>{
     try{
     const code = Math.floor(Math.random() * 900000) + 100000;
     const {emailId}=req.body
+    await ModelOtp.deleteMany({emailId})
     const tempdata=ModelOtp({emailId:emailId,code:code})
     await tempdata.save();
     // console.log(code)
     await SendEmail(emailId,code)
     res.send("Email Sent")
 }
-    catch(err){console.log(err.message)}
+    catch(err){res.send(err.message)}
 })
 
 AuthRouter.post("/sendemailadmin",async (req,res)=>{
     try{
     const code = Math.floor(Math.random() * 900000) + 100000;
     // const emailId="aarambh38fromstart@gmail.com"
-     const {emailId,age,fullName,gender,photourl}=req.body
-    
+     const {emailId,collegeName,fullName,gender,mobileNumber}=req.body
+    await ModelOtpAdmin.deleteMany({emailId})
     const tempdata=ModelOtpAdmin({emailId:emailId,code:code,fullName:fullName})
     await tempdata.save();
     // console.log(code)
     // const email="aarambh38fromstart@gmail.com"
     // console.log(photourl)
-    await SendEmailForAdmin({emailId,age,fullName,gender,photourl,code})
+    await SendEmailForAdmin({emailId,fullName,gender,collegeName,mobileNumber,code})
     res.send("Email Sent")
 }
     catch(err){res.send(err.message)}
 })
+
+
+
+AuthRouter.post("/sendemailtoforget", async (req, res) => {
+  try {
+    const code = Math.floor(Math.random() * 900000) + 100000;
+    const { emailId, network } = req.body;
+    await ModelOtp.deleteMany({emailId})
+    let checkemail;
+    if (network === "student") {
+      
+      checkemail = await ModelUser.findOne({ emailId });
+    } else if (network === "alumni") {
+      checkemail = await ModelAlumini.findOne({ emailId });
+    } else if (network === "admin") {
+      checkemail = await ModelAdmin.findOne({ emailId });
+    }
+
+    if (!checkemail) {
+      return res.status(404).json({ success: false, message: "NO USER FOUND" });
+    }
+
+    const tempdata = new ModelOtp({ emailId, code });
+    await tempdata.save();
+    await SendEmail(emailId, code);
+
+    return res.json({ success: true, message: "Email Sent" });
+  } catch (err) {
+    // console.log(err.message);
+    return res.status(500).json({ success: false, message: "Server Error" });
+  }
+});
+
+AuthRouter.post("/verifytonewpassword",async(req,res)=>{
+  try{
+    const {emailId,code,network}=req.body
+     const CheckFirst = await ModelOtp.findOne({ emailId: emailId });
+    if (!CheckFirst) {
+      return res.status(400).json({
+        success: false,
+        message: "OTP not found. Please register again.",
+      });
+    }
+  
+    if (Number(CheckFirst.code) !== Number(code)) {
+      return res.status(400).json({
+        success: false,
+        message: "❌ Invalid OTP. Please try again.",
+      });
+    }
+  
+    // delete OTP after use
+    await ModelOtp.deleteMany({ emailId: emailId });
+
+
+
+     let checkemail;
+     if(network==="student")
+     {
+      checkemail=await ModelUser.findOne({emailId:emailId})
+      if(!checkemail)
+        res.send("NO USER FOUND")
+     }
+
+      if(network==="alumni")
+     {
+      checkemail=await ModelAlumini.findOne({emailId:emailId})
+      if(!checkemail)
+        res.send("NO USER FOUND")
+     }
+
+      if(network==="admin")
+     {
+      checkemail=await ModelAdmin.findOne({emailId:emailId})
+      if(!checkemail)
+        res.send("NO USER FOUND")
+     }
+
+   const token = await jwt.sign(
+  { _id: checkemail._id, network },
+  "#raushansanyukt38",
+  { expiresIn: "10m" } // JWT expires in 10 minutes
+);
+
+// console.log(token);
+
+res.cookie("token", token, {
+  maxAge: 10 * 60 * 1000       // 10 minutes in milliseconds
+});
+
+     res.send("all set")
+  }
+  catch(err){res.send(err.message)}
+})
+
+const UserSetPassword=async (req,res,next)=>{
+    try{
+    const {token}=req.cookies
+    const decode=await jwt.verify(token,"#raushansanyukt38")
+    if(!decode)
+        res.status(400).send("Not verifed pls login")
+     req.decode=decode
+    next();
+}
+    catch(err){res.status(400).send("Error: "+err.message+" please try agian.." )}
+
+}
+
+AuthRouter.post("/resetpassword",UserSetPassword,async (req,res)=>{
+  try{
+  const {_id,network}=req.decode
+  const {newPassword}=req.body
+   let checkemail;
+     if(network==="student")
+     {
+      checkemail=await ModelUser.findOne({_id:_id})
+      if(!checkemail)
+        res.send("NO USER FOUND")
+     }
+
+      if(network==="alumni")
+     {
+      checkemail=await ModelAlumini.findOne({_id:_id})
+      if(!checkemail)
+        res.send("NO USER FOUND")
+     }
+
+      if(network==="admin")
+     {
+      checkemail=await ModelAdmin.findOne({_id:_id})
+      if(!checkemail)
+        res.send("NO USER FOUND")
+     }
+  if(newPassword.lenght<5)
+  {
+    return res.send("password not strong")
+  }
+  const hashnewPassword = await bcrypt.hash(newPassword, 10);
+  checkemail.newPassword=hashnewPassword
+  await checkemail.save();
+   res.send("Password Reset")}
+   catch(err){res.send(err.message)}
+})
+
+
+
+
 AuthRouter.post("/signupuser", async (req, res) => {
   try {
    
@@ -136,7 +285,7 @@ AuthRouter.post("/signupuser", async (req, res) => {
       message: "🎉 Signup successful!",
     });
   } catch (err) {
-    console.error("Signup error:", err);
+    // console.error("Signup error:", err);
     res.status(500).json({
       success: false,
       message: "⚠️ Internal Server Error. Please try again later.",
@@ -228,7 +377,7 @@ AuthRouter.post("/signupalumini", async (req, res) => {
     });
 
   } catch (err) {
-    console.error("Signup error:", err);
+    // console.error("Signup error:", err);
     return res.status(500).json({
       success: false,
       message: "Internal server error. Please try again later.",
@@ -305,7 +454,7 @@ AuthRouter.post("/alumniaddbyadmin",UserAuth, async (req, res) => {
     const finalData = new ModelAlumini(data);
     finalData.toshow=true
     await finalData.save();
-    console.log(finalData)
+    // console.log(finalData)
     // ✅ Email notification
     // EmailAlumniRequest(req.body);
 
@@ -315,7 +464,7 @@ AuthRouter.post("/alumniaddbyadmin",UserAuth, async (req, res) => {
     });
 
   } catch (err) {
-    console.error("Signup error:", err);
+    // console.error("Signup error:", err);
     return res.status(500).json({
       success: false,
       message: "Internal server error. Please try again later.",
@@ -390,88 +539,169 @@ const CheckFirst2=await ModelOtpAdmin.findOne({emailId:emailId})
 })
 
 
-AuthRouter.post("/loginuser",async (req,res)=>{
-    const {emailId,newPassword}=req.body
-    const checkemail=await ModelUser.findOne({emailId:emailId})
-    if(!checkemail)
-        return res.status(400).send("Email not Found Please Register")
+AuthRouter.post("/loginuser", async (req, res) => {
+  try {
+    const { emailId, newPassword } = req.body;
 
-    const checkpassword= await bcrypt.compare(newPassword,checkemail.newPassword)
-    if(!checkpassword)
-        return res.status(400).send("Password Not Match")
-   
-    if(checkemail.reach===false)
-      return res.status(400).send("Waiting for admin response")
+    const checkemail = await ModelUser.findOne({ emailId: emailId });
+    if (!checkemail) {
+      return res.status(400).json({
+        success: false,
+        message: "Email not found. Please register first.",
+      });
+    }
+
+    const checkpassword = await bcrypt.compare(newPassword, checkemail.newPassword);
+    if (!checkpassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Incorrect password. Please try again.",
+      });
+    }
+
+    if (checkemail.reach === false) {
+      return res.status(403).json({
+        success: false,
+        message: "Waiting for admin approval.",
+      });
+    }
+
+    // Create JWT
     const token = await jwt.sign(
-        {_id:checkemail._id},
-        "#raushanaarambh38",
-        { expiresIn: "2d" }
-    )
+      { _id: checkemail._id },
+      "#raushanaarambh38",
+      { expiresIn: "2d" }
+    );
 
-    res.cookie("token",token,{
-        maxAge: 2 * 24 * 60 * 60 * 1000   // cookie expires in 2 days
-    })
+    res.cookie("token", token, {
+      maxAge: 2 * 24 * 60 * 60 * 1000, // 2 days
+      
+    });
 
-    const finalemail=await ModelUser.findOne({emailId:emailId})
-        .select("fullName emailId branch collegeName batch photourl age gender")
+    const finalemail = await ModelUser.findOne({ emailId: emailId }).select(
+      "fullName emailId branch collegeName batch photourl age gender"
+    );
 
-    return res.send(checkemail)
-})
+    return res.json({
+      success: true,
+      message: "Welcome back! Student",
+      user: finalemail,
+    });
+  } catch (err) {
+    // console.error(err);
+    return res.status(500).json({
+      success: false,
+      message: "Server error. Please try again later.",
+    });
+  }
+});
 
-AuthRouter.post("/loginalumini",async (req,res)=>{
-    const {emailId,newPassword}=req.body
-    const checkemail=await ModelAlumini.findOne({emailId:emailId})
-    if(!checkemail)
-        return res.status(400).send("No account found with this email. Please register first")
+AuthRouter.post("/loginalumini", async (req, res) => {
+  try {
+    const { emailId, newPassword } = req.body;
 
-    const checkpassword= await bcrypt.compare(newPassword,checkemail.newPassword)
-    if(!checkpassword)
-        return res.status(400).send("Incorrect password. Please try again.")
+    const checkemail = await ModelAlumini.findOne({ emailId: emailId });
+    if (!checkemail) {
+      return res.status(400).json({
+        success: false,
+        message: "No account found with this email. Please register first",
+      });
+    }
 
-    if(checkemail.toshow===false)
-        return res.send("Your account is pending verification by the admin")
+    const checkpassword = await bcrypt.compare(newPassword, checkemail.newPassword);
+    if (!checkpassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Incorrect password. Please try again.",
+      });
+    }
 
+    if (checkemail.toshow === false) {
+      return res.status(403).json({
+        success: false,
+        message: "Your account is pending verification by the admin",
+      });
+    }
+
+    // Create token
     const token = await jwt.sign(
-        {_id:checkemail._id},
-        "#raushanaarambh38",
-        { expiresIn: "2d" }
-    )
+      { _id: checkemail._id },
+      "#raushanaarambh38",
+      { expiresIn: "2d" }
+    );
 
-    res.cookie("token",token,{
-        maxAge: 2 * 24 * 60 * 60 * 1000
-    })
+    res.cookie("token", token, {
+      maxAge: 2 * 24 * 60 * 60 * 1000,
+    });
 
-    const finalemail=await ModelAlumini.findOne({emailId:emailId})
-        .select("fullName role collegeName batch photourl age company gender gate emailId about branch linkedinshow")
+    const finalemail = await ModelAlumini.findOne({ emailId: emailId }).select(
+      "fullName role collegeName batch photourl age company gender gate emailId about branch linkedinshow"
+    );
 
-    return res.send(finalemail)
-})
+    return res.json({
+      success: true,
+      message: "A warm welcome back to our संyukt38 family!",
+      user: finalemail,
+    });
+  } catch (err) {
+    // console.error(err);
+    return res.status(500).json({
+      success: false,
+      message: "Server error. Please try again later.",
+    });
+  }
+});
 
-AuthRouter.post("/loginadmin",async (req,res)=>{
-    const {emailId,newPassword}=req.body
-    const checkemail=await ModelAdmin.findOne({emailId:emailId})
-    if(!checkemail)
-        return res.status(400).send("Email not Found Please Ask Admin")
 
-    const checkpassword= await bcrypt.compare(newPassword,checkemail.newPassword)
-    if(!checkpassword)
-        return res.status(400).send("Password Not Match")
+AuthRouter.post("/loginadmin", async (req, res) => {
+  try {
+    const { emailId, newPassword } = req.body;
 
+    const checkemail = await ModelAdmin.findOne({ emailId: emailId });
+    if (!checkemail) {
+      return res.status(400).json({
+        success: false,
+        message: "Email not found. Please contact the admin.",
+      });
+    }
+
+    const checkpassword = await bcrypt.compare(newPassword, checkemail.newPassword);
+    if (!checkpassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Incorrect password. Please try again.",
+      });
+    }
+
+    // Create JWT
     const token = await jwt.sign(
-        {_id:checkemail._id},
-        "#raushanaarambh38",
-        { expiresIn: "2d" }
-    )
+      { _id: checkemail._id },
+      "#raushanaarambh38",
+      { expiresIn: "2d" }
+    );
 
-    res.cookie("token",token,{
-        maxAge: 2 * 24 * 60 * 60 * 1000
-    })
+    res.cookie("token", token, {
+      maxAge: 2 * 24 * 60 * 60 * 1000,
+      
+    });
 
-    const finalemail=await ModelAdmin.findOne({emailId:emailId})
-        .select("fullName role photourl age gender branch emailId collegeName mobileNumber")
+    const finalemail = await ModelAdmin.findOne({ emailId: emailId }).select(
+      "fullName role photourl age gender branch emailId collegeName mobileNumber"
+    );
 
-    return res.send(finalemail)
-})
+    return res.json({
+      success: true,
+      message: "Welcome Back! Manage Your Team",
+      user: finalemail,
+    });
+  } catch (err) {
+    // console.error(err);
+    return res.status(500).json({
+      success: false,
+      message: "Server error. Please try again later.",
+    });
+  }
+});
 
 
 AuthRouter.get("/logout",async (req,res)=>{

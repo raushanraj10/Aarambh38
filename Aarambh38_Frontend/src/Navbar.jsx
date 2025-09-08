@@ -127,7 +127,11 @@ export default function Navbar() {
        {/* Logo */}
 <Link
   to="/"
-  className="text-3xl font-bold tracking-wide drop-shadow-lg bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-green-600"
+  className="text-3xl font-bold tracking-wide drop-shadow-lg 
+             text-transparent bg-clip-text 
+             bg-gradient-to-r from-blue-600 via-green-500 to-green-600 
+             bg-[length:200%_200%] bg-center 
+             animate-[shimmer_3s_linear_infinite]"  // faster shimmer (2s loop)
 >
   {/* "San" in Sanskrit with anusvāra */}
   <span style={{ fontFamily: "Samarkan, Devanagari" }}>
@@ -138,6 +142,7 @@ export default function Navbar() {
   {/* "38" as is */}
   38
 </Link>
+
 
 
 

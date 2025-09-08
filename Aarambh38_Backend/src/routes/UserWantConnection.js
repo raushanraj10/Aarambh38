@@ -100,7 +100,7 @@ UserRouter.get("/mymentors", UserAuth, async (req, res) => {
     res.send(finaldata);
 
   } catch (err) {
-    console.error("Error in /mymentors:", err);
+    // console.error("Error in /mymentors:", err);
     res.status(500).send({ error: err.message });
   }
 });
@@ -306,7 +306,7 @@ UserRouter.post("/sendemailbyuser", async (req, res) => {
     });
     res.status(200).send("Email sent successfully");
   } catch (err) {
-    console.error("Email error:", err);
+    // console.error("Email error:", err);
     res.status(500).send("Email failed");
   }
 });
@@ -328,7 +328,7 @@ UserRouter.post("/requestonlineemail/:Id", UserAuth,async (req, res) => {
     });
     res.status(200).send("Email sent successfully");
   } catch (err) {
-    console.error("Email error:", err);
+    // console.error("Email error:", err);
     res.status(500).send("Email failed");
   }
 });
@@ -375,7 +375,7 @@ UserRouter.get("/alumnireaded", UserAuth, async (req, res) => {
     // console.log(idsAsStrings)
     res.json(idsAsStrings);
   } catch (err) {
-    console.error("Error in /alumnireaded:", err);
+    // console.error("Error in /alumnireaded:", err);
     res.status(500).send(err.message);
   }
 });
@@ -401,7 +401,7 @@ UserRouter.get("/studentreaded", UserAuth, async (req, res) => {
     const idsAsStrings = unreadIds.map(id => id.toString());
     res.json(idsAsStrings);
   } catch (err) {
-    console.error("Error in /studentreaded:", err);
+    // console.error("Error in /studentreaded:", err);
     res.status(500).send(err.message);
   }
 });

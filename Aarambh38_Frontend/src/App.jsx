@@ -34,6 +34,10 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 import AddAlumniAdmin from "./AddAlumniAdmin";
 import AdminStudentRequests from "./components/Admin/AdminStudentRequests";
+import ForgotPasswordOtp from "./ForgotPasswordOtp";
+import ResetPassword from "./ResetPassword";
+import ForgotPasswordOtpAdmin from "./ForgotPasswordOtpAdmin";
+import ForgotPasswordOtpAlumni from "./ForgotPasswordOtpalumni";
 
 function App() {
   return (
@@ -116,6 +120,39 @@ function App() {
                 </PublicRoute>
               }
             />
+            <Route
+  path="/forgotpasswordotp"
+  element={
+    <PublicRoute>
+      <ForgotPasswordOtp />
+    </PublicRoute>
+  }
+/>
+<Route
+  path="/resetpassword"
+  element={
+    <PublicRoute>
+      <ResetPassword />
+    </PublicRoute>
+  }
+/>
+          <Route
+  path="/forgotpasswordotpalumni"
+  element={
+    <PublicRoute>
+      <ForgotPasswordOtpAlumni/>
+    </PublicRoute>
+  }
+/>
+          <Route
+  path="/forgotpasswordotpadmin"
+  element={
+    <PublicRoute>
+      <ForgotPasswordOtpAdmin/>
+    </PublicRoute>
+  }
+/>
+
             <Route
               path="/signupuser"
               element={
@@ -272,6 +309,8 @@ function App() {
               }
             />
           </Route>
+
+  
         </Routes>
       </BrowserRouter>
     </Provider>

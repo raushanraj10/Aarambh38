@@ -3,7 +3,7 @@ const { transporter } = require("./Email.config");
 const SendEmailToUserByAdmin = async ({ to, subject, message }) => {
   try {
     const info = await transporter.sendMail({
-      from: '"संyukt38 Admin" <aarambh38fromstart@gmail.com>',
+      from: '"संyukt38 Admin" <sanyukt38@gmail.com>',
       to,
       subject,
       text: message,
@@ -21,7 +21,7 @@ const SendEmailToUserByAdmin = async ({ to, subject, message }) => {
                 ${message}
               </p>
               <div style="text-align: center; margin-top: 30px;">
-                <a href="mailto:aarambh38fromstart@gmail.com" style="background-color: #2563EB; color: white; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; display: inline-block;">
+                <a href="mailto:sanyukt38@gmail.com" style="background-color: #2563EB; color: white; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; display: inline-block;">
                   📬 Reply to Admin
                 </a>
               </div>
@@ -39,7 +39,7 @@ const SendEmailToUserByAdmin = async ({ to, subject, message }) => {
 
     // console.log("✅ Email successfully sent to:", to);
   } catch (err) {
-    console.error("❌ Email send failed:", err.message);
+   res.send("❌ Email send failed:", err.message);
   }
 };
 

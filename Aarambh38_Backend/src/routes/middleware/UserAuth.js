@@ -11,4 +11,7 @@ const UserAuth=async (req,res,next)=>{
     catch(err){res.status(400).send("Error: "+err.message+" please try agian.." )}
 
 }
+
+
+
 module.exports=UserAuth

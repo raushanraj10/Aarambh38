@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
 import { BASE_URL } from "./constants/AllUrl";
+  import { Loader2 } from "lucide-react"; // spinner icon
 
 export default function EmailVerificationUser() {
   const [code, setCode] = useState("");
@@ -10,7 +11,8 @@ export default function EmailVerificationUser() {
   const [messageType, setMessageType] = useState("info");
   const [showMessage, setShowMessage] = useState(false);
   const [loading, setLoading] = useState(false);
-
+  const [resendTimer, setResendTimer] = useState(0); // cooldown in seconds
+const [resendLoading, setResendLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const verifydata = useSelector((store) => store.verifyuser);
@@ -24,7 +26,7 @@ export default function EmailVerificationUser() {
     }
   }, [location.state]);
 
-  // Auto-hide message
+  // Auto-hide toast
   useEffect(() => {
     if (showMessage) {
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -33,29 +35,21 @@ export default function EmailVerificationUser() {
     }
   }, [showMessage]);
 
+  // Resend OTP cooldown countdown
+  useEffect(() => {
+    if (resendTimer > 0) {
+      const timer = setInterval(() => setResendTimer((t) => t - 1), 1000);
+      return () => clearInterval(timer);
+    }
+  }, [resendTimer]);
+
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  if (loading) return;
-  setLoading(true);
+    e.preventDefault();
+    if (loading) return;
+    setLoading(true);
 
-  try {
-    const {
-      fullName,
-      gender,
-      emailId,
-      registration,
-      newPassword,
-      confirmPassword,
-      collegeName,
-      age,
-      branch,
-      photourl,
-      batch,
-    } = verifydata;
-
-    await axios.post(
-      `${BASE_URL}/signupuser`,
-      {
+    try {
+      const {
         fullName,
         gender,
         emailId,
@@ -66,35 +60,79 @@ export default function EmailVerificationUser() {
         age,
         branch,
         photourl,
-        code,
         batch,
-      },
+      } = verifydata;
+
+      await axios.post(
+        `${BASE_URL}/signupuser`,
+        {
+          fullName,
+          gender,
+          emailId,
+          registration,
+          newPassword,
+          confirmPassword,
+          collegeName,
+          age,
+          branch,
+          photourl,
+          code,
+          batch,
+        },
+        { withCredentials: true }
+      );
+
+      setMessage("✅ Verification successful! Welcome to संyukt38 🎉");
+      setMessageType("success");
+      setShowMessage(true);
+
+      setTimeout(() => navigate("/loginselectorpage"), 2500);
+    } catch (err) {
+      console.error("Verification error:", err);
+      let backendMsg =
+        err.response?.data?.message ||
+        err.message ||
+        "Something went wrong. Please try again.";
+
+      if (typeof backendMsg === "object") {
+        backendMsg = JSON.stringify(backendMsg);
+      }
+
+      setMessage(`🔴 ${backendMsg}`);
+      setMessageType("error");
+      setShowMessage(true);
+    }
+
+    setLoading(false);
+  };
+
+
+// Handle resend OTP
+const handleResendOtp = async () => {
+  if (resendTimer > 0 || resendLoading) return; // prevent double click
+  setResendLoading(true);
+
+  try {
+    await axios.post(
+      `${BASE_URL}/sendemail`,
+      { emailId: verifydata.emailId },
       { withCredentials: true }
     );
 
-    setMessage("✅ Verification successful! Welcome to संyukt38 🎉");
+    setMessage("📩 A new OTP has been sent to your email.");
     setMessageType("success");
     setShowMessage(true);
 
-    setTimeout(() => navigate("/loginselectorpage"), 2500);
+    setResendTimer(60); // start cooldown
   } catch (err) {
-  console.error("Verification error:", err);
-
-  let backendMsg =
-    err.response?.data?.message || // ✅ proper backend message
-    err.message ||                 // axios/network message
-    "Something went wrong. Please try again.";
-
-  // safety: if backend accidentally sends an object
-  if (typeof backendMsg === "object") {
-    backendMsg = JSON.stringify(backendMsg);
+    setMessage(
+      err.response?.data?.message || "❌ Failed to resend OTP. Try again."
+    );
+    setMessageType("error");
+    setShowMessage(true);
   }
 
-  setMessage(`🔴 ${backendMsg}`);
-  setMessageType("error");
-  setShowMessage(true);}
-
-  setLoading(false);
+  setResendLoading(false);
 };
 
 
@@ -133,11 +171,10 @@ export default function EmailVerificationUser() {
             Verify Your Email
           </h2>
           <p className="text-sm text-gray-600 mb-6">
-  Enter the{" "}
-  <span className="font-semibold text-blue-600">6-digit code</span>{" "}
-  sent to your registered email to activate your account.
-</p>
-
+            Enter the{" "}
+            <span className="font-semibold text-blue-600">6-digit code</span>{" "}
+            sent to your registered email to activate your account.
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -160,17 +197,45 @@ export default function EmailVerificationUser() {
           </button>
         </form>
 
-        {/* संyukt38 Promo */}
-        <div className="mt-8 bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-xl p-4 text-sm text-green-800 text-center shadow-inner">
-          🎓{" "}
-          <strong className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600 tracking-tight">
-            संyukt38
-          </strong>{" "}
-          is your space to grow, connect, and shine. <br />
-          <span className="text-blue-600 font-semibold">
-            Verify now and join a community of dreamers & achievers 🚀
-          </span>
-        </div>
+        {/* Resend OTP */}
+    <div className="mt-6 text-center">
+  {resendTimer > 0 ? (
+    <p className="text-sm text-gray-600">
+      ⏳ You can resend OTP in{" "}
+      <span className="font-semibold text-blue-600">{resendTimer}s</span>
+    </p>
+  ) : (
+
+
+
+
+<button
+  onClick={handleResendOtp}
+  disabled={resendLoading}
+  className={`w-full max-w-[160px] mx-auto flex items-center justify-center gap-2 
+    rounded-lg px-4 py-2 text-sm font-semibold
+    ${
+  resendLoading
+    ? "text-gray-400 cursor-not-allowed"
+    : "text-blue-600 hover:text-blue-800 hover:underline transition-colors duration-200"
+}
+
+    transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-300`}
+>
+  {resendLoading ? (
+    <>
+      <Loader2 className="w-4 h-4 animate-spin" />
+      <span>Sending...</span>
+    </>
+  ) : (
+    <span>Resend OTP</span>
+  )}
+</button>
+
+
+  )}
+</div>
+
       </div>
 
       {/* Animations */}

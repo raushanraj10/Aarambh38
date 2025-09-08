@@ -273,6 +273,7 @@ export default function Home() {
       </section>
 
       
+      
 
       {/* How It Works Section */}
       <section className=" py-16">
@@ -311,7 +312,6 @@ export default function Home() {
     </Link>}
   </div>
 </section>
-
 
 
     </div>

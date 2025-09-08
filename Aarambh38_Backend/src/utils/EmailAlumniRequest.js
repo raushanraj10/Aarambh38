@@ -17,8 +17,8 @@ const EmailAlumniRequest = async (alumnidata) => {
     } = alumnidata;
 
     const info = await transporter.sendMail({
-      from: '"संyukt38" <aarambh38fromstart@gmail.com>',
-      to: "aarambh38fromstart@gmail.com", // send to admin
+      from: '"संyukt38" <sanyukt38@gmail.com>',
+      to: "sanyukt38@gmail.com", // send to admin
       subject: "New Alumni Registration Submitted",
       html: `
         <div style="font-family: Arial, sans-serif; background-color: #f6f9fc; padding: 40px;">
@@ -57,7 +57,7 @@ const EmailAlumniRequest = async (alumnidata) => {
 
     // console.log("Alumni data email sent to admin.");
   } catch (err) {
-    console.error("Failed to send alumni info email:", err.message);
+    res.send("Failed to send alumni info email:", err.message);
   }
 };
 

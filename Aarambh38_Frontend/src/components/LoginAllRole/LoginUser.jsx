@@ -32,42 +32,41 @@ export default function LoginUser() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    const { emailId, newPassword } = formData;
+  e.preventDefault();
+  const { emailId, newPassword } = formData;
 
-    try {
-      const res = await axios.post(
-        `${BASE_URL}/loginuser`,
-        { emailId, newPassword },
-        { withCredentials: true }
-      );
+  try {
+    const res = await axios.post(
+      `${BASE_URL}/loginuser`,
+      { emailId, newPassword },
+      { withCredentials: true }
+    );
 
-      setMessage("Welcome back! Student");
+    if (res.data.success) {
+      setMessage(res.data.message || "Welcome back! Student");
       setMessageType("success");
       setShowMessage(true);
-      // dispatch(Verifieduser());
-      // dispatch(addstudent(res.data));
-
-      // setTimeout(() => {
-      //   navigate("/landingpage");
-      // }, 2000);
 
       setTimeout(() => {
         setShowMessage(false);
 
         dispatch(Verifieduser());
-        dispatch(addstudent(res.data));
-
+        dispatch(addstudent(res.data.user)); // ✅ only pass user
         navigate("/landingpage");
       }, 1000);
-    } catch (err) {
-      const message =
-        err.response?.data?.message || "Invalid email or password.";
-      setMessage(message);
+    } else {
+      setMessage(res.data.message || "Login failed. Please try again.");
       setMessageType("error");
       setShowMessage(true);
     }
-  };
+  } catch (err) {
+    const message =
+      err.response?.data?.message || "Invalid email or password.";
+    setMessage(message);
+    setMessageType("error");
+    setShowMessage(true);
+  }
+};
 
   // Auto-hide message after 4 seconds
   useEffect(() => {
@@ -124,60 +123,72 @@ export default function LoginUser() {
           </span>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email
-            </label>
-            <input
-              type="email"
-              name="emailId"
-              value={formData.emailId}
-              onChange={handleChange}
-              placeholder="student@example.com"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-              required
-            />
-          </div>
+       <form onSubmit={handleSubmit} className="space-y-5">
+  <div>
+    <label className="block text-sm font-medium text-gray-700 mb-1">
+      Email
+    </label>
+    <input
+      type="email"
+      name="emailId"
+      value={formData.emailId}
+      onChange={handleChange}
+      placeholder="student@example.com"
+      className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+      required
+    />
+  </div>
 
-          <div className="relative">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Password
-            </label>
-            <input
-              type={showPassword ? "text" : "password"}
-              name="newPassword"
-              value={formData.newPassword}
-              onChange={handleChange}
-              placeholder="••••••••"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-              required
-            />
-            <div
-              className="absolute right-3 top-[42px] text-gray-500 cursor-pointer"
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-            </div>
-          </div>
+  <div className="relative">
+    <label className="block text-sm font-medium text-gray-700 mb-1">
+      Password
+    </label>
+    <input
+      type={showPassword ? "text" : "password"}
+      name="newPassword"
+      value={formData.newPassword}
+      onChange={handleChange}
+      placeholder="••••••••"
+      className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+      required
+    />
+    <div
+      className="absolute right-3 top-[42px] text-gray-500 cursor-pointer"
+      onClick={() => setShowPassword(!showPassword)}
+    >
+      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+    </div>
+  </div>
 
-          <button
-            type="submit"
-            className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition duration-200 font-semibold"
-          >
-            Log In
-          </button>
-        </form>
+  <button
+    type="submit"
+    className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition duration-200 font-semibold"
+  >
+    Log In
+  </button>
 
-        <p className="text-sm text-center text-gray-500 mt-6">
-          Don’t have an account?{" "}
-          <a
-            href="/signupchoice"
-            className="text-green-600 font-medium hover:underline"
-          >
-            Sign up
-          </a>
-        </p>
+  {/* Forgot Password Button */}
+  <button
+    type="button"
+    onClick={() => navigate("/forgotpasswordotp")}
+    className="w-full mt-2 text-green-600 font-medium hover:underline"
+  >
+    Forgot Password?
+  </button>
+</form>
+
+<p className="text-sm text-center text-gray-500 mt-6">
+  Don’t have an account?{" "}
+  <a
+    href="/signupchoice"
+    className="text-green-600 font-medium hover:underline"
+  >
+    Sign up
+  </a>
+</p>
+
+
+       
       </div>
     </div>
   );

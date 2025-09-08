@@ -31,41 +31,44 @@ export default function LoginAdmin() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    const { email, password } = formData;
-    const emailId = email;
-    const newPassword = password;
+  e.preventDefault();
+  const { email, password } = formData;
+  const emailId = email;
+  const newPassword = password;
 
-    try {
-      const res = await axios.post(
-        `${BASE_URL}/loginadmin`,
-        { emailId, newPassword },
-        { withCredentials: true }
-      );
+  try {
+    const res = await axios.post(
+      `${BASE_URL}/loginadmin`,
+      { emailId, newPassword },
+      { withCredentials: true }
+    );
 
-      setMessage("✅ Login successful. Please wait while we redirect you to your dashboard…");
+    if (res.data.success) {
+      setMessage(res.data.message || "✅ Welcome Back! Manage Your Team");
       setMessageType("success");
       setShowMessage(true);
-      // dispatch(Verifieduser());
-      // dispatch(removealumini());
-      // dispatch(removestudent());
-      // dispatch(addadmin(res.data));
 
       setTimeout(() => {
         dispatch(Verifieduser());
         dispatch(removealumini());
         dispatch(removestudent());
-        dispatch(addadmin(res.data));
+        dispatch(addadmin(res.data.user)); // ✅ only user
         navigate("/recivedrequestfromalumni");
       }, 2000);
-    } catch (err) {
-      const msg =
-        err.response?.data?.message || "❌ Invalid email or password.";
-      setMessage(msg);
+    } else {
+      setMessage(res.data.message || "❌ Login failed. Please try again.");
       setMessageType("error");
       setShowMessage(true);
     }
-  };
+  } catch (err) {
+    const msg =
+      err.response?.data?.message || "❌ Invalid email or password.";
+    setMessage(msg);
+    setMessageType("error");
+    setShowMessage(true);
+  }
+};
+
 
   useEffect(() => {
     if (showMessage) {
@@ -157,6 +160,14 @@ export default function LoginAdmin() {
           >
             Log In
           </button>
+
+          <button
+    type="button"
+    onClick={() => navigate("/forgotpasswordotpadmin")}
+    className="w-full mt-2 text-indigo-600 font-medium hover:underline"
+  >
+    Forgot Password?
+  </button>
         </form>
 
         <p className="text-sm text-center text-gray-500 mt-6">

@@ -26,7 +26,7 @@ export default function SignupPageUser() {
   const [formData, setFormData] = useState({
     fullName: "",
     emailId: "",
-    collegeName: "",
+    collegeName: "Bakhtiyarpur Engineering College (BEC), Bakhtiyarpur",
     branch: "",
     registration: "",
     batch: "",
@@ -98,9 +98,15 @@ export default function SignupPageUser() {
     errors.photourl = "Please upload your photo.";
   }
 
-  if (formData.newPassword.length < 6) {
-    errors.newPassword = "Password must be at least 6 characters.";
-  }
+
+
+// Strong password regex
+const strongPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/;
+
+if (!strongPassword.test(formData.newPassword)) {
+  errors.newPassword =
+    "Password must be at least 8 characters and include uppercase, lowercase, number, and special character.";
+}
 
   if (formData.newPassword !== formData.confirmPassword) {
     errors.confirmPassword = "Passwords do not match.";
@@ -212,12 +218,50 @@ export default function SignupPageUser() {
             {formErrors.emailId && <p className="text-xs text-red-500 mt-1">{formErrors.emailId}</p>}
           </div>
 
+           {/* Gender */}
+          <div>
+            <label className="text-sm font-medium text-gray-700">Gender</label>
+            <select
+              name="gender"
+              value={formData.gender}
+              onChange={handleChange}
+              className={`w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none ${
+                formErrors.gender ? "border-red-500 ring-2 ring-red-300" : "border-gray-300 focus:ring-2 focus:ring-blue-500"
+              }`}
+              required
+            >
+              <option value="">Select Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+            {formErrors.gender && <p className="text-xs text-red-500 mt-1">{formErrors.gender}</p>}
+          </div>
+          
+              {/* Age */}
+           <div>
+            <label className="text-sm font-medium text-gray-700">Age</label>
+            <input
+              type="number"
+              name="age"
+              value={formData.age}
+              onChange={handleChange}
+              className={`w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none ${
+                formErrors.age ? "border-red-500 ring-2 ring-red-300" : "border-gray-300 focus:ring-2 focus:ring-blue-500"
+              }`}
+              required
+            />
+            {formErrors.age && <p className="text-xs text-red-500 mt-1">{formErrors.age}</p>}
+          </div>
+
+
           {/* College */}
           <div>
             <label className="text-sm font-medium text-gray-700">College Name</label>
             <Select
               options={collegeOptions}
               onChange={handleCollegeSelect}
+              isDisabled
               defaultValue={formData.collegeName && { label: formData.collegeName, value: formData.collegeName }}
               placeholder="Select your college"
               className="mt-1"
@@ -231,6 +275,33 @@ export default function SignupPageUser() {
             />
             {formErrors.collegeName && <p className="text-xs text-red-500 mt-1">{formErrors.collegeName}</p>}
           </div>
+             
+                 {/* Batch */}
+            <div>
+  <label className="text-sm font-medium text-gray-700">Batch</label>
+  <input
+    type="text"
+    name="batch"
+    value={formData.batch}
+    onChange={(e) => {
+      const onlyNums = e.target.value.replace(/[^0-9]/g, ""); // only numbers
+      setFormData({ ...formData, batch: onlyNums });
+    }}
+    maxLength={4}
+    minLength={4}
+    pattern="\d{4}"
+    className={`w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none ${
+      formErrors.batch
+        ? "border-red-500 ring-2 ring-red-300"
+        : "border-gray-300 focus:ring-2 focus:ring-blue-500"
+    }`}
+    required
+  />
+  {formErrors.batch && (
+    <p className="text-xs text-red-500 mt-1">{formErrors.batch}</p>
+  )}
+</div>
+
 
           {/* Branch */}
           <div>
@@ -281,91 +352,52 @@ export default function SignupPageUser() {
 </div>
 
 
-          {/* Batch */}
-          <div>
-  <label className="text-sm font-medium text-gray-700">Batch</label>
+      
+        
+
+      
+         
+         
+
+          {/* Password */}
+         <div className="relative">
+  <label className="text-sm font-medium text-gray-700">Password</label>
   <input
-    type="text"
-    name="batch"
-    value={formData.batch}
+    type={showPassword ? "text" : "password"}
+    name="newPassword"
+    value={formData.newPassword}
     onChange={(e) => {
-      const onlyNums = e.target.value.replace(/[^0-9]/g, ""); // only numbers
-      setFormData({ ...formData, batch: onlyNums });
+      handleChange(e);
+      // validatePassword(e.target.value);
     }}
-    maxLength={4}
-    minLength={4}
-    pattern="\d{4}"
     className={`w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none ${
-      formErrors.batch
+      formErrors.newPassword
         ? "border-red-500 ring-2 ring-red-300"
         : "border-gray-300 focus:ring-2 focus:ring-blue-500"
     }`}
     required
+    minLength={8}
+    placeholder="Enter a strong password"
   />
-  {formErrors.batch && (
-    <p className="text-xs text-red-500 mt-1">{formErrors.batch}</p>
+  <div
+    className="absolute right-3 top-9 text-gray-500 cursor-pointer"
+    onClick={() => setShowPassword(!showPassword)}
+  >
+    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+  </div>
+  {formErrors.newPassword && (
+    <p className="text-xs text-red-500 mt-1">{formErrors.newPassword}</p>
   )}
+  {/* <p className="text-xs text-gray-500 mt-1">
+    Password must contain: <br />
+    • Minimum 8 characters <br />
+    • At least 1 uppercase letter <br />
+    • At least 1 lowercase letter <br />
+    • At least 1 number <br />
+    • At least 1 special character (!@#$%^&*)
+  </p> */}
 </div>
 
-
-          {/* Age */}
-          <div>
-            <label className="text-sm font-medium text-gray-700">Age</label>
-            <input
-              type="number"
-              name="age"
-              value={formData.age}
-              onChange={handleChange}
-              className={`w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none ${
-                formErrors.age ? "border-red-500 ring-2 ring-red-300" : "border-gray-300 focus:ring-2 focus:ring-blue-500"
-              }`}
-              required
-            />
-            {formErrors.age && <p className="text-xs text-red-500 mt-1">{formErrors.age}</p>}
-          </div>
-
-          {/* Gender */}
-          <div>
-            <label className="text-sm font-medium text-gray-700">Gender</label>
-            <select
-              name="gender"
-              value={formData.gender}
-              onChange={handleChange}
-              className={`w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none ${
-                formErrors.gender ? "border-red-500 ring-2 ring-red-300" : "border-gray-300 focus:ring-2 focus:ring-blue-500"
-              }`}
-              required
-            >
-              <option value="">Select Gender</option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-              <option value="Other">Other</option>
-            </select>
-            {formErrors.gender && <p className="text-xs text-red-500 mt-1">{formErrors.gender}</p>}
-          </div>
-
-          {/* Password */}
-          <div className="relative">
-            <label className="text-sm font-medium text-gray-700">Password</label>
-            <input
-              type={showPassword ? "text" : "password"}
-              name="newPassword"
-              value={formData.newPassword}
-              onChange={handleChange}
-              className={`w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none ${
-                formErrors.newPassword ? "border-red-500 ring-2 ring-red-300" : "border-gray-300 focus:ring-2 focus:ring-blue-500"
-              }`}
-              required
-              minLength={6}
-            />
-            <div
-              className="absolute right-3 top-9 text-gray-500 cursor-pointer"
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-            </div>
-            {formErrors.newPassword && <p className="text-xs text-red-500 mt-1">{formErrors.newPassword}</p>}
-          </div>
 
           {/* Confirm Password */}
           <div>

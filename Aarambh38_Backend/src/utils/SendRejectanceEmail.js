@@ -14,7 +14,7 @@ const SendRejectanceEmail = async ({
     const roleUpper = role ? role.toUpperCase() : "";
 
     const info = await transporter.sendMail({
-      from: '"संyukt38" <aarambh38fromstart@gmail.com>',
+      from: '"संyukt38" <sanyukt38@gmail.com>',
       to: emailId,
       subject: "🙏 Update on Your Connection Request",
       text: `Hello! Unfortunately, ${fullName} from ${collegeName} (Batch ${batch}), currently at ${companyUpper} as ${roleUpper}, was unable to accept your connection request at this time. But don’t lose heart — many more alumni are here to guide and support you. Keep connecting, your right mentor is waiting for you on संyukt38 🚀`,
@@ -56,7 +56,7 @@ const SendRejectanceEmail = async ({
 
     // console.log("❌ Rejectance email sent to student:", emailId);
   } catch (err) {
-    console.error("❌ Email send failed:", err.message);
+    res.send("❌ Email send failed:", err.message);
   }
 };
 

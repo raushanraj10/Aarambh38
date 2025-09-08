@@ -3,12 +3,12 @@ const { transporter } = require("./Email.config");
 const Requestonlineemail = async ({ emailId, fullName }) => {
   try {
     if (!emailId) {
-      console.error("Recipient email is missing!");
+      // console.error("Recipient email is missing!");
       return;
     }
 
     const info = await transporter.sendMail({
-      from: '"संyukt38" <aarambh38fromstart@gmail.com>',
+      from: '"संyukt38" <sanyukt38@gmail.com>',
       to: emailId,
       subject: `Chat Request from ${fullName} (संyukt38 Alumni)`,
       text: `Hello,
@@ -55,9 +55,9 @@ http://13.60.166.165/
       `,
     });
 
-    console.log("Chat request email sent to:", emailId);
+    // console.log("Chat request email sent to:", emailId);
   } catch (err) {
-    console.error("Email send failed:", err.message);
+    res.send("Email send failed:", err.message);
   }
 };
 

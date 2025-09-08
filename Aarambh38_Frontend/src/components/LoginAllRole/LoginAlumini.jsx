@@ -44,38 +44,41 @@ export default function LoginAlumini() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const { email, password } = formData;
+  e.preventDefault();
+  try {
+    const { email, password } = formData;
 
-      const res = await axios.post(
-        `${BASE_URL}/loginalumini`,
-        { emailId: email, newPassword: password },
-        { withCredentials: true }
-      );
+    const res = await axios.post(
+      `${BASE_URL}/loginalumini`,
+      { emailId: email, newPassword: password },
+      { withCredentials: true }
+    );
 
-      // dispatch(addalumini(res.data));
-      // dispatch(Verifieduser());
-
-      setMessage("A warm welcome back to our संyukt38 family.");
+    if (res.data.success) {
+      setMessage(res.data.message || "A warm welcome back to our संyukt38 family.");
       setMessageType("success");
       setShowMessage(true);
 
       setTimeout(() => {
-        dispatch(addalumini(res.data));
+        dispatch(addalumini(res.data.user)); // ✅ only user object
         dispatch(Verifieduser());
         navigate("/alumnimentees");
       }, 1000);
-    } catch (err) {
-      const msg =
-        err.response?.data ||
-        err.message ||
-        "Something went wrong. Please try again.";
-      setMessage(msg);
+    } else {
+      setMessage(res.data.message || "Login failed. Please try again.");
       setMessageType("error");
       setShowMessage(true);
     }
-  };
+  } catch (err) {
+    const msg =
+      err.response?.data?.message ||
+      err.message ||
+      "Something went wrong. Please try again.";
+    setMessage(msg);
+    setMessageType("error");
+    setShowMessage(true);
+  }
+};
 
   useEffect(() => {
     if (showMessage) {
@@ -165,6 +168,14 @@ export default function LoginAlumini() {
           >
             Log In
           </button>
+
+          <button
+    type="button"
+    onClick={() => navigate("/forgotpasswordotpalumni")}
+    className="w-full mt-2 text-blue-600 font-medium hover:underline"
+  >
+    Forgot Password?
+  </button>
         </form>
 
         <p className="text-sm text-center text-gray-500 mt-6">

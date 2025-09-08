@@ -3,7 +3,7 @@ const { transporter } = require("./Email.config");
 const AlumniAcceptanceEmail = async ({ emailId, fullName }) => {
   try {
     const info = await transporter.sendMail({
-      from: '"संyukt38 Team" <aarambh38fromstart@gmail.com>',
+      from: '"संyukt38 Team" <sanyukt38@gmail.com>',
       to: emailId,
       subject: "Welcome to संyukt38 – Your Alumni Profile is Verified!",
       text: `Dear ${fullName},\n\nWe are delighted to inform you that your alumni profile has been successfully verified by the संyukt38 team. You can now mentor students, share experiences, and contribute to shaping the next generation.\n\nWarm regards,\nThe संyukt38 Team`,
@@ -27,7 +27,7 @@ const AlumniAcceptanceEmail = async ({ emailId, fullName }) => {
             
             <p style="font-size: 14px; color: #555;">
               If you have any questions, feel free to reach out to us at 
-              <a href="mailto:aarambh38fromstart@gmail.com" style="color: #4A90E2;">aarambh38fromstart@gmail.com</a>.
+              <a href="mailto:sanyukt38@gmail.com" style="color: #4A90E2;">sanyukt38@gmail.com</a>.
             </p>
             <p style="font-size: 14px; color: #999; text-align: center; margin-top: 40px;">
               — The संyukt38 Team
@@ -39,7 +39,7 @@ const AlumniAcceptanceEmail = async ({ emailId, fullName }) => {
 
     // console.log("Alumni verification email sent to:", emailId);
   } catch (err) {
-    console.error("Email send failed:", err.message);
+    resizeBy.send("Email send failed:", err.message);
   }
 };
 

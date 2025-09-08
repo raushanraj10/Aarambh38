@@ -38,7 +38,7 @@ export default function SignupPageAlumini() {
   const [formData, setFormData] = useState({
     fullName: "",
     emailId: "",
-    collegeName: "",
+    collegeName: "Bakhtiyarpur Engineering College (BEC), Bakhtiyarpur",
     registration: "",
     batch: "",
     company: "",
@@ -113,6 +113,13 @@ const validateFields = () => {
   // Password match
   if (formData.newPassword && formData.confirmPassword && formData.newPassword !== formData.confirmPassword) {
     errors.confirmPassword = "Passwords do not match.";
+  }
+
+  if (formData.newPassword) {
+    const strongPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/;
+    if (!strongPassword.test(formData.newPassword)) {
+      errors.newPassword = "Password must be at least 8 characters, include uppercase, lowercase, number & special character.";
+    }
   }
 
   // ✅ Registration must be exactly 11 digits
@@ -248,6 +255,7 @@ const validateFields = () => {
     <Select
       options={collegeOptions}
       onChange={handleCollegeSelect}
+      isDisabled
       value={selectedCollege}
       className="mt-1"
       styles={{
@@ -516,32 +524,50 @@ const validateFields = () => {
 
   {/* Password */}
   <div className="col-span-1 relative">
-    <label className="block text-sm font-medium text-gray-700 mb-1">
-      Password
-    </label>
-    <input
-      type={showPassword ? "text" : "password"}
-      name="newPassword"
-      value={formData.newPassword}
-      onChange={handleChange}
-      className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${
-        formErrors.newPassword
-          ? "border-red-500 ring-2 ring-red-300"
-          : "border-gray-300 focus:ring-2 focus:ring-blue-500"
-      }`}
-      required
-      minLength={6}
-    />
-    <div
-      className="absolute right-3 top-9 text-gray-500 cursor-pointer"
-      onClick={() => setShowPassword(!showPassword)}
-    >
-      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-    </div>
-    {formErrors.newPassword && (
-      <p className="text-xs text-red-500 mt-1">{formErrors.newPassword}</p>
-    )}
+  <label className="block text-sm font-medium text-gray-700 mb-1">
+    Password
+  </label>
+  <input
+    type={showPassword ? "text" : "password"}
+    name="newPassword"
+    value={formData.newPassword}
+    onChange={(e) => {
+      handleChange(e);
+
+      // Strong password validation
+      const password = e.target.value;
+      const strongPassword =
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/;
+
+      if (!strongPassword.test(password)) {
+        setFormErrors((prev) => ({
+          ...prev,
+          newPassword:
+            "Password must be at least 8 characters, include uppercase, lowercase, number & special character.",
+        }));
+      } else {
+        setFormErrors((prev) => ({ ...prev, newPassword: "" }));
+      }
+    }}
+    className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${
+      formErrors.newPassword
+        ? "border-red-500 ring-2 ring-red-300"
+        : "border-gray-300 focus:ring-2 focus:ring-blue-500"
+    }`}
+    required
+    minLength={8}
+  />
+  <div
+    className="absolute right-3 top-9 text-gray-500 cursor-pointer"
+    onClick={() => setShowPassword(!showPassword)}
+  >
+    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
   </div>
+  {formErrors.newPassword && (
+    <p className="text-xs text-red-500 mt-1">{formErrors.newPassword}</p>
+  )}
+</div>
+
 
   {/* Confirm Password */}
   <div className="col-span-1">

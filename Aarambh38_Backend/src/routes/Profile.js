@@ -51,7 +51,7 @@ ProfileRouter.post("/edituser", UserAuth, async (req, res) => {
     const updatedUser = await ModelUser.findOne({ _id: decode }).select("fullName emailId branch collegeName batch photourl age  gender")
     res.send(updatedUser);
   } catch (err) {
-    console.error(err);
+    // console.error(err);
     res.status(500).send(err.message);
   }
 });
@@ -87,7 +87,7 @@ ProfileRouter.post("/editalumni", UserAuth, async (req, res) => {
     const updatedData = await ModelAlumini.findOne({ _id: decode }).select("fullName linkedinshow emailId role collegeName batch photourl age company gender about gate branch")
     res.send(updatedData);
   } catch (err) {
-    console.error(err);
+    // console.error(err);
     res.status(500).send(err.message);
   }
 });
@@ -119,7 +119,7 @@ ProfileRouter.post("/editadmin", UserAuth, async (req, res) => {
     const updatedData = await ModelAdmin.findOne({ _id: decode }).select("fullName age emailId gender photourl emailId mobileNumber");
     res.send(updatedData);
   } catch (err) {
-    console.error(err);
+    // console.error(err);
     res.status(500).send(err.message);
   }
 });
@@ -271,7 +271,7 @@ ProfileRouter.post("/uploaddocument",UserAuth, async (req, res) => {
     });
     return res.json({ url: result.secure_url });
   } catch (err) {
-    console.error("Upload failed:", err);
+    // console.error("Upload failed:", err);
     return res.status(500).json({ error: "Upload failed" });
   }
 });

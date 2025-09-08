@@ -4,7 +4,7 @@ const SendEmailByUser = async ({ useremail, subject, usermessage }) => {
   try {
     await transporter.sendMail({
       from: `"संyukt38 User" <${useremail}>`,
-      to: '"संyukt38 Admin" <aarambh38fromstart@gmail.com>',
+      to: '"संyukt38 Admin" <sanyukt38@gmail.com>',
       subject,
       text: usermessage,
       html: `
@@ -33,7 +33,7 @@ const SendEmailByUser = async ({ useremail, subject, usermessage }) => {
       `,
     });
   } catch (err) {
-    console.error("❌ Email send failed:", err.message);
+    res.send("❌ Email send failed:", err.message);
   }
 };
 

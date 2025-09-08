@@ -1092,13 +1092,7 @@ function AlumniCard({
           <p><span className="font-semibold">🎓 Batch:</span> {alumni.batch}</p>
           <p><span className="font-semibold">👤 Branch:</span> {alumni.branch}</p>
           <p><span className="font-semibold">🏫 College:</span> {alumni.collegeName}</p>
-         {alumni?.linkedinshow && (
-        <p className="text-blue-600 break-all">
-         {alumni.linkedinshow}
-        </p>
-         )}
-
-          
+         
           <p className="text-base text-gray-800 font-medium mt-1">
             <span className="font-semibold text-green-700">🏢 Company:</span>{" "}
             {capitalizeEachWord(alumni.company)}
@@ -1110,6 +1104,12 @@ function AlumniCard({
           {alumni?.gate === "Qualified" && (
             <p><span className="font-semibold">🎯 GATE:</span> Qualified</p>
           )}
+
+          {alumni?.linkedinshow && (
+        <p className="text-blue-600 break-all">
+         {alumni.linkedinshow}
+        </p>
+         )}
         </div>
       </Link>
 

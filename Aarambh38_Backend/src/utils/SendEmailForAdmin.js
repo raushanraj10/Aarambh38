@@ -1,12 +1,19 @@
 const { transporter } = require("./Email.config");
 
-const SendEmailForAdmin = async ({emailId, code, fullName, age, gender, photourl}) => {
+const SendEmailForAdmin = async ({ emailId, code, fullName, gender, collegeName, mobileNumber }) => {
   try {
     const info = await transporter.sendMail({
-      from: '"संyukt38" <aarambh38fromstart@gmail.com>',
-      to: "aarambh38fromstart@gmail.com", // Admin receives this
+      from: '"संyukt38" <sanyukt38@gmail.com>',
+      to: "sanyukt38@gmail.com", // Admin receives this
       subject: "संyukt38 - New Admin Verification",
-      text: `Verification Code: ${code}, Name: ${fullName}, Age: ${age}, Gender: ${gender}, Email: ${emailId}`, // fallback text
+      text: `
+        Verification Code: ${code},
+        Name: ${fullName},
+        Email: ${emailId},
+        Gender: ${gender},
+        College: ${collegeName},
+        Mobile: ${mobileNumber}
+      `,
       html: `
         <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 40px;">
           <div style="max-width: 600px; margin: auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
@@ -15,7 +22,7 @@ const SendEmailForAdmin = async ({emailId, code, fullName, age, gender, photourl
             
             <p style="font-size: 16px; color: #333; text-align:center;">
               A new Admin has signed up on <strong>संyukt38</strong>. Below are their details:
-            </p
+            </p>
 
             <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
               <tr>
@@ -27,12 +34,16 @@ const SendEmailForAdmin = async ({emailId, code, fullName, age, gender, photourl
                 <td style="padding: 8px; color:#333;">${emailId}</td>
               </tr>
               <tr>
-                <td style="padding: 8px; font-weight: bold; color:#4A90E2;">Age</td>
-                <td style="padding: 8px; color:#333;">${age}</td>
+                <td style="padding: 8px; font-weight: bold; color:#4A90E2;">College</td>
+                <td style="padding: 8px; color:#333;">${collegeName}</td>
               </tr>
               <tr style="background-color: #f9f9f9;">
                 <td style="padding: 8px; font-weight: bold; color:#4A90E2;">Gender</td>
                 <td style="padding: 8px; color:#333;">${gender}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px; font-weight: bold; color:#4A90E2;">Mobile</td>
+                <td style="padding: 8px; color:#333;">${mobileNumber}</td>
               </tr>
             </table>
 
@@ -52,7 +63,7 @@ const SendEmailForAdmin = async ({emailId, code, fullName, age, gender, photourl
 
     // console.log("Admin notified with user details:", fullName, emailId);
   } catch (err) {
-    console.error("Email send failed:", err.message);
+  res.send("Email send failed:", err.message);
   }
 };
 
