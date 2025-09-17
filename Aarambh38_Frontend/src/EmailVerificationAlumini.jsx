@@ -66,6 +66,7 @@ export default function EmailVerificationAlumini() {
         about,
         gate,
         linkedinshow,
+        collegeReview
       } = verifydata;
 
       const res = await axios.post(
@@ -87,6 +88,7 @@ export default function EmailVerificationAlumini() {
           code,
           gate,
           linkedinshow,
+          collegeReview
         },
         { withCredentials: true }
       );

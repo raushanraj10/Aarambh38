@@ -368,7 +368,7 @@ AuthRouter.post("/signupalumini", async (req, res) => {
     // ✅ Save alumni
     const finalData = new ModelAlumini(data);
     await finalData.save();
-
+    console.log(finalData)
     // ✅ Email notification
     EmailAlumniRequest(req.body);
 
