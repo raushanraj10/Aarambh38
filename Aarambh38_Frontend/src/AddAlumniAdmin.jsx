@@ -42,6 +42,7 @@ export default function AddAlumniAdmin() {
     gate: "",
     about: "",
     photourl: "",
+    collegeReview: "", 
   });
 
   useEffect(() => {
@@ -124,11 +125,11 @@ export default function AddAlumniAdmin() {
     setConfirmModalOpen(false);
 
     try {
-      const { fullName, emailId, collegeName, registration, batch, company, role, gender, branch, newPassword, confirmPassword, gate, about, photourl } = formData;
+      const { fullName, emailId, collegeName, registration, batch, company, role, gender, branch, newPassword, confirmPassword, gate, about, photourl ,collegeReview} = formData;
 
       await axios.post(
         `${BASE_URL}/alumniaddbyadmin`,
-        { fullName, emailId, collegeName, registration, batch, company, role, gender, branch, newPassword, confirmPassword, gate, about, photourl },
+        { fullName, emailId, collegeName, registration, batch, company, role, gender, branch, newPassword, confirmPassword, gate, about, photourl,collegeReview },
         { withCredentials: true }
       );
 
@@ -414,6 +415,29 @@ export default function AddAlumniAdmin() {
   />
   {formErrors.about && (
     <p className="text-xs text-red-500 mt-1">{formErrors.about}</p>
+  )}
+</div>
+
+{/* College Review */}
+<div className="col-span-1 md:col-span-2">
+  <label className="block text-sm font-medium text-gray-700 mb-1">
+    College Review
+  </label>
+  <textarea
+    name="collegeReview"
+    rows={4}
+    value={formData.collegeReview}
+    onChange={handleChange}
+    className={`w-full px-4 py-2 border rounded-lg focus:outline-none resize-none whitespace-pre-line ${
+      formErrors.collegeReview
+        ? "border-red-500 ring-2 ring-red-300"
+        : "border-gray-300 focus:ring-2 focus:ring-blue-500"
+    }`}
+    placeholder="Share your honest review about your college experience..."
+    required
+  />
+  {formErrors.collegeReview && (
+    <p className="text-xs text-red-500 mt-1">{formErrors.collegeReview}</p>
   )}
 </div>
 

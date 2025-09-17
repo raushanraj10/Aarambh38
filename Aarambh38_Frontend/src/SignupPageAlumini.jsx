@@ -50,7 +50,8 @@ export default function SignupPageAlumini() {
     gate:"",
     about: "",
     photourl:"",
-      linkedinshow:""
+    linkedinshow:"",
+    collegeReview: "" 
   });
 
   useEffect(() => {
@@ -169,6 +170,7 @@ const validateFields = () => {
     //  console.log(code)
       // const hashedCode = await bcrypt.hash(code.toString(), 10);
       const updatedFormData = { ...formData };
+      console.log(updatedFormData)
 
       dispatch(pendinguser(updatedFormData));
       setPopupMessage(`📩 OTP sent to ${emailId}`);
@@ -498,6 +500,30 @@ const validateFields = () => {
     )}
   </div>
 
+  {/* Admin Review */}
+<div className="col-span-1 md:col-span-2">
+  <label className="block text-sm font-medium text-gray-700 mb-1">
+    College Review
+  </label>
+  <textarea
+    name="collegeReview"
+    rows={3}
+    value={formData.collegeReview}
+    onChange={handleChange}
+    className={`w-full px-4 py-2 border rounded-lg focus:outline-none resize-none ${
+      formErrors.collegeReview
+        ? "border-red-500 ring-2 ring-red-300"
+        : "border-gray-300 focus:ring-2 focus:ring-blue-500"
+    }`}
+    placeholder="Share your experience and feedback about the college"
+    required
+  />
+  {formErrors.collegeReview && (
+    <p className="text-xs text-red-500 mt-1">{formErrors.collegeReview}</p>
+  )}
+</div>
+
+
   {/* Photo Upload */}
   <div className="col-span-1 md:col-span-2 order-last">
     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -629,3 +655,6 @@ const validateFields = () => {
     </div>
   );
 }
+
+
+
