@@ -277,6 +277,26 @@ ProfileRouter.post("/uploaddocument",UserAuth, async (req, res) => {
 });
 
 
+ProfileRouter.get("/getAllAlumni", UserAuth, async (req, res) => {
+    try {
+        const list = await ModelAlumini.find({ toshow: true })
+            .select("fullName photourl company collegeReview")
+            .lean(); // Convert Mongoose documents to plain JavaScript objects
+        if (!list || list.length === 0) {
+            return res.status(404).json({ message: "No alumni found" });
+        }
+        const formattedList = list.map(alumni => ({
+            name: alumni.fullName,
+            photo: alumni.photourl,
+            company: alumni.company,
+            message: alumni.collegeReview
+        }));
+        res.status(200).json(formattedList);
+    } catch (error) {
+        console.error("Error fetching alumni:", error);
+        res.status(500).json({ message: "Server error while fetching alumni" });
+    }
+});
 
 
 
