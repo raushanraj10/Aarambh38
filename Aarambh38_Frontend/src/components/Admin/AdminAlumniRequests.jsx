@@ -470,7 +470,9 @@ const [popupType, setPopupType] = useState("success"); // "success" | "error"
   <p className="text-blue-600 break-all">
     {alum.linkedinshow}
   </p>
+  
 )}
+<p><strong>College Review:</strong> {alum.collegeReview}</p>
 
                 </div>
 

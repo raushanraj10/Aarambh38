@@ -277,7 +277,7 @@ ProfileRouter.post("/uploaddocument",UserAuth, async (req, res) => {
 });
 
 
-ProfileRouter.get("/getAllAlumni", UserAuth, async (req, res) => {
+ProfileRouter.get("/getAllAlumni", async (req, res) => {
     try {
         const list = await ModelAlumini.find({ toshow: true })
             .select("fullName photourl company collegeReview")
@@ -286,10 +286,10 @@ ProfileRouter.get("/getAllAlumni", UserAuth, async (req, res) => {
             return res.status(404).json({ message: "No alumni found" });
         }
         const formattedList = list.map(alumni => ({
-            name: alumni.fullName,
-            photo: alumni.photourl,
+            fullName: alumni.fullName,
+            photourl: alumni.photourl,
             company: alumni.company,
-            message: alumni.collegeReview
+            collegeReview: alumni.collegeReview
         }));
         res.status(200).json(formattedList);
     } catch (error) {

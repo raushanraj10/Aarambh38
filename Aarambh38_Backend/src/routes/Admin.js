@@ -9,7 +9,7 @@ const StudentRejectionEmail = require("../utils/StudentRejectionEmail");
 const AlumniRejectionEmail = require("../utils/AlumniRejectionEmail");
 
 const AdminRouter=express.Router()
-const alumniselectdatalist="_id fullName linkedinshow gate gender collegeName emailId branch role company batch age photourl about mobileNumber registration createdAt"
+const alumniselectdatalist="_id fullName linkedinshow gate gender collegeName emailId branch role company batch age photourl about mobileNumber registration collegeReview createdAt"
 const studentdatalist="_id fullName gender collegeName emailId branch batch age photourl mobileNumber registration createdAt"
 
 
