@@ -12,23 +12,23 @@ const sections = [
   {
     icon: Info,
     color: "text-green-600",
-    title: "What is yukt38?",
+    title: "What is संyukt38?",
     content:
-      "yukt38 is a dynamic mentorship platform connecting students from Bihar's 38 government engineering colleges with experienced alumni, facilitating career guidance, placement prep, and meaningful networking.",
+      "संyukt38 is a dynamic mentorship platform connecting students from Bihar's 38 government engineering colleges with experienced alumni, facilitating career guidance, placement prep, and meaningful networking.",
   },
   {
     icon: HelpCircle,
     color: "text-blue-600",
     title: "Why was it built?",
     content:
-      "Designed to overcome the mentorship gap, yukt38 links students directly with alumni, empowering informed career decisions and referral opportunities.",
+      "Designed to overcome the mentorship gap, संyukt38 links students directly with alumni, empowering informed career decisions and referral opportunities.",
   },
   {
     icon: Calendar,
     color: "text-green-600",
     title: "When was it started?",
     content:
-      "Launched in 2025, yukt38 has evolved with user-centric features—real-time chats, profile security, and seamless request handling—to foster a thriving mentorship ecosystem.",
+      "Launched in 2025, संyukt38 has evolved with user-centric features—real-time chats, profile security, and seamless request handling—to foster a thriving mentorship ecosystem.",
   },
   {
     icon: MapPin,
@@ -60,7 +60,7 @@ const principal = {
   // img: "https://randomuser.me/api/portraits/men/55.jpg", // Use actual base64 or URL value
   img: principalimg,
   description:
-    "Provides vision and leadership, guiding संyukt38 to empower students across 38 colleges.",
+    "Empowering संyukt38 with vision and dedication to inspire student growth.",
 };
 
 // Mentors array - all others except principal
@@ -70,35 +70,35 @@ const mentors = [
     role: "Dean",
     img: shahiruddin,
     description:
-      "Supports students in exam strategy, higher education opportunities, and research guidance.",
+      "Oversees academic affairs and upholds the institution’s standards of excellence.",
   },
   {
     name: "Prof. Rajeev Ranjan",
     role: "Training & Placement Officer, BCE Patna ",
     img: rajeev,
     description:
-      "Supports students in exam strategy, higher education opportunities, and research guidance.",
+      "Facilitates student placements, industry collaborations, and career development opportunities.",
   },
   {
     name: "Prof. Shahab Saquib",
     role: "Assistant Professor(HOD CSE)",
     img: saquib,
     description:
-      "Placed alumni helping students with coding, internships, and real-world project experience.",
+      "Guides students in computer science education, fostering skills in coding, research, and projects.",
   },
   {
     name: "Dr. Vikash Kumar",
     role: "Assistant Professor",
     img: vikash,
     description:
-      "Mentoring students with insights into analytics, GATE preparation, and higher studies abroad.",
+      "Dedicated to advancing student success through academic guidance and career-focused mentorship.",
   },
   {
     name: "Prof. Ajeet Kumar",
     role: "Assistant Professor",
     img:ajeet,
     description:
-      "Supports students in exam strategy, higher education opportunities, and research guidance.",
+      "Committed to enhancing student learning, research engagement, and academic excellence.",
   },
 ];
 
