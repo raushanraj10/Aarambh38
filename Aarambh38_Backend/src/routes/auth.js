@@ -313,6 +313,7 @@ AuthRouter.post("/signupalumini", async (req, res) => {
       return res.status(400).json({
         success: false,
         message: "Invalid or incorrect OTP. Please try again.",
+        
       });
     }
 
@@ -323,7 +324,7 @@ AuthRouter.post("/signupalumini", async (req, res) => {
     const requiredFields = [
       "fullName", "gender", "emailId", "newPassword", "confirmPassword",
       "registration", "batch", "collegeName", "company", "role",
-      "photourl", "about", "branch","gate","linkedinshow"
+      "photourl", "about", "branch","gate","linkedinshow","collegeReview"
     ];
       // console.log(req.body.gate)
     const missingFields = requiredFields.filter(field => !(field in data));
@@ -404,13 +405,13 @@ AuthRouter.post("/alumniaddbyadmin",UserAuth, async (req, res) => {
     confirmPassword,
     gate,
     about,
-    photourl } = req.body;
+    photourl,collegeReview } = req.body;
 
 
     const requiredFields = [
       "fullName", "gender", "emailId", "newPassword", "confirmPassword",
       "registration", "batch", "collegeName", "company", "role",
-      "photourl", "about", "branch","gate"
+      "photourl", "about", "branch","gate","collegeReview"
     ];
       // console.log(req.body.gate)
     const missingFields = requiredFields.filter(field => !(field in data));

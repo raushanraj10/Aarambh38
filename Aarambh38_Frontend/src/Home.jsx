@@ -67,6 +67,59 @@ export default function Home() {
     },
   ];
 
+  const testimonials = [
+    {
+      id: 1,
+      name: "Ankit Sharma",
+      company: "Amazon",
+      photo: "https://i.pravatar.cc/150?img=1",
+      message: "संyukt38 helped me connect with amazing alumni who guided me through my placement preparation. I got my dream job at TCS thanks to their mentorship!",
+    },
+    {
+      id: 2,
+      name: "Sneha Gupta",
+      company: "Amazon",
+      photo: "https://i.pravatar.cc/150?img=9",
+      message: "Being part of संyुkt38 as an alumni has been incredibly rewarding. I love helping juniors navigate their career paths and seeing them succeed.",
+    },
+    {
+      id: 3,
+      name: "Rahul Mishra",
+      company: "Amazon",
+      photo: "https://i.pravatar.cc/150?img=11",
+      message: "The GATE qualified alumni on this platform are gems! Their preparation strategies and mock interviews helped me crack GATE with a good score.",
+    },
+    {
+      id: 4,
+      name: "Divya Singh",
+      company: "Amazon",
+      photo: "https://i.pravatar.cc/150?img=14",
+      message: "संyुkt38 provides a safe space for meaningful conversations. I can help students without worrying about privacy, and they get genuine guidance.",
+    },
+    {
+      id: 5,
+      name: "Vikash Kumar",
+      company: "Amazon",
+      photo: "https://i.pravatar.cc/150?img=12",
+      message: "From resume reviews to mock interviews, the alumni here go above and beyond. I landed internships at two companies through referrals from this network!",
+    },
+    {
+      id: 6,
+      name: "Pooja Kumari",
+      company: "Amazon",
+      photo: "https://i.pravatar.cc/150?img=16",
+      message: "The platform's focus on verified alumni ensures quality mentorship. It's amazing to see juniors grow and succeed with proper guidance.",
+    }
+  ];
+  const [currentTestimonial, setCurrentTestimonial] = useState(0);
+
+  useEffect(() => {
+    const testimonialInterval = setInterval(() => {
+      setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
+    }, 4000);
+    return () => clearInterval(testimonialInterval);
+  }, [testimonials.length]);
+
   return (
     <div className="bg-white">
       {/* Hero Section */}
@@ -271,6 +324,73 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+{/* Testimonial */}
+
+      <section className="bg-gradient-to-br from-blue-50 via-purple-50 to-green-50 py-16">
+  <div className="max-w-6xl mx-auto px-4">
+    <h2 className="text-3xl font-bold text-gray-800 mb-4 text-center">
+      What Our Alumni Says
+    </h2>
+    <p className="text-gray-600 text-center mb-12 max-w-2xl mx-auto">
+      Hear from our alumni about their experiences, achievements, and how our college shaped their career paths.
+    </p>
+    
+    <div className="bg-white rounded-2xl shadow-xl p-8 mb-12 relative overflow-hidden">
+      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-400 to-purple-400 rounded-full opacity-10 transform translate-x-16 -translate-y-16"></div>
+      
+      <div className="relative z-10">
+        {/* Profile */}
+        <div className="flex items-center mb-6">
+          <img
+            src={testimonials[currentTestimonial].photo}
+            alt={testimonials[currentTestimonial].name}
+            className="w-16 h-16 rounded-full border-4 border-blue-500 object-cover mr-4"
+          />
+          <div>
+            <h3 className="text-xl font-semibold text-gray-800">
+              {testimonials[currentTestimonial].name}
+            </h3>
+            {testimonials[currentTestimonial].company && (
+              <span className="inline-block mt-1 bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium">
+                {testimonials[currentTestimonial].company}
+              </span>
+            )}
+          </div>
+        </div>
+        
+        {/* Quote */}
+        <div className="text-4xl text-blue-400 mb-4">"</div>
+        <p className="text-gray-700 text-lg leading-relaxed mb-6 pl-8">
+          {testimonials[currentTestimonial].message}
+        </p>
+
+        {/* Testimonial Navigation */}
+        <div className="flex space-x-2 justify-center">
+          {testimonials.map((_, idx) => (
+            <button
+              key={idx}
+              className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                idx === currentTestimonial 
+                  ? 'bg-blue-600 scale-125' 
+                  : 'bg-gray-300 hover:bg-gray-400'
+              }`}
+              onClick={() => setCurrentTestimonial(idx)}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+
+      
+
+      
+
 
       
       

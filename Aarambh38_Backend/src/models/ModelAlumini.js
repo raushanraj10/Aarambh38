@@ -89,7 +89,14 @@ const AluminiSchema=new mongoose.Schema({
         type:String,
         enum:["Qualified",""],
         default:""
-    }
+    },
+    collegeReview: {
+    type: String,
+    required: true
+    },
+
+
+
 },{timestamps:true})
 
 
