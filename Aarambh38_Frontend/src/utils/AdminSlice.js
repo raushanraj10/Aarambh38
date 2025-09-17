@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { Verified } from "lucide-react";
 
 const AdminSlice=createSlice({
     name:"admindata",
