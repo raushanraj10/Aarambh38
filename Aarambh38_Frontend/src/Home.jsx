@@ -756,9 +756,49 @@ const filteredTestimonials = testimonials.filter(
         </div>
       </section>
 
+
+
+      {/* How It Works Section */}
+      <section className=" py-16">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <h2 className="text-3xl font-bold text-gray-800 mb-10">How It Works</h2>
+          <div className="grid md:grid-cols-3 gap-8 text-left">
+            <div>
+              <h3 className="text-xl font-semibold text-blue-600 mb-2">1. Sign Up</h3>
+              <p className="text-gray-600">Choose your role – Alumni or Student – and create your profile.</p>
+            </div>
+            <div>
+              <h3 className="text-xl font-semibold text-green-600 mb-2">2. Connect</h3>
+              <p className="text-gray-600">Search, follow, and interact with alumni/students in your domain.</p>
+            </div>
+            <div>
+              <h3 className="text-xl font-semibold text-purple-600 mb-2">3. Grow</h3>
+              <p className="text-gray-600">Access shared resources, career help, and exclusive opportunities.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    <section className=" py-10 px-4">
+  <div className="max-w-3xl mx-auto text-center border border-gray-200 bg-white rounded-xl shadow-sm py-8 px-6">
+    <h2 className="text-2xl font-bold text-gray-800 mb-2 tracking-tight">
+      Ready to Start Your Journey?
+    </h2>
+    <p className="text-sm text-gray-600 mb-5">
+      Connect with mentors, explore opportunities, and grow with संyukt38.
+    </p>
+    {!Studentdata&&!Aluminidata&&<Link
+      to="/signupchoice"
+      className="inline-block bg-blue-600 text-white text-sm font-medium px-6 py-2 rounded-lg hover:bg-blue-700 transition"
+    >
+      Create Your Account
+    </Link>}
+  </div>
+</section>
+
 {/* Testimonial */}
 
-      <section className="bg-gradient-to-br from-blue-50 via-purple-50 to-green-50 py-16">
+     { filteredTestimonials.length > 0&&<section className="bg-gradient-to-br from-blue-50 via-purple-50 to-green-50 py-16">
     <div className="max-w-6xl mx-auto px-4">
         <h2 className="text-3xl font-bold text-gray-800 mb-4 text-center">
             What Our Alumni Says
@@ -822,47 +862,7 @@ const filteredTestimonials = testimonials.filter(
             </div>
         )}
     </div>
-</section>
-
-      
-
-      {/* How It Works Section */}
-      <section className=" py-16">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold text-gray-800 mb-10">How It Works</h2>
-          <div className="grid md:grid-cols-3 gap-8 text-left">
-            <div>
-              <h3 className="text-xl font-semibold text-blue-600 mb-2">1. Sign Up</h3>
-              <p className="text-gray-600">Choose your role – Alumni or Student – and create your profile.</p>
-            </div>
-            <div>
-              <h3 className="text-xl font-semibold text-green-600 mb-2">2. Connect</h3>
-              <p className="text-gray-600">Search, follow, and interact with alumni/students in your domain.</p>
-            </div>
-            <div>
-              <h3 className="text-xl font-semibold text-purple-600 mb-2">3. Grow</h3>
-              <p className="text-gray-600">Access shared resources, career help, and exclusive opportunities.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-    <section className=" py-10 px-4">
-  <div className="max-w-3xl mx-auto text-center border border-gray-200 bg-white rounded-xl shadow-sm py-8 px-6">
-    <h2 className="text-2xl font-bold text-gray-800 mb-2 tracking-tight">
-      Ready to Start Your Journey?
-    </h2>
-    <p className="text-sm text-gray-600 mb-5">
-      Connect with mentors, explore opportunities, and grow with संyukt38.
-    </p>
-    {!Studentdata&&!Aluminidata&&<Link
-      to="/signupchoice"
-      className="inline-block bg-blue-600 text-white text-sm font-medium px-6 py-2 rounded-lg hover:bg-blue-700 transition"
-    >
-      Create Your Account
-    </Link>}
-  </div>
-</section>
+</section>}
 
 
     </div>
