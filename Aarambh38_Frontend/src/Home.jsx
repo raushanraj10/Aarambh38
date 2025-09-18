@@ -797,72 +797,79 @@ const filteredTestimonials = testimonials.filter(
 </section>
 
 {/* Testimonial */}
-
-     { filteredTestimonials.length > 0&&<section className="bg-gradient-to-br from-blue-50 via-purple-50 to-green-50 py-16">
+{
+  filteredTestimonials.length > 0 &&
+  <section className="bg-gradient-to-br from-blue-50 via-purple-50 to-green-50 py-16">
     <div className="max-w-6xl mx-auto px-4">
-        <h2 className="text-3xl font-bold text-gray-800 mb-4 text-center">
-            What Our Alumni Says
-        </h2>
-        <p className="text-gray-600 text-center mb-12 max-w-2xl mx-auto">
-            Hear from our alumni about their experiences, achievements, and how our college shaped their career paths.
-        </p>
-        
-        {filteredTestimonials.length === 0 ? (
-            <div className="text-center py-16">No alumni testimonials available</div>
-        ) : (
-            <div className="bg-white rounded-xl shadow-lg p-6 mb-8 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-400 to-purple-400 rounded-full opacity-10 transform translate-x-12 -translate-y-12"></div>
-                
-                <div className="relative z-10">
-                    {/* Profile */}
-                    <div className="flex items-center mb-4">
-                        <div className="relative w-12 h-12 mr-3">
-                            <img
-                                src={filteredTestimonials[currentTestimonial].photourl}
-                                alt={filteredTestimonials[currentTestimonial].fullName}
-                                className="w-12 h-12 rounded-full border-3 border-blue-500 object-cover"
-                            />
-                            {/* Concentric circles */}
-                            <div className="absolute inset-0 rounded-full border-2 border-blue-300 opacity-50 -z-10 animate-pulse"></div>
-                            <div className="absolute inset-0 rounded-full border-2 border-blue-700 opacity-30 -z-10 scale-125 animate-pulse delay-150"></div>
-                        </div>
-                        <div>
-                            <h3 className="text-lg font-semibold text-gray-800">
-                                {filteredTestimonials[currentTestimonial].fullName}
-                            </h3>
-                            {filteredTestimonials[currentTestimonial].company && (
-                                <span className="inline-block mt-1 bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-medium">
-                                    {filteredTestimonials[currentTestimonial].company}
-                                </span>
-                            )}
-                        </div>
-                    </div>
-                    
-                    {/* Quote */}
-                    <div className="text-3xl text-blue-400 mb-3">"</div>
-                    <p className="text-gray-700 text-base leading-relaxed mb-4 pl-6">
-                        {filteredTestimonials[currentTestimonial].collegeReview || "No review provided"}
-                    </p>
+      <h2 className="text-3xl font-bold text-gray-800 mb-4 text-center">
+        What Our Alumni Says
+      </h2>
+      <p className="text-gray-600 text-center mb-12 max-w-2xl mx-auto">
+        Hear from our alumni about their experiences, achievements, and how our college shaped their career paths.
+      </p>
 
-                    {/* Testimonial Navigation */}
-                    <div className="flex space-x-2 justify-center">
-                        {filteredTestimonials.map((_, idx) => (
-                            <button
-                                key={idx}
-                                className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                                    idx === currentTestimonial 
-                                        ? 'bg-blue-600 scale-125' 
-                                        : 'bg-gray-300 hover:bg-gray-400'
-                                }`}
-                                onClick={() => handleDotClick(idx)}
-                            />
-                        ))}
-                    </div>
-                </div>
+      {filteredTestimonials.length === 0 ? (
+        <div className="text-center py-16">No alumni testimonials available</div>
+      ) : (
+        <div className="bg-white rounded-xl shadow-lg p-6 mb-8 relative overflow-hidden h-60">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-400 to-purple-400 rounded-full opacity-10 transform translate-x-12 -translate-y-12"></div>
+
+          <div className="relative z-10 h-full flex flex-col">
+            {/* Profile */}
+            <div className="flex items-center mb-4">
+              <div className="relative w-12 h-12 mr-3">
+                <img
+                  src={filteredTestimonials[currentTestimonial].photourl}
+                  alt={filteredTestimonials[currentTestimonial].fullName}
+                  className="w-12 h-12 rounded-full border-3 border-blue-500 object-cover"
+                />
+                <div className="absolute inset-0 rounded-full border-2 border-blue-300 opacity-50 -z-10 animate-pulse"></div>
+                <div className="absolute inset-0 rounded-full border-2 border-blue-700 opacity-30 -z-10 scale-125 animate-pulse delay-150"></div>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-800">
+                  {filteredTestimonials[currentTestimonial].fullName}
+                </h3>
+                {filteredTestimonials[currentTestimonial].company && (
+                  <span className="inline-block mt-1 bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-medium">
+                    {filteredTestimonials[currentTestimonial].company}
+                  </span>
+                )}
+              </div>
             </div>
-        )}
+
+            {/* Quote */}
+            <div className="text-3xl text-blue-400 mb-3">"</div>
+
+            {/* Fixed height and scrollable message */}
+            <div className="pl-6 mb-4 overflow-y-auto max-h-20">
+              <p className="text-gray-700 text-base leading-relaxed break-words">
+                {filteredTestimonials[currentTestimonial].collegeReview || "No review provided"}
+              </p>
+            </div>
+
+            {/* Testimonial Navigation */}
+            <div className="flex space-x-2 justify-center mt-auto">
+              {filteredTestimonials.map((_, idx) => (
+                <button
+                  key={idx}
+                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                    idx === currentTestimonial
+                      ? 'bg-blue-600 scale-125'
+                      : 'bg-gray-300 hover:bg-gray-400'
+                  }`}
+                  onClick={() => handleDotClick(idx)}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
-</section>}
+  </section>
+}
+
+
 
 
     </div>
