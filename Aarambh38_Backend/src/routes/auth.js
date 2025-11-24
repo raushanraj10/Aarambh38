@@ -574,10 +574,11 @@ AuthRouter.post("/loginuser", async (req, res) => {
       { expiresIn: "2d" }
     );
 
-    res.cookie("token", token, {
-      maxAge: 2 * 24 * 60 * 60 * 1000, // 2 days
-      
-    });
+     res.cookie("token", token, {
+  secure: true,
+  sameSite: "none",
+  maxAge: 2 * 24 * 60 * 60 * 1000,
+});
 
     const finalemail = await ModelUser.findOne({ emailId: emailId }).select(
       "fullName emailId branch collegeName batch photourl age gender"
@@ -632,8 +633,11 @@ AuthRouter.post("/loginalumini", async (req, res) => {
     );
 
     res.cookie("token", token, {
-      maxAge: 2 * 24 * 60 * 60 * 1000,
-    });
+  secure: true,
+  sameSite: "none",
+  maxAge: 2 * 24 * 60 * 60 * 1000,
+});
+
 
     const finalemail = await ModelAlumini.findOne({ emailId: emailId }).select(
       "fullName role collegeName batch photourl age company gender gate emailId about branch linkedinshow"
@@ -681,10 +685,11 @@ AuthRouter.post("/loginadmin", async (req, res) => {
       { expiresIn: "2d" }
     );
 
-    res.cookie("token", token, {
-      maxAge: 2 * 24 * 60 * 60 * 1000,
-      
-    });
+     res.cookie("token", token, {
+  secure: true,
+  sameSite: "none",
+  maxAge: 2 * 24 * 60 * 60 * 1000,
+});
 
     const finalemail = await ModelAdmin.findOne({ emailId: emailId }).select(
       "fullName role photourl age gender branch emailId collegeName mobileNumber"
