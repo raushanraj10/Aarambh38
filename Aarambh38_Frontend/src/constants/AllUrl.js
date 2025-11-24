@@ -1,2 +1,2 @@
 export const BASE_URL= 
-location.hostname==="localhost"?"http://localhost:5000":"/api"
+location.hostname==="localhost"?"http://localhost:5000":"https://aarambh38-1.onrender.com"
