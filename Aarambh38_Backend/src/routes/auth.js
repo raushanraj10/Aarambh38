@@ -710,8 +710,13 @@ AuthRouter.post("/loginadmin", async (req, res) => {
 });
 
 
-AuthRouter.get("/logout",async (req,res)=>{
-    res.cookie("token","",{maxAge:0})
-    res.send("Logout Successfully")
-})
+AuthRouter.get("/logout", (req, res) => {
+  res.cookie("token", "", {
+    secure: true,
+    sameSite: "none",
+    maxAge: 0
+  });
+  res.send("Logout Successfully");
+});
+
 module.exports=AuthRouter
