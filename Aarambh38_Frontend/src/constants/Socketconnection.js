@@ -5,7 +5,9 @@ export const SocketConnection=()=>{
     if(location.hostname==="localhost")
         return io(BASE_URL)
     else
-        return io("https://aarambh38-1.onrender.com/",{path:"/api/socket.io"})
+       return io("https://aarambh38-1.onrender.com", {
+  transports: ["websocket"]
+});
 }
 
 
