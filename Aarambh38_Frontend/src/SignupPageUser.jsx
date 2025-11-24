@@ -278,11 +278,12 @@ if (!strongPassword.test(formData.newPassword)) {
              
                  {/* Batch */}
             <div>
-  <label className="text-sm font-medium text-gray-700">Batch</label>
+  <label className="text-sm font-medium text-gray-700">Session</label>
   <input
     type="text"
     name="batch"
     value={formData.batch}
+    placeholder="2022-2026"
     onChange={(e) => {
       const onlyNums = e.target.value.replace(/[^0-9]/g, ""); // only numbers
       setFormData({ ...formData, batch: onlyNums });

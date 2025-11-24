@@ -278,7 +278,7 @@ const validateFields = () => {
   {/* Batch */}
   <div className="col-span-1">
     <label className="block text-sm font-medium text-gray-700 mb-1">
-      Batch
+      Session
     </label>
     <input
       type="text"
@@ -298,7 +298,7 @@ const validateFields = () => {
       minLength={4}
       maxLength={4}
       pattern="\d{4}"
-      placeholder="e.g. 2025"
+      placeholder="2022-2026"
     />
   </div>
 

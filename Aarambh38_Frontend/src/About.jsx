@@ -108,7 +108,7 @@ const About = () => {
       {/* Hero Section */}
       <header className="relative bg-gradient-to-r from-blue-700 to-green-600 text-white text-center py-24 px-6 overflow-hidden shadow-lg">
         <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight leading-tight mb-4 drop-shadow-lg">
-          About yukt38
+          About संyukt38
         </h1>
         <p className="mt-6 text-lg max-w-3xl mx-auto leading-relaxed tracking-wide drop-shadow-md">
           Your bridge to mentorship, career growth, and collaboration across Bihar's 38 government engineering colleges.
