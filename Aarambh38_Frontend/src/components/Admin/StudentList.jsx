@@ -624,7 +624,7 @@ useEffect(() => {
                           <strong>Registration:</strong> {alum.registration}
                         </p>
                         <p>
-                          <strong>Mobile:</strong> {alum.mobileNumber}
+                          <strong>Mobile:</strong> {alum.mobileNumber||"NA"}
                         </p>
                         
                       </div>

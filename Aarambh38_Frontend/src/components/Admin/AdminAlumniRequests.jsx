@@ -463,7 +463,7 @@ const [popupType, setPopupType] = useState("success"); // "success" | "error"
                   <p><strong>Branch:</strong> {alum.branch}</p>
                   <p><strong>Batch:</strong> {alum.batch}</p>
                   {/* <p><strong>Age:</strong> {alum.age}</p> */}
-                  <p><strong>Mobile:</strong> {alum.mobileNumber}</p>
+                  <p><strong>Mobile:</strong> {alum.mobileNumber||"NA"}</p>
                   <p><strong>About:</strong> {alum.about}</p>
                   <p><strong>Registration No.:</strong> {alum.registration}</p>
                {alum?.linkedinshow && (
@@ -472,7 +472,7 @@ const [popupType, setPopupType] = useState("success"); // "success" | "error"
   </p>
   
 )}
-<p><strong>College Review:</strong> {alum.collegeReview}</p>
+<p><strong>College Review:</strong> {alum.collegeReview||"NA"}</p>
 
                 </div>
 
