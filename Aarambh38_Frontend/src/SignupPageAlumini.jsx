@@ -257,7 +257,6 @@ const validateFields = () => {
     <Select
       options={collegeOptions}
       onChange={handleCollegeSelect}
-      isDisabled
       value={selectedCollege}
       className="mt-1"
       styles={{

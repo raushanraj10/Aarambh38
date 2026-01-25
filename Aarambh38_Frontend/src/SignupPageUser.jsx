@@ -261,7 +261,7 @@ if (!strongPassword.test(formData.newPassword)) {
             <Select
               options={collegeOptions}
               onChange={handleCollegeSelect}
-              isDisabled
+              
               defaultValue={formData.collegeName && { label: formData.collegeName, value: formData.collegeName }}
               placeholder="Select your college"
               className="mt-1"
