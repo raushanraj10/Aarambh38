@@ -368,7 +368,7 @@ const AdminAlumniList = () => {
   const fetchAlumni = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${BASE_URL}/getallalumni`, {
+      const res = await axios.get(`${BASE_URL}/getallalumniall`, {
         withCredentials: true,
       });
       setAlumni(res.data);
@@ -605,7 +605,7 @@ const AdminAlumniList = () => {
                       <p><strong>Branch:</strong> {alum.branch}</p>
                       <p><strong>Batch:</strong> {alum.batch}</p>
                       {/* <p><strong>Age:</strong> {alum.age}</p> */}
-                      <p><strong>Mobile:</strong> {alum.mobileNumber}</p>
+                      <p><strong>Mobile:</strong> {alum.mobileNumber||"Not Provided"}</p>
                       <p><strong>About:</strong> {alum.about}</p>
                       <p><strong>Registration:</strong> {alum.registration}</p>
                        {alum?.linkedinshow && (

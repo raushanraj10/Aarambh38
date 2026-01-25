@@ -13,14 +13,17 @@ const alumniselectdatalist="_id fullName linkedinshow gate gender collegeName em
 const studentdatalist="_id fullName gender collegeName emailId branch batch age photourl mobileNumber registration createdAt"
 
 
-AdminRouter.get("/getallalumni",UserAuth, async (req,res)=>{
+AdminRouter.get("/getallalumniall",UserAuth, async (req,res)=>{
     try{
     const AdminId = req.decode;
     const Admindata=await ModelAdmin.findOne({_id:AdminId}) 
     
     if(!Admindata)
         return res.status(400).send("Not Available Data")
-    const AlumniList=await ModelAlumini.find({toshow:true}).select(alumniselectdatalist)
+    const AlumniList = await ModelAlumini
+  .find({ toshow: true })
+  .select("-newPassword -confirmPassword");
+
     res.send(AlumniList)}
     catch(err){res.send(err.message)}
     
