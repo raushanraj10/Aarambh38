@@ -557,5 +557,53 @@ UserRouter.post("/addtogroup/:groupId/:studentId", UserAuth, async (req, res) =>
 });
 
 
+// ===============================
+// ALUMNI BULK MESSAGE TO STUDENTS
+// ===============================
+UserRouter.post("/alumni/bulkmessage", UserAuth, async (req, res) => {
+  try {
+    const alumniId = req.decode._id;
+    const { studentIds, text } = req.body;
+
+    if (!Array.isArray(studentIds) || studentIds.length === 0) {
+      return res.status(400).send("No students selected");
+    }
+
+    if (!text || !text.trim()) {
+      return res.status(400).send("Message is empty");
+    }
+
+    // ✅ verify students are connected to alumni
+    const connections = await ModelUserSendConnection.find({
+      touserId: alumniId,
+      status: "accepted",
+      fromuserId: { $in: studentIds },
+    }).select("fromuserId");
+
+    const allowedStudents = connections.map(c => c.fromuserId.toString());
+
+    if (allowedStudents.length !== studentIds.length) {
+      return res.status(403).send("Some students are not connected");
+    }
+
+    // ✅ create messages
+    const messages = studentIds.map(studentId => ({
+      fromuserId: alumniId,
+      targetuserId: studentId,
+      text,
+      messageType: "text",
+      studentreaded: "NO",
+      alumnireaded: "YES",
+    }));
+
+    await ModelMessage.insertMany(messages);
+
+    res.status(200).send("Message sent to selected students");
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+
 
 module.exports=UserRouter
