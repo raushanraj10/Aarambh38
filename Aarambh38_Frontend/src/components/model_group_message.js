@@ -1,26 +1,15 @@
 const mongoose = require("mongoose");
 
-const groupMessageSchema = new mongoose.Schema(
+const GroupMessageSchema = new mongoose.Schema(
   {
-    groupId: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true,
-    },
-    senderId: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true,
-    },
+    groupId: { type: mongoose.Schema.Types.ObjectId, ref: "Group" },
+    senderId: { type: mongoose.Schema.Types.ObjectId },
     text: String,
     image: String,
     document: String,
-    originalFilename: String,
-    messageType: {
-      type: String,
-      enum: ["text", "image", "file"],
-      default: "text",
-    },
+    messageType: { type: String, default: "text" },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("GroupMessage", groupMessageSchema);
+module.exports = mongoose.model("GroupMessage", GroupMessageSchema);
