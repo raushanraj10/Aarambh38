@@ -1,0 +1,391 @@
+------------------------------------------------------------models/Group.js
+
+const mongoose = require("mongoose");
+
+const groupSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+    },
+    members: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+      },
+    ],
+  },
+  { timestamps: true }
+);
+
+module.exports = mongoose.model("Group", groupSchema);
+
+------------------------------------------------------------models/GroupMessage.js
+  const mongoose = require("mongoose");
+
+const groupMessageSchema = new mongoose.Schema(
+  {
+    groupId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+    },
+    senderId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+    },
+    text: String,
+    image: String,
+    document: String,
+    originalFilename: String,
+    messageType: {
+      type: String,
+      enum: ["text", "image", "file"],
+      default: "text",
+    },
+  },
+  { timestamps: true }
+);
+
+module.exports = mongoose.model("GroupMessage", groupMessageSchema);
+
+
+------------------------------------------------------------routes/UserWantConnection.js
+
+ 1----------------->
+  const Group = require("../models/Group");
+const GroupMessage = require("../models/GroupMessage");
+
+
+// ===============================
+// GROUP CHAT (ALUMNI ONLY)
+// ===============================
+
+// ✅ Create group (Alumni → connected students only)
+2---------------------> 
+  UserRouter.post("/creategroup", UserAuth, async (req, res) => {
+  try {
+    const alumniId = req.decode._id;
+    const { groupName, studentIds } = req.body;
+
+    if (!groupName || !Array.isArray(studentIds)) {
+      return res.status(400).send("Invalid data");
+    }
+
+    // get accepted students of alumni
+    const connections = await ModelUserSendConnection.find({
+      touserId: alumniId,
+      status: "accepted",
+    }).select("fromuserId");
+
+    const allowedStudents = connections.map(c => c.fromuserId.toString());
+
+    const invalid = studentIds.filter(
+      id => !allowedStudents.includes(id)
+    );
+
+    if (invalid.length > 0) {
+      return res.status(403).send("Only connected students allowed");
+    }
+
+    const group = await Group.create({
+      name: groupName,
+      createdBy: alumniId,
+      members: [alumniId, ...studentIds],
+    });
+
+    res.status(201).json(group);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+// ✅ Get my groups (Alumni + Students)
+UserRouter.get("/mygroups", UserAuth, async (req, res) => {
+  try {
+    const userId = req.decode._id;
+    const groups = await Group.find({ members: userId });
+    res.json(groups);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+// ✅ Get group messages
+UserRouter.get("/groupmessages/:groupId", UserAuth, async (req, res) => {
+  try {
+    const userId = req.decode._id;
+    const group = await Group.findById(req.params.groupId);
+
+    if (!group) return res.status(404).send("Group not found");
+    if (!group.members.includes(userId))
+      return res.status(403).send("Not authorized");
+
+    const messages = await GroupMessage.find({
+      groupId: req.params.groupId,
+    }).sort({ createdAt: 1 });
+
+    res.json(messages);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+// ✅ Add student to group (Alumni only)
+UserRouter.post("/addtogroup/:groupId/:studentId", UserAuth, async (req, res) => {
+  try {
+    const alumniId = req.decode._id;
+    const { groupId, studentId } = req.params;
+
+    const group = await Group.findById(groupId);
+    if (!group) return res.status(404).send("Group not found");
+
+    if (group.createdBy.toString() !== alumniId) {
+      return res.status(403).send("Only alumni admin can add");
+    }
+
+    const connection = await ModelUserSendConnection.findOne({
+      fromuserId: studentId,
+      touserId: alumniId,
+      status: "accepted",
+    });
+
+    if (!connection) {
+      return res.status(403).send("Student not connected");
+    }
+
+    if (!group.members.includes(studentId)) {
+      group.members.push(studentId);
+      await group.save();
+    }
+
+    res.send("Student added");
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+
+3--------------------->   
+  module.exports = UserRouter
+
+------------------------------------utils/IntializeSocket.js
+
+  const socket = require("socket.io");
+const ModelMessage = require("../models/ModelMessage");
+const GroupMessage = require("../models/GroupMessage"); // ✅ NEW
+const BASE_URL = require("../constants/ALLURL");
+const { cloudinary } = require("./cloudinary");
+const path = require("path");
+
+const IntializeSocket = (server) => {
+  const io = socket(server, {
+    cors: {
+      origin: BASE_URL,
+      credentials: true,
+    },
+    maxHttpBufferSize: 1e7,
+  });
+
+  io.on("connection", (socket) => {
+    /* ================================
+       EXISTING 1–TO–1 CHAT (UNCHANGED)
+    ================================= */
+
+    socket.on("joinchat", ({ fromuserId, targetuserId }) => {
+      const RoomId = [fromuserId, targetuserId].sort().join("_");
+      socket.join(RoomId);
+    });
+
+    socket.on(
+      "sendmessage",
+      async ({
+        fromuserId,
+        targetuserId,
+        findId,
+        text = "",
+        image = "",
+        document = "",
+        messageType = "text",
+        originalFilename = "",
+        repliedtext,
+        repliedToId,
+        repliedById,
+        repliedImage,
+        messageId,
+        repliedMessageId,
+        repliedDocument,
+        repliedOriginalFilename,
+        repliedToCreatedAt,
+      }) => {
+        const RoomId = [fromuserId, targetuserId].sort().join("_");
+
+        try {
+          let imageUrl = "";
+          let documentUrl = "";
+
+          // image upload
+          if (messageType === "image" && image) {
+            const result = await cloudinary.uploader.upload(image);
+            imageUrl = result.secure_url;
+          }
+
+          // document upload
+          if (messageType === "file" && document) {
+            if (/^https?:\/\//.test(document)) {
+              documentUrl = document;
+            } else {
+              const filenameWithoutExt = path.basename(
+                originalFilename,
+                path.extname(originalFilename)
+              );
+              const extension = path.extname(originalFilename) || ".pdf";
+              const publicId = `chat_files/${Date.now()}_${filenameWithoutExt}${extension}`;
+
+              const docResult = await cloudinary.uploader.upload(document, {
+                resource_type: "raw",
+                public_id: publicId,
+              });
+
+              documentUrl = docResult.secure_url;
+            }
+          }
+
+          const message = new ModelMessage({
+            fromuserId,
+            targetuserId,
+            text,
+            image: imageUrl,
+            document: documentUrl,
+            originalFilename,
+            messageType,
+            repliedImage,
+            messageId,
+            repliedMessageId,
+            repliedDocument,
+            repliedtext,
+            repliedById,
+            repliedToId,
+            repliedToCreatedAt,
+          });
+
+          if (findId === "student") message.studentreaded = "YES";
+          else message.alumnireaded = "YES";
+
+          await message.save();
+
+          io.to(RoomId).emit("messageRecieved", {
+            fromuserId,
+            targetuserId,
+            text,
+            messageId,
+            image: imageUrl,
+            document: documentUrl,
+            originalFilename,
+            messageType,
+            repliedMessageId,
+            repliedtext,
+            repliedById,
+            repliedImage,
+            repliedDocument,
+            repliedOriginalFilename,
+            repliedToId,
+            repliedToCreatedAt,
+            _id: message._id,
+            createdAt: message.createdAt,
+          });
+        } catch (error) {
+          socket.emit("messageError", { error: "Message not saved" });
+        }
+      }
+    );
+
+    /* ================================
+       ✅ GROUP CHAT (NEW – ADDED)
+    ================================= */
+
+    // join group room
+    socket.on("joingroup", ({ groupId }) => {
+      socket.join(groupId);
+    });
+
+    // send group message
+    socket.on(
+      "sendgroupmessage",
+      async ({
+        groupId,
+        senderId,
+        text = "",
+        image = "",
+        document = "",
+        messageType = "text",
+        originalFilename = "",
+      }) => {
+        try {
+          let imageUrl = "";
+          let documentUrl = "";
+
+          if (messageType === "image" && image) {
+            const result = await cloudinary.uploader.upload(image);
+            imageUrl = result.secure_url;
+          }
+
+          if (messageType === "file" && document) {
+            if (/^https?:\/\//.test(document)) {
+              documentUrl = document;
+            } else {
+              const filenameWithoutExt = path.basename(
+                originalFilename,
+                path.extname(originalFilename)
+              );
+              const extension = path.extname(originalFilename) || ".pdf";
+              const publicId = `group_files/${Date.now()}_${filenameWithoutExt}${extension}`;
+
+              const docResult = await cloudinary.uploader.upload(document, {
+                resource_type: "raw",
+                public_id: publicId,
+              });
+
+              documentUrl = docResult.secure_url;
+            }
+          }
+
+          const groupMessage = await GroupMessage.create({
+            groupId,
+            senderId,
+            text,
+            image: imageUrl,
+            document: documentUrl,
+            originalFilename,
+            messageType,
+          });
+
+          io.to(groupId).emit("groupMessageReceived", {
+            _id: groupMessage._id,
+            groupId,
+            senderId,
+            text,
+            image: imageUrl,
+            document: documentUrl,
+            originalFilename,
+            messageType,
+            createdAt: groupMessage.createdAt,
+          });
+        } catch (err) {
+          socket.emit("groupMessageError", {
+            error: "Group message not saved",
+          });
+        }
+      }
+    );
+
+    socket.on("disconnect", () => {});
+  });
+};
+
+module.exports = IntializeSocket;
+
+
+
