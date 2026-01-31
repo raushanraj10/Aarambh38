@@ -1,6 +1,5 @@
 const socket = require("socket.io");
 const ModelMessage = require("../models/ModelMessage");
-const GroupMessage = require("../models/GroupMessage"); // ✅ NEW
 const BASE_URL = require("../constants/ALLURL");
 const { cloudinary } = require("./cloudinary");
 const path = require("path");
@@ -9,21 +8,23 @@ const IntializeSocket = (server) => {
   const io = socket(server, {
     cors: {
       origin: BASE_URL,
-      credentials: true,
     },
     maxHttpBufferSize: 1e7,
   });
 
   io.on("connection", (socket) => {
-    /* ================================
-       EXISTING 1–TO–1 CHAT (UNCHANGED)
-    ================================= */
 
+    // ===============================
+    // PRIVATE CHAT JOIN (EXISTING)
+    // ===============================
     socket.on("joinchat", ({ fromuserId, targetuserId }) => {
       const RoomId = [fromuserId, targetuserId].sort().join("_");
       socket.join(RoomId);
     });
 
+    // ===============================
+    // PRIVATE MESSAGE (EXISTING)
+    // ===============================
     socket.on(
       "sendmessage",
       async ({
@@ -51,13 +52,13 @@ const IntializeSocket = (server) => {
           let imageUrl = "";
           let documentUrl = "";
 
-          // image upload
+          // IMAGE UPLOAD
           if (messageType === "image" && image) {
             const result = await cloudinary.uploader.upload(image);
             imageUrl = result.secure_url;
           }
 
-          // document upload
+          // FILE UPLOAD
           if (messageType === "file" && document) {
             if (/^https?:\/\//.test(document)) {
               documentUrl = document;
@@ -66,7 +67,8 @@ const IntializeSocket = (server) => {
                 originalFilename,
                 path.extname(originalFilename)
               );
-              const extension = path.extname(originalFilename) || ".pdf";
+              const extension =
+                path.extname(originalFilename) || ".pdf";
               const publicId = `chat_files/${Date.now()}_${filenameWithoutExt}${extension}`;
 
               const docResult = await cloudinary.uploader.upload(document, {
@@ -78,6 +80,7 @@ const IntializeSocket = (server) => {
             }
           }
 
+          // SAVE MESSAGE
           const message = new ModelMessage({
             fromuserId,
             targetuserId,
@@ -96,11 +99,14 @@ const IntializeSocket = (server) => {
             repliedToCreatedAt,
           });
 
-          if (findId === "student") message.studentreaded = "YES";
-          else message.alumnireaded = "YES";
+          if (findId === "student")
+            message.studentreaded = "YES";
+          else
+            message.alumnireaded = "YES";
 
           await message.save();
 
+          // EMIT MESSAGE
           io.to(RoomId).emit("messageRecieved", {
             fromuserId,
             targetuserId,
@@ -122,85 +128,50 @@ const IntializeSocket = (server) => {
             createdAt: message.createdAt,
           });
         } catch (error) {
-          socket.emit("messageError", { error: "Message not saved" });
+          socket.emit("messageError", {
+            error: "Message not saved",
+          });
         }
       }
     );
 
-    /* ================================
-       ✅ GROUP CHAT (NEW – ADDED)
-    ================================= */
-
-    // join group room
-    socket.on("joingroup", ({ groupId }) => {
-      socket.join(groupId);
-    });
-
-    // send group message
+    // ===============================
+    // 🔥 ALUMNI BULK MESSAGE (NEW)
+    // ===============================
     socket.on(
-      "sendgroupmessage",
-      async ({
-        groupId,
-        senderId,
-        text = "",
-        image = "",
-        document = "",
-        messageType = "text",
-        originalFilename = "",
-      }) => {
+      "alumniBulkMessage",
+      async ({ fromuserId, studentIds, text }) => {
         try {
-          let imageUrl = "";
-          let documentUrl = "";
-
-          if (messageType === "image" && image) {
-            const result = await cloudinary.uploader.upload(image);
-            imageUrl = result.secure_url;
+          if (!Array.isArray(studentIds) || studentIds.length === 0) {
+            return;
           }
 
-          if (messageType === "file" && document) {
-            if (/^https?:\/\//.test(document)) {
-              documentUrl = document;
-            } else {
-              const filenameWithoutExt = path.basename(
-                originalFilename,
-                path.extname(originalFilename)
-              );
-              const extension = path.extname(originalFilename) || ".pdf";
-              const publicId = `group_files/${Date.now()}_${filenameWithoutExt}${extension}`;
+          for (const studentId of studentIds) {
+            const RoomId = [fromuserId, studentId].sort().join("_");
 
-              const docResult = await cloudinary.uploader.upload(document, {
-                resource_type: "raw",
-                public_id: publicId,
-              });
+            // SAVE MESSAGE FOR EACH STUDENT
+            const message = await ModelMessage.create({
+              fromuserId,
+              targetuserId: studentId,
+              text,
+              messageType: "text",
+              studentreaded: "NO",
+              alumnireaded: "YES",
+            });
 
-              documentUrl = docResult.secure_url;
-            }
+            // REAL-TIME EMIT (IF STUDENT ONLINE)
+            io.to(RoomId).emit("messageRecieved", {
+              fromuserId,
+              targetuserId: studentId,
+              text,
+              messageType: "text",
+              messageId: message._id,
+              createdAt: message.createdAt,
+            });
           }
-
-          const groupMessage = await GroupMessage.create({
-            groupId,
-            senderId,
-            text,
-            image: imageUrl,
-            document: documentUrl,
-            originalFilename,
-            messageType,
-          });
-
-          io.to(groupId).emit("groupMessageReceived", {
-            _id: groupMessage._id,
-            groupId,
-            senderId,
-            text,
-            image: imageUrl,
-            document: documentUrl,
-            originalFilename,
-            messageType,
-            createdAt: groupMessage.createdAt,
-          });
-        } catch (err) {
-          socket.emit("groupMessageError", {
-            error: "Group message not saved",
+        } catch (error) {
+          socket.emit("messageError", {
+            error: "Bulk message failed",
           });
         }
       }
