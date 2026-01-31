@@ -13,7 +13,6 @@ const Group = require("../models/Group");
 const GroupMessage = require("../models/GroupMessage");
 
 
-
 const UserRouter=express.Router()
 
 UserRouter.post("/sendrequest/:touserId",UserAuth,async(req,res)=>{
@@ -449,35 +448,14 @@ UserRouter.get("/studentreadedoff/:fromuserId", UserAuth, async (req, res) => {
   }
 });
 
-// ===============================
-// GROUP CHAT (ALUMNI ONLY)
-// ===============================
 
-// ✅ Create group (Alumni → connected students only)
 UserRouter.post("/creategroup", UserAuth, async (req, res) => {
   try {
     const alumniId = req.decode._id;
     const { groupName, studentIds } = req.body;
 
-    if (!groupName || !Array.isArray(studentIds)) {
+    if (!groupName || !studentIds?.length)
       return res.status(400).send("Invalid data");
-    }
-
-    // get accepted students of alumni
-    const connections = await ModelUserSendConnection.find({
-      touserId: alumniId,
-      status: "accepted",
-    }).select("fromuserId");
-
-    const allowedStudents = connections.map(c => c.fromuserId.toString());
-
-    const invalid = studentIds.filter(
-      id => !allowedStudents.includes(id)
-    );
-
-    if (invalid.length > 0) {
-      return res.status(403).send("Only connected students allowed");
-    }
 
     const group = await Group.create({
       name: groupName,
@@ -485,125 +463,26 @@ UserRouter.post("/creategroup", UserAuth, async (req, res) => {
       members: [alumniId, ...studentIds],
     });
 
-    res.status(201).json(group);
+    res.json(group);
   } catch (err) {
     res.status(500).send(err.message);
   }
 });
 
-// ✅ Get my groups (Alumni + Students)
+/* ================= GET MY GROUPS ================= */
 UserRouter.get("/mygroups", UserAuth, async (req, res) => {
-  try {
-    const userId = req.decode._id;
-    const groups = await Group.find({ members: userId });
-    res.json(groups);
-  } catch (err) {
-    res.status(500).send(err.message);
-  }
+  const groups = await Group.find({ members: req.decode._id });
+  res.json(groups);
 });
 
-// ✅ Get group messages
+/* ================= GROUP MESSAGES ================= */
 UserRouter.get("/groupmessages/:groupId", UserAuth, async (req, res) => {
-  try {
-    const userId = req.decode._id;
-    const group = await Group.findById(req.params.groupId);
+  const msgs = await GroupMessage.find({
+    groupId: req.params.groupId,
+  }).sort({ createdAt: 1 });
 
-    if (!group) return res.status(404).send("Group not found");
-    if (!group.members.includes(userId))
-      return res.status(403).send("Not authorized");
-
-    const messages = await GroupMessage.find({
-      groupId: req.params.groupId,
-    }).sort({ createdAt: 1 });
-
-    res.json(messages);
-  } catch (err) {
-    res.status(500).send(err.message);
-  }
+  res.json(msgs);
 });
-
-// ✅ Add student to group (Alumni only)
-UserRouter.post("/addtogroup/:groupId/:studentId", UserAuth, async (req, res) => {
-  try {
-    const alumniId = req.decode._id;
-    const { groupId, studentId } = req.params;
-
-    const group = await Group.findById(groupId);
-    if (!group) return res.status(404).send("Group not found");
-
-    if (group.createdBy.toString() !== alumniId) {
-      return res.status(403).send("Only alumni admin can add");
-    }
-
-    const connection = await ModelUserSendConnection.findOne({
-      fromuserId: studentId,
-      touserId: alumniId,
-      status: "accepted",
-    });
-
-    if (!connection) {
-      return res.status(403).send("Student not connected");
-    }
-
-    if (!group.members.includes(studentId)) {
-      group.members.push(studentId);
-      await group.save();
-    }
-
-    res.send("Student added");
-  } catch (err) {
-    res.status(500).send(err.message);
-  }
-});
-
-
-// ===============================
-// ALUMNI BULK MESSAGE TO STUDENTS
-// ===============================
-UserRouter.post("/alumni/bulkmessage", UserAuth, async (req, res) => {
-  try {
-    const alumniId = req.decode._id;
-    const { studentIds, text } = req.body;
-
-    if (!Array.isArray(studentIds) || studentIds.length === 0) {
-      return res.status(400).send("No students selected");
-    }
-
-    if (!text || !text.trim()) {
-      return res.status(400).send("Message is empty");
-    }
-
-    // ✅ verify students are connected to alumni
-    const connections = await ModelUserSendConnection.find({
-      touserId: alumniId,
-      status: "accepted",
-      fromuserId: { $in: studentIds },
-    }).select("fromuserId");
-
-    const allowedStudents = connections.map(c => c.fromuserId.toString());
-
-    if (allowedStudents.length !== studentIds.length) {
-      return res.status(403).send("Some students are not connected");
-    }
-
-    // ✅ create messages
-    const messages = studentIds.map(studentId => ({
-      fromuserId: alumniId,
-      targetuserId: studentId,
-      text,
-      messageType: "text",
-      studentreaded: "NO",
-      alumnireaded: "YES",
-    }));
-
-    await ModelMessage.insertMany(messages);
-
-    res.status(200).send("Message sent to selected students");
-  } catch (err) {
-    res.status(500).send(err.message);
-  }
-});
-
 
 
 module.exports=UserRouter
